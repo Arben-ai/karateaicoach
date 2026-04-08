@@ -17,7 +17,8 @@ public class Trainingsplan {
     private TrainingsplanStatus status;
     private String sportlerId;
 
-    public Trainingsplan() {}
+    public Trainingsplan() {
+    }
 
     public Trainingsplan(String titel, int dauer, TrainingsplanStatus status, String sportlerId) {
         this.titel = titel;
@@ -27,10 +28,32 @@ public class Trainingsplan {
         this.erstelldatum = LocalDate.now();
     }
 
-    public String getId() { return id; }
-    public String getTitel() { return titel; }
-    public LocalDate getErstelldatum() { return erstelldatum; }
-    public int getDauer() { return dauer; }
-    public TrainingsplanStatus getStatus() { return status; }
-    public String getSportlerId() { return sportlerId; }
+    public String getId() {
+        return id;
+    }
+
+    public String getTitel() {
+        return titel;
+    }
+
+    public LocalDate getErstelldatum() {
+        return erstelldatum;
+    }
+
+    public int getDauer() {
+        return dauer;
+    }
+
+    public TrainingsplanStatus getStatus() {
+        return status;
+    }
+
+    public String getSportlerId() {
+        return sportlerId;
+    }
+
+    public void setStatus(TrainingsplanStatus status) {
+        this.status = status;
+    }
+
 }
