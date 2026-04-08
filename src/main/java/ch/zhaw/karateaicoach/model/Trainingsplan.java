@@ -44,6 +44,7 @@ public class Trainingsplan {
         return dauer;
     }
 
+    @org.springframework.data.mongodb.core.mapping.Field("status")
     public TrainingsplanStatus getStatus() {
         return status;
     }
