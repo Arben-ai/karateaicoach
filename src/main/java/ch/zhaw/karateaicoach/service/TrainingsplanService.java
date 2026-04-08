@@ -17,7 +17,6 @@ public class TrainingsplanService {
 
     public Optional<Trainingsplan> activateTrainingsplan(String trainingsplanId) {
 
-        // 1. Trainingsplan laden
         Optional<Trainingsplan> optionalPlan = trainingsplanRepository.findById(trainingsplanId);
 
         if (optionalPlan.isEmpty()) {
@@ -26,15 +25,33 @@ public class TrainingsplanService {
 
         Trainingsplan plan = optionalPlan.get();
 
-        // 2. Status prüfen
         if (plan.getStatus() != TrainingsplanStatus.DRAFT) {
             return Optional.empty();
         }
 
-        // 3. Status ändern
         plan.setStatus(TrainingsplanStatus.ACTIVE);
+        trainingsplanRepository.save(plan);
 
-        // 4. speichern
+        return Optional.of(plan);
+    }
+
+    // 🔥 NEU
+    public Optional<Trainingsplan> completeTrainingsplan(String trainingsplanId) {
+
+        Optional<Trainingsplan> optionalPlan = trainingsplanRepository.findById(trainingsplanId);
+
+        if (optionalPlan.isEmpty()) {
+            return Optional.empty();
+        }
+
+        Trainingsplan plan = optionalPlan.get();
+
+        // 🔴 WICHTIG: nur ACTIVE erlaubt
+        if (plan.getStatus() != TrainingsplanStatus.ACTIVE) {
+            return Optional.empty();
+        }
+
+        plan.setStatus(TrainingsplanStatus.COMPLETED);
         trainingsplanRepository.save(plan);
 
         return Optional.of(plan);
