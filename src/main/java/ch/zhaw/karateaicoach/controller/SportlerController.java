@@ -33,4 +33,13 @@ public class SportlerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+    @GetMapping("/sportler")
+    public ResponseEntity<Iterable<Sportler>> getAllSportler() {
+        try {
+            return ResponseEntity.ok(sportlerRepository.findAll());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 }
