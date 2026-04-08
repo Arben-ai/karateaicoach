@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import ch.zhaw.karateaicoach.model.Trainingsplan;
 import ch.zhaw.karateaicoach.model.TrainingsplanCreateDTO;
+import ch.zhaw.karateaicoach.model.TrainingsplanStatus;
 import ch.zhaw.karateaicoach.repository.TrainingsplanRepository;
 
 @RestController
@@ -34,9 +35,37 @@ public class TrainingsplanController {
     }
 
     @GetMapping("/trainingsplan")
-    public ResponseEntity<Iterable<Trainingsplan>> getAllTrainingsplan() {
+    public ResponseEntity<?> getAllTrainingsplan(
+            @RequestParam(required = false) Integer minDauer,
+            @RequestParam(required = false) String status) {
+
         try {
-            return ResponseEntity.ok(trainingsplanRepository.findAll());
+            // Case 1: keine Parameter
+            if (minDauer == null && status == null) {
+                return ResponseEntity.ok(trainingsplanRepository.findAll());
+            }
+
+            // Case 2: nur minDauer
+            if (status == null) {
+                return ResponseEntity.ok(
+                        trainingsplanRepository.findByDauerGreaterThan(minDauer));
+            }
+
+            // String → Enum umwandeln
+            TrainingsplanStatus enumStatus = TrainingsplanStatus.valueOf(status);
+
+            // Case 3: nur status
+            if (minDauer == null) {
+                return ResponseEntity.ok(
+                        trainingsplanRepository.findByStatus(enumStatus));
+            }
+
+            // Case 4: beide Parameter
+            return ResponseEntity.ok(
+                    trainingsplanRepository.findByDauerGreaterThanAndStatus(minDauer, enumStatus));
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Invalid parameter");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
