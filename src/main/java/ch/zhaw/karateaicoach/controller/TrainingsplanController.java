@@ -9,6 +9,7 @@ import ch.zhaw.karateaicoach.model.Trainingsplan;
 import ch.zhaw.karateaicoach.model.TrainingsplanCreateDTO;
 import ch.zhaw.karateaicoach.model.TrainingsplanStatus;
 import ch.zhaw.karateaicoach.repository.TrainingsplanRepository;
+import ch.zhaw.karateaicoach.service.SportlerService;
 
 @RestController
 @RequestMapping("/api")
@@ -17,8 +18,17 @@ public class TrainingsplanController {
     @Autowired
     TrainingsplanRepository trainingsplanRepository;
 
+    @Autowired
+    SportlerService sportlerService;
+
     @PostMapping("/trainingsplan")
     public ResponseEntity<Trainingsplan> createTrainingsplan(@RequestBody TrainingsplanCreateDTO dto) {
+
+        // 🔴 VALIDIERUNG: sportlerId prüfen
+        if (!sportlerService.sportlerExists(dto.getSportlerId())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
         try {
             Trainingsplan plan = new Trainingsplan(
                     dto.getTitel(),
@@ -77,5 +87,4 @@ public class TrainingsplanController {
                 .map(plan -> ResponseEntity.ok(plan))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
-
 }
