@@ -42,4 +42,11 @@ public class TrainingsplanController {
         }
     }
 
+    @GetMapping("/trainingsplan/{id}")
+    public ResponseEntity<Trainingsplan> getTrainingsplanById(@PathVariable String id) {
+        return trainingsplanRepository.findById(id)
+                .map(plan -> ResponseEntity.ok(plan))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    }
+
 }
