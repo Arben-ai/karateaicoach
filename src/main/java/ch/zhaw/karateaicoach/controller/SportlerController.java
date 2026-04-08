@@ -20,11 +20,10 @@ public class SportlerController {
     public ResponseEntity<Sportler> createSportler(@RequestBody SportlerCreateDTO dto) {
         try {
             Sportler sportler = new Sportler(
-                dto.getName(),
-                dto.getEmail(),
-                dto.getGuertelgrad(),
-                dto.getGewicht()
-            );
+                    dto.getName(),
+                    dto.getEmail(),
+                    dto.getGuertelgrad(),
+                    dto.getGewicht());
 
             Sportler saved = sportlerRepository.save(sportler);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
@@ -41,5 +40,12 @@ public class SportlerController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @GetMapping("/sportler/{id}")
+    public ResponseEntity<Sportler> getSportlerById(@PathVariable String id) {
+        return sportlerRepository.findById(id)
+                .map(sportler -> ResponseEntity.ok(sportler))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 }
