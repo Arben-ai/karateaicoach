@@ -31,4 +31,19 @@ public class TrainingsplanServiceController {
 
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+
+    // 🔥 NEU
+    @PutMapping("/completeTrainingsplan")
+    public ResponseEntity<Trainingsplan> completeTrainingsplan(
+            @RequestBody TrainingsplanStatusChangeDTO dto) {
+
+        Optional<Trainingsplan> plan =
+                trainingsplanService.completeTrainingsplan(dto.getTrainingsplanId());
+
+        if (plan.isPresent()) {
+            return new ResponseEntity<>(plan.get(), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
 }
