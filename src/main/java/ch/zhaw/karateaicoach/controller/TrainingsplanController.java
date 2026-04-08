@@ -20,11 +20,10 @@ public class TrainingsplanController {
     public ResponseEntity<Trainingsplan> createTrainingsplan(@RequestBody TrainingsplanCreateDTO dto) {
         try {
             Trainingsplan plan = new Trainingsplan(
-                dto.getTitel(),
-                dto.getDauer(),
-                dto.getStatus(),
-                dto.getSportlerId()
-            );
+                    dto.getTitel(),
+                    dto.getDauer(),
+                    dto.getStatus(),
+                    dto.getSportlerId());
 
             Trainingsplan saved = trainingsplanRepository.save(plan);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
@@ -33,4 +32,14 @@ public class TrainingsplanController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+    @GetMapping("/trainingsplan")
+    public ResponseEntity<Iterable<Trainingsplan>> getAllTrainingsplan() {
+        try {
+            return ResponseEntity.ok(trainingsplanRepository.findAll());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
 }
