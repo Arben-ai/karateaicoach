@@ -34,6 +34,9 @@
           <li class="nav-item">
             <a class="nav-link" href="/trainingsplan">Trainingspläne</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/account">Account</a> <!-- ✅ NEU -->
+          </li>
         {/if}
       </ul>
 
