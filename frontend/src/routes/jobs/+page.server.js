@@ -1,58 +1,60 @@
 import axios from "axios";
 import { error } from '@sveltejs/kit';
-// Load environment variables from .env file for local development
 import 'dotenv/config';
-const API_BASE_URL = process.env.API_BASE_URL; // defined in frontend/.env
+
+const API_BASE_URL = process.env.API_BASE_URL;
 
 export async function load() {
 
     try {
-        // Could be done in parallel with Promise.all(...)
-        const jobsResponse = await axios({
+        const trainingsplanResponse = await axios({
             method: "get",
-            url: `${API_BASE_URL}/api/job`,
-        })
-        const companiesResponse = await axios({
+            url: `${API_BASE_URL}/api/trainingsplan`,
+        });
+
+        const sportlerResponse = await axios({
             method: "get",
-            url: `${API_BASE_URL}/api/company`,
-        })
+            url: `${API_BASE_URL}/api/sportler`,
+        });
 
         return {
-            jobs: jobsResponse.data,
-            companies: companiesResponse.data
+            trainingsplaene: trainingsplanResponse.data,
+            sportler: sportlerResponse.data
         };
 
     } catch (axiosError) {
-        console.log('Error loading companies:', axiosError);
+        console.log('Error loading data:', axiosError);
+        throw error(500, 'Error loading data');
     }
 }
 
 export const actions = {
-    createJob: async ({ request }) => {
+    createTrainingsplan: async ({ request }) => {
 
         const data = await request.formData();
-        const job = {
-            title: data.get('title'),
-            description: data.get('description'),
-            earnings: parseFloat(data.get('earnings')),
-            jobType: data.get('jobType'),
-            companyId: data.get('companyId')
+
+        const trainingsplan = {
+            titel: data.get('titel'),
+            dauer: parseInt(data.get('dauer')),
+            status: data.get('status'),
+            sportlerId: data.get('sportlerId')
         };
 
         try {
             await axios({
                 method: "post",
-                url: `${API_BASE_URL}/api/job`,
+                url: `${API_BASE_URL}/api/trainingsplan`,
                 headers: {
                     "Content-Type": "application/json",
                 },
-                data: job,
+                data: trainingsplan,
             });
 
             return { success: true };
-        } catch (error) {
-            console.log('Error creating job:', error);
-            return { success: false, error: 'Could not create job' };
+
+        } catch (err) {
+            console.log('Error creating trainingsplan:', err);
+            return { success: false, error: 'Could not create trainingsplan' };
         }
     }
-}
+};
