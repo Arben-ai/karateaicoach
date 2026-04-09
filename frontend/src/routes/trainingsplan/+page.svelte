@@ -4,7 +4,7 @@
   let { data, form } = $props();
 
   let sportler = $derived(data.sportler);
-  let trainingsplaene = $derived(data.trainingsplaene);
+  let trainingsplaene = $derived(data.trainingsplan); // ✅ FIX
 </script>
 
 <h1 class="mt-3">Create Trainingsplan</h1>
@@ -85,13 +85,19 @@
     </tr>
   </thead>
   <tbody>
-    {#each trainingsplaene as tp}
+    {#if trainingsplaene && trainingsplaene.length > 0}
+      {#each trainingsplaene as tp}
+        <tr>
+          <td>{tp.titel}</td>
+          <td>{tp.dauer}</td>
+          <td>{tp.status}</td>
+          <td>{tp.sportlerId}</td>
+        </tr>
+      {/each}
+    {:else}
       <tr>
-        <td>{tp.titel}</td>
-        <td>{tp.dauer}</td>
-        <td>{tp.status}</td>
-        <td>{tp.sportlerId}</td>
+        <td colspan="4">Keine Trainingspläne vorhanden</td>
       </tr>
-    {/each}
+    {/if}
   </tbody>
 </table>
