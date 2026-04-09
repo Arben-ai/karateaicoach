@@ -24,23 +24,27 @@
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
-      
-      <!-- LINKS (Navigation) -->
+      <!-- LINKS -->
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         {#if isAuthenticated}
           <li class="nav-item">
             <a class="nav-link" href="/sportler">Sportler</a>
           </li>
+
+          <!-- 👇 Trainingspläne nur für Admin -->
+          {#if user.user_roles && user.user_roles.includes("admin")}
+            <li class="nav-item">
+              <a class="nav-link" href="/trainingsplan">Trainingspläne</a>
+            </li>
+          {/if}
+
           <li class="nav-item">
-            <a class="nav-link" href="/trainingsplan">Trainingspläne</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/account">Account</a> <!-- ✅ NEU -->
+            <a class="nav-link" href="/account">Account</a>
           </li>
         {/if}
       </ul>
 
-      <!-- RECHTS (Login / Logout) -->
+      <!-- RECHTS -->
       <div class="d-flex align-items-center">
         {#if isAuthenticated}
           <span class="me-2">{user.name}</span>
@@ -53,7 +57,6 @@
           <a href="/signup" class="btn btn-outline-primary">Sign Up</a>
         {/if}
       </div>
-
     </div>
   </div>
 </nav>

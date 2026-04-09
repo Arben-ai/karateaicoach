@@ -10,6 +10,7 @@ import ch.zhaw.karateaicoach.model.TrainingsplanCreateDTO;
 import ch.zhaw.karateaicoach.model.TrainingsplanStatus;
 import ch.zhaw.karateaicoach.repository.TrainingsplanRepository;
 import ch.zhaw.karateaicoach.service.SportlerService;
+import ch.zhaw.karateaicoach.service.UserService; // 👈 NEU
 
 @RestController
 @RequestMapping("/api")
@@ -21,8 +22,16 @@ public class TrainingsplanController {
     @Autowired
     SportlerService sportlerService;
 
+    @Autowired
+    UserService userService; // 👈 NEU
+
     @PostMapping("/trainingsplan")
     public ResponseEntity<Trainingsplan> createTrainingsplan(@RequestBody TrainingsplanCreateDTO dto) {
+
+        // 🔒 NEU: nur Admin darf erstellen
+        if (!userService.userHasRole("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
 
         // 🔴 VALIDIERUNG: sportlerId prüfen
         if (!sportlerService.sportlerExists(dto.getSportlerId())) {
@@ -50,27 +59,22 @@ public class TrainingsplanController {
             @RequestParam(required = false) String status) {
 
         try {
-            // Case 1: keine Parameter
             if (minDauer == null && status == null) {
                 return ResponseEntity.ok(trainingsplanRepository.findAll());
             }
 
-            // Case 2: nur minDauer
             if (status == null) {
                 return ResponseEntity.ok(
                         trainingsplanRepository.findByDauerGreaterThan(minDauer));
             }
 
-            // String → Enum umwandeln
             TrainingsplanStatus enumStatus = TrainingsplanStatus.valueOf(status);
 
-            // Case 3: nur status
             if (minDauer == null) {
                 return ResponseEntity.ok(
                         trainingsplanRepository.findByStatus(enumStatus));
             }
 
-            // Case 4: beide Parameter
             return ResponseEntity.ok(
                     trainingsplanRepository.findByDauerGreaterThanAndStatus(minDauer, enumStatus));
 
