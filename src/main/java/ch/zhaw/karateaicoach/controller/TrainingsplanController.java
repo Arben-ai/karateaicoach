@@ -10,6 +10,7 @@ import ch.zhaw.karateaicoach.model.TrainingsplanCreateDTO;
 import ch.zhaw.karateaicoach.model.TrainingsplanStatus;
 import ch.zhaw.karateaicoach.repository.TrainingsplanRepository;
 import ch.zhaw.karateaicoach.service.SportlerService;
+import ch.zhaw.karateaicoach.service.UserService;
 
 @RestController
 @RequestMapping("/api")
@@ -21,10 +22,17 @@ public class TrainingsplanController {
     @Autowired
     SportlerService sportlerService;
 
+    @Autowired
+    UserService userService;
+
     @PostMapping("/trainingsplan")
     public ResponseEntity<Trainingsplan> createTrainingsplan(@RequestBody TrainingsplanCreateDTO dto) {
 
-        // 🔴 VALIDIERUNG: sportlerId prüfen
+        // 🔒 ADMIN CHECK
+        if (!userService.userHasRole("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
         if (!sportlerService.sportlerExists(dto.getSportlerId())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -49,28 +57,28 @@ public class TrainingsplanController {
             @RequestParam(required = false) Integer minDauer,
             @RequestParam(required = false) String status) {
 
+        // 🔒 ADMIN CHECK
+        if (!userService.userHasRole("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
         try {
-            // Case 1: keine Parameter
             if (minDauer == null && status == null) {
                 return ResponseEntity.ok(trainingsplanRepository.findAll());
             }
 
-            // Case 2: nur minDauer
             if (status == null) {
                 return ResponseEntity.ok(
                         trainingsplanRepository.findByDauerGreaterThan(minDauer));
             }
 
-            // String → Enum umwandeln
             TrainingsplanStatus enumStatus = TrainingsplanStatus.valueOf(status);
 
-            // Case 3: nur status
             if (minDauer == null) {
                 return ResponseEntity.ok(
                         trainingsplanRepository.findByStatus(enumStatus));
             }
 
-            // Case 4: beide Parameter
             return ResponseEntity.ok(
                     trainingsplanRepository.findByDauerGreaterThanAndStatus(minDauer, enumStatus));
 
@@ -83,6 +91,12 @@ public class TrainingsplanController {
 
     @GetMapping("/trainingsplan/{id}")
     public ResponseEntity<Trainingsplan> getTrainingsplanById(@PathVariable String id) {
+
+        // 🔒 ADMIN CHECK
+        if (!userService.userHasRole("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
         return trainingsplanRepository.findById(id)
                 .map(plan -> ResponseEntity.ok(plan))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));

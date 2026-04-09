@@ -1,60 +1,38 @@
 import axios from "axios";
-import { error } from '@sveltejs/kit';
-import 'dotenv/config';
+import { redirect } from "@sveltejs/kit";
+import { env } from "$env/dynamic/private";
 
-const API_BASE_URL = process.env.API_BASE_URL;
+const API_BASE_URL = env.API_BASE_URL;
 
-export async function load() {
+export async function load({ locals }) {
+  const jwt_token = locals.jwt_token;
 
-    try {
-        const trainingsplanResponse = await axios({
-            method: "get",
-            url: `${API_BASE_URL}/api/trainingsplan`,
-        });
+  console.log("LOAD RUNNING");
 
-        const sportlerResponse = await axios({
-            method: "get",
-            url: `${API_BASE_URL}/api/sportler`,
-        });
+  if (!jwt_token) {
+    throw redirect(303, "/login");
+  }
 
-        return {
-            trainingsplaene: trainingsplanResponse.data,
-            sportler: sportlerResponse.data
-        };
-
-    } catch (axiosError) {
-        console.log('Error loading data:', axiosError);
-        throw error(500, 'Error loading data');
+  const trainingsplanResponse = await axios.get(
+    `${API_BASE_URL}/api/trainingsplan`,
+    {
+      headers: {
+        Authorization: "Bearer " + jwt_token
+      }
     }
+  );
+
+  const sportlerResponse = await axios.get(
+    `${API_BASE_URL}/api/sportler`,
+    {
+      headers: {
+        Authorization: "Bearer " + jwt_token
+      }
+    }
+  );
+
+  return {
+    trainingsplan: trainingsplanResponse.data,
+    sportler: sportlerResponse.data
+  };
 }
-
-export const actions = {
-    createTrainingsplan: async ({ request }) => {
-
-        const data = await request.formData();
-
-        const trainingsplan = {
-            titel: data.get('titel'),
-            dauer: parseInt(data.get('dauer')),
-            status: data.get('status'),
-            sportlerId: data.get('sportlerId')
-        };
-
-        try {
-            await axios({
-                method: "post",
-                url: `${API_BASE_URL}/api/trainingsplan`,
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                data: trainingsplan,
-            });
-
-            return { success: true };
-
-        } catch (err) {
-            console.log('Error creating trainingsplan:', err);
-            return { success: false, error: 'Could not create trainingsplan' };
-        }
-    }
-};
