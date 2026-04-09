@@ -25,10 +25,10 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="/companies">Sportler</a>
+          <a class="nav-link" aria-current="page" href="/sportler">Sportler</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/jobs">Trainingspläne</a>
+          <a class="nav-link" href="/trainingsplan">Trainingspläne</a>
         </li>
       </ul>
     </div>
