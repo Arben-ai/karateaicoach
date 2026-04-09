@@ -10,7 +10,7 @@ import ch.zhaw.karateaicoach.model.TrainingsplanCreateDTO;
 import ch.zhaw.karateaicoach.model.TrainingsplanStatus;
 import ch.zhaw.karateaicoach.repository.TrainingsplanRepository;
 import ch.zhaw.karateaicoach.service.SportlerService;
-import ch.zhaw.karateaicoach.service.UserService; // 👈 NEU
+import ch.zhaw.karateaicoach.service.UserService;
 
 @RestController
 @RequestMapping("/api")
@@ -23,17 +23,16 @@ public class TrainingsplanController {
     SportlerService sportlerService;
 
     @Autowired
-    UserService userService; // 👈 NEU
+    UserService userService;
 
     @PostMapping("/trainingsplan")
     public ResponseEntity<Trainingsplan> createTrainingsplan(@RequestBody TrainingsplanCreateDTO dto) {
 
-        // 🔒 NEU: nur Admin darf erstellen
+        // 🔒 ADMIN CHECK
         if (!userService.userHasRole("admin")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
 
-        // 🔴 VALIDIERUNG: sportlerId prüfen
         if (!sportlerService.sportlerExists(dto.getSportlerId())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -57,6 +56,11 @@ public class TrainingsplanController {
     public ResponseEntity<?> getAllTrainingsplan(
             @RequestParam(required = false) Integer minDauer,
             @RequestParam(required = false) String status) {
+
+        // 🔒 ADMIN CHECK
+        if (!userService.userHasRole("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
 
         try {
             if (minDauer == null && status == null) {
@@ -87,6 +91,12 @@ public class TrainingsplanController {
 
     @GetMapping("/trainingsplan/{id}")
     public ResponseEntity<Trainingsplan> getTrainingsplanById(@PathVariable String id) {
+
+        // 🔒 ADMIN CHECK
+        if (!userService.userHasRole("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        }
+
         return trainingsplanRepository.findById(id)
                 .map(plan -> ResponseEntity.ok(plan))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
