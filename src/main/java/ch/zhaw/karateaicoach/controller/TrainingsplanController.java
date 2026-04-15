@@ -101,4 +101,19 @@ public class TrainingsplanController {
                 .map(plan -> ResponseEntity.ok(plan))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
+
+    @DeleteMapping("/trainingsplan/{id}")
+    public ResponseEntity<Void> deleteTrainingsplan(@PathVariable String id) {
+
+        if (!userService.userHasRole("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        if (!trainingsplanRepository.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        trainingsplanRepository.deleteById(id);
+        return ResponseEntity.ok().build();
+    }
 }
