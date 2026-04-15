@@ -57,4 +57,9 @@ public class Trainingsplan {
         this.status = status;
     }
 
+    // ✅ HIER HINZUFÜGEN
+    public void setDauer(int dauer) {
+        this.dauer = dauer;
+    }
+
 }
