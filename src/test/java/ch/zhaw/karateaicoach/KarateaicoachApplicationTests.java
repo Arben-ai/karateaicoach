@@ -9,11 +9,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ch.zhaw.karateaicoach.repository.SportlerRepository;
 import ch.zhaw.karateaicoach.repository.TrainingsplanRepository;
 
-@SpringBootTest(properties = {
-		"spring.security.oauth2.resourceserver.jwt.issuer-uri=http://dummy",
-		"spring.autoconfigure.exclude=org.springframework.boot.mongodb.autoconfigure.MongoAutoConfiguration,"
-				+ "org.springframework.boot.data.mongodb.autoconfigure.DataMongoAutoConfiguration,"
-				+ "org.springframework.boot.data.mongodb.autoconfigure.DataMongoRepositoriesAutoConfiguration" })
+@SpringBootTest
 class KarateaicoachApplicationTests {
 
 	@MockitoBean
