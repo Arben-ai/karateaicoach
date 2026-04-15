@@ -17,6 +17,9 @@ public class Trainingsplan {
     private TrainingsplanStatus status;
     private String sportlerId;
 
+    // ✅ NEU: Trainingsfokus (z.B. Kata, Kumite)
+    private String fokus;
+
     public Trainingsplan() {
     }
 
@@ -53,11 +56,20 @@ public class Trainingsplan {
         return sportlerId;
     }
 
+    // ✅ Getter für Fokus
+    public String getFokus() {
+        return fokus;
+    }
+
+    // ✅ Setter für Fokus
+    public void setFokus(String fokus) {
+        this.fokus = fokus;
+    }
+
     public void setStatus(TrainingsplanStatus status) {
         this.status = status;
     }
 
-    // ✅ HIER HINZUFÜGEN
     public void setDauer(int dauer) {
         this.dauer = dauer;
     }

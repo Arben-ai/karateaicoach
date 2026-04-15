@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.Test;
 
 import ch.zhaw.karateaicoach.model.Trainingsplan;
-import ch.zhaw.karateaicoach.model.TrainingsplanStatus;
 
 public class PercentageAdjustmentTest {
 

@@ -7,7 +7,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import ch.zhaw.karateaicoach.model.Trainingsplan;
-import ch.zhaw.karateaicoach.model.TrainingsplanStatus;
 
 public class FixedBonusAdjustmentTest {
 
