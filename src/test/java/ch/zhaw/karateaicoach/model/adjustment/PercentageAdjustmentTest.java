@@ -2,6 +2,8 @@ package ch.zhaw.karateaicoach.model.adjustment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 
@@ -79,4 +81,23 @@ public class PercentageAdjustmentTest {
 
         assertEquals("Error: Percentage must be greater zero.", exception.getMessage());
     }
+
+    @Test
+void testWithMockito() {
+
+    // Mock Trainingsplan 1
+    Trainingsplan tp1 = mock(Trainingsplan.class);
+    when(tp1.getDauer()).thenReturn(42);
+
+    // Mock Trainingsplan 2
+    Trainingsplan tp2 = mock(Trainingsplan.class);
+    when(tp2.getDauer()).thenReturn(77);
+
+    PercentageAdjustment adjustment = new PercentageAdjustment(10);
+
+    double result = adjustment.calculateAdjustment(List.of(tp1, tp2));
+
+    // 42 + 77 = 119 → 10% = 11.9
+    assertEquals(11.9, result);
+}
 }
