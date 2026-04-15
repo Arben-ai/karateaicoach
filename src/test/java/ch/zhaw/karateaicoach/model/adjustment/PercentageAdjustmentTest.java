@@ -1,6 +1,7 @@
 package ch.zhaw.karateaicoach.model.adjustment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
@@ -48,5 +49,34 @@ public class PercentageAdjustmentTest {
         double result = adjustment.calculateAdjustment(List.of(tp1, tp2));
 
         assertEquals(50.0, result);
+    }
+
+    // ===== NEU: Exception Tests =====
+
+    @Test
+    void testPercentageGreaterThan50() {
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            new PercentageAdjustment(60);
+        });
+
+        assertEquals("Error: Percentage must be less or equal 50.", exception.getMessage());
+    }
+
+    @Test
+    void testPercentageEqualsZero() {
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            new PercentageAdjustment(0);
+        });
+
+        assertEquals("Error: Percentage must be greater zero.", exception.getMessage());
+    }
+
+    @Test
+    void testPercentageLessThanZero() {
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            new PercentageAdjustment(-10);
+        });
+
+        assertEquals("Error: Percentage must be greater zero.", exception.getMessage());
     }
 }
