@@ -4,7 +4,10 @@
   let { data, form } = $props();
 
   let sportler = $derived(data.sportler);
-  let trainingsplaene = $derived(data.trainingsplan); // ✅ FIX
+  let trainingsplaene = $derived(data.trainingsplan);
+  let pagination = $derived(data.trainingsplanPagination);
+
+  const createPageLink = (page) => `/trainingsplan?page=${page}&size=${pagination.size}`;
 </script>
 
 <h1 class="mt-3">Create Trainingsplan</h1>
@@ -73,7 +76,7 @@
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
-<h1>All Trainingspläne</h1>
+<h1>All Trainingsplaene</h1>
 
 <table class="table">
   <thead>
@@ -96,8 +99,37 @@
       {/each}
     {:else}
       <tr>
-        <td colspan="4">Keine Trainingspläne vorhanden</td>
+        <td colspan="4">Keine Trainingsplaene vorhanden</td>
       </tr>
     {/if}
   </tbody>
 </table>
+
+{#if pagination.totalPages > 0}
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <p class="mb-0">
+      Seite {pagination.page + 1} von {pagination.totalPages}
+      ({pagination.totalElements} Eintraege)
+    </p>
+
+    <div class="d-flex gap-2">
+      <a
+        class="btn btn-outline-secondary"
+        class:disabled={pagination.page === 0}
+        href={pagination.page === 0 ? "#" : createPageLink(pagination.page - 1)}
+        aria-disabled={pagination.page === 0}
+      >
+        Zurueck
+      </a>
+
+      <a
+        class="btn btn-outline-secondary"
+        class:disabled={pagination.page >= pagination.totalPages - 1}
+        href={pagination.page >= pagination.totalPages - 1 ? "#" : createPageLink(pagination.page + 1)}
+        aria-disabled={pagination.page >= pagination.totalPages - 1}
+      >
+        Weiter
+      </a>
+    </div>
+  </div>
+{/if}

@@ -4,6 +4,9 @@
   let { data, form } = $props();
 
   let sportler = $derived(data.sportler);
+  let pagination = $derived(data.pagination);
+
+  const createPageLink = (page) => `/sportler?page=${page}&size=${pagination.size}`;
 </script>
 
 <h1 class="mt-3">Create Sportler</h1>
@@ -70,3 +73,32 @@
     {/each}
   </tbody>
 </table>
+
+{#if pagination.totalPages > 0}
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <p class="mb-0">
+      Seite {pagination.page + 1} von {pagination.totalPages}
+      ({pagination.totalElements} Eintraege)
+    </p>
+
+    <div class="d-flex gap-2">
+      <a
+        class="btn btn-outline-secondary"
+        class:disabled={pagination.page === 0}
+        href={pagination.page === 0 ? "#" : createPageLink(pagination.page - 1)}
+        aria-disabled={pagination.page === 0}
+      >
+        Zurueck
+      </a>
+
+      <a
+        class="btn btn-outline-secondary"
+        class:disabled={pagination.page >= pagination.totalPages - 1}
+        href={pagination.page >= pagination.totalPages - 1 ? "#" : createPageLink(pagination.page + 1)}
+        aria-disabled={pagination.page >= pagination.totalPages - 1}
+      >
+        Weiter
+      </a>
+    </div>
+  </div>
+{/if}
