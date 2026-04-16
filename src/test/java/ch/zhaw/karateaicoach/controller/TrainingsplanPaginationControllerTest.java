@@ -130,4 +130,11 @@ class TrainingsplanPaginationControllerTest {
         mockMvc.perform(get("/api/trainingsplan?page=-1&size=5"))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    @WithMockUser(username = "user", roles = "USER")
+    void getAllTrainingsplanRequiresAdminRole() throws Exception {
+        mockMvc.perform(get("/api/trainingsplan?page=0&size=2"))
+                .andExpect(status().isForbidden());
+    }
 }

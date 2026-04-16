@@ -6,6 +6,11 @@ const API_BASE_URL = env.API_BASE_URL;
 const DEFAULT_PAGE_SIZE = 5;
 const SPORTLER_SELECT_PAGE_SIZE = 100;
 
+function userIsAdmin(user) {
+  return Array.isArray(user?.user_roles)
+    && user.user_roles.some((role) => typeof role === "string" && role.toLowerCase() === "admin");
+}
+
 export async function load({ locals, url }) {
   const jwt_token = locals.jwt_token;
   const pageParam = Number.parseInt(url.searchParams.get("page") ?? "0", 10);
@@ -15,6 +20,10 @@ export async function load({ locals, url }) {
 
   if (!jwt_token) {
     throw redirect(303, "/login");
+  }
+
+  if (!userIsAdmin(locals.user)) {
+    throw redirect(303, "/");
   }
 
   try {
@@ -72,6 +81,10 @@ export const actions = {
 
     if (!jwt_token) {
       throw error(401, "Authentication required");
+    }
+
+    if (!userIsAdmin(locals.user)) {
+      throw redirect(303, "/");
     }
 
     const data = await request.formData();

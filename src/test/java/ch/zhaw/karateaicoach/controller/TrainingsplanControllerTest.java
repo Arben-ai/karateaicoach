@@ -145,6 +145,25 @@ class TrainingsplanControllerTest {
 
     @Test
     @Order(2)
+    void createTrainingsplanRequiresAdminRole() throws Exception {
+        String requestBody = """
+                {
+                  "titel": "User Plan",
+                  "dauer": 20,
+                  "status": "DRAFT",
+                  "sportlerId": "sportler-1"
+                }
+                """;
+
+        mockMvc.perform(post("/api/trainingsplan")
+                        .with(user("user").roles("USER"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(3)
     @WithMockUser(username = "admin", roles = "ADMIN")
     void getTrainingsplan() throws Exception {
         mockMvc.perform(get("/api/trainingsplan/{id}", trainingsplanId))
@@ -154,7 +173,15 @@ class TrainingsplanControllerTest {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
+    void getTrainingsplanRequiresAdminRole() throws Exception {
+        mockMvc.perform(get("/api/trainingsplan/{id}", "tp-forbidden")
+                        .with(user("user").roles("USER")))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @Order(5)
     @WithMockUser(username = "admin", roles = "ADMIN")
     void deleteTrainingsplan() throws Exception {
         mockMvc.perform(delete("/api/trainingsplan/{id}", trainingsplanId))
@@ -162,7 +189,7 @@ class TrainingsplanControllerTest {
     }
 
     @Test
-    @Order(4)
+    @Order(6)
     @WithMockUser(username = "admin", roles = "ADMIN")
     void getDeletedTrainingsplan() throws Exception {
         mockMvc.perform(get("/api/trainingsplan/{id}", trainingsplanId))
@@ -170,7 +197,7 @@ class TrainingsplanControllerTest {
     }
 
     @Test
-    @Order(5)
+    @Order(7)
     void deleteTrainingsplanRequiresAdminRole() throws Exception {
         mockMvc.perform(delete("/api/trainingsplan/{id}", "tp-forbidden")
                         .with(user("user").roles("USER")))
