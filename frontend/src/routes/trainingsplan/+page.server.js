@@ -32,7 +32,7 @@ export async function load({ locals }) {
   );
 
   return {
-    trainingsplan: trainingsplanResponse.data,
-    sportler: sportlerResponse.data
+    trainingsplan: trainingsplanResponse.data.content ?? trainingsplanResponse.data,
+    sportler: sportlerResponse.data.content ?? sportlerResponse.data
   };
 }

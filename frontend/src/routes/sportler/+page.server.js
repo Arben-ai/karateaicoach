@@ -21,7 +21,7 @@ export async function load({ locals }) {
     });
 
     return {
-      sportler: response.data
+      sportler: response.data.content ?? response.data
     };
 
   } catch (err) {

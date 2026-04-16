@@ -2,6 +2,8 @@ package ch.zhaw.karateaicoach.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
@@ -11,11 +13,11 @@ import ch.zhaw.karateaicoach.model.TrainingsplanStatusAggregationDTO;
 
 public interface TrainingsplanRepository extends MongoRepository<Trainingsplan, String> {
 
-    List<Trainingsplan> findByDauerGreaterThan(int dauer);
+    Page<Trainingsplan> findByDauerGreaterThan(int dauer, Pageable pageable);
 
-    List<Trainingsplan> findByStatus(TrainingsplanStatus status);
+    Page<Trainingsplan> findByStatus(TrainingsplanStatus status, Pageable pageable);
 
-    List<Trainingsplan> findByDauerGreaterThanAndStatus(int dauer, TrainingsplanStatus status);
+    Page<Trainingsplan> findByDauerGreaterThanAndStatus(int dauer, TrainingsplanStatus status, Pageable pageable);
 
     @Aggregation({
     "{ '$match': { 'sportlerId': ?0 } }",
