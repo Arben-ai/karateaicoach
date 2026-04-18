@@ -1,32 +1,94 @@
 <script>
   let { data } = $props();
-  let { isAuthenticated } = data;
+  let isAuthenticated = $derived(data.isAuthenticated);
+  let user = $derived(data.user);
 </script>
 
 {#if isAuthenticated}
-  <h1>Willkommen beim KarateAI Coach!</h1>
+  <div class="hero-section">
+    <div class="hero-icon">
+      <i class="bi bi-shield-fill"></i>
+    </div>
+    <h1 class="hero-title">Willkommen, {user.given_name ?? user.name}!</h1>
+    <p class="hero-subtitle">
+      Verwalte deine Trainingspläne und verfolge deinen Fortschritt mit KarateAI Coach.
+    </p>
+  </div>
 
-  <p>Deine Trainingspläne und Fortschritte stehen bereit.</p>
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="stat-card-icon"><i class="bi bi-people-fill"></i></div>
+        <div class="stat-card-title">Sportler</div>
+        <div class="stat-card-text">Verwalte deine Athleten</div>
+        <a href="/sportler" class="btn btn-outline-primary btn-sm mt-3">
+          <i class="bi bi-arrow-right me-1"></i>Öffnen
+        </a>
+      </div>
+    </div>
+
+    {#if user.user_roles && user.user_roles.includes("admin")}
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-card-icon"><i class="bi bi-journal-text"></i></div>
+          <div class="stat-card-title">Trainingspläne</div>
+          <div class="stat-card-text">Erstelle und verwalte Pläne</div>
+          <a href="/trainingsplan" class="btn btn-outline-primary btn-sm mt-3">
+            <i class="bi bi-arrow-right me-1"></i>Öffnen
+          </a>
+        </div>
+      </div>
+    {/if}
+
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="stat-card-icon"><i class="bi bi-person-circle"></i></div>
+        <div class="stat-card-title">Mein Account</div>
+        <div class="stat-card-text">Profil und Einstellungen</div>
+        <a href="/account" class="btn btn-outline-primary btn-sm mt-3">
+          <i class="bi bi-arrow-right me-1"></i>Öffnen
+        </a>
+      </div>
+    </div>
+  </div>
 
 {:else}
-  <div class="container mt-5">
-    <div class="row justify-content-center">
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-header">KarateAI Coach</div>
+  <div class="hero-section">
+    <div class="hero-icon">
+      <i class="bi bi-shield-fill"></i>
+    </div>
+    <h1 class="hero-title">KarateAI Coach</h1>
+    <p class="hero-subtitle">
+      KI-gestützte Trainingspläne für Karateka. Verwalte Sportler, erstelle personalisierte Pläne und verfolge den Fortschritt.
+    </p>
+    <div class="d-flex gap-3 justify-content-center">
+      <a href="/login" class="btn btn-primary btn-lg">
+        <i class="bi bi-box-arrow-in-right me-2"></i>Anmelden
+      </a>
+      <a href="/signup" class="btn btn-outline-secondary btn-lg">Registrieren</a>
+    </div>
+  </div>
 
-          <div class="card-body text-center">
-            <h5 class="card-title">Get Started</h5>
-
-            <p class="card-text">
-              Bitte logge dich ein oder registriere dich, um deine Trainingspläne zu verwalten.
-            </p>
-
-            <a href="/login" class="btn btn-primary me-2">Login</a>
-            <a href="/signup" class="btn btn-outline-primary">Sign Up</a>
-          </div>
-
-        </div>
+  <div class="row g-3 mt-2">
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="stat-card-icon"><i class="bi bi-robot"></i></div>
+        <div class="stat-card-title">KI-Trainingspläne</div>
+        <div class="stat-card-text">Personalisierte Pläne basierend auf Gürtelgrad und Trainingszielen</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="stat-card-icon"><i class="bi bi-graph-up"></i></div>
+        <div class="stat-card-title">Fortschritt verfolgen</div>
+        <div class="stat-card-text">Dokumentiere Trainingseinheiten und überwache die Entwicklung</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="stat-card-icon"><i class="bi bi-people-fill"></i></div>
+        <div class="stat-card-title">Sportlerverwaltung</div>
+        <div class="stat-card-text">Betreue mehrere Athleten und behalte den Überblick</div>
       </div>
     </div>
   </div>

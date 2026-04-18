@@ -2,102 +2,124 @@
   import { enhance } from "$app/forms";
 
   let { data, form } = $props();
-
   let sportler = $derived(data.sportler);
   let pagination = $derived(data.pagination);
 
   const createPageLink = (page) => `/sportler?page=${page}&size=${pagination.size}`;
 </script>
 
-<h1 class="mt-3">Create Sportler</h1>
+<div class="d-flex justify-content-between align-items-center mb-1">
+  <h1 class="page-title"><i class="bi bi-people-fill me-2"></i>Sportler</h1>
+</div>
+<p class="page-subtitle">Alle registrierten Athleten verwalten</p>
 
-{#if form?.success}
-  <div class="alert alert-success alert-dismissible fade show" role="alert">
-    Sportler created successfully!
+<!-- Formular -->
+<div class="card mb-4">
+  <div class="card-header">
+    <i class="bi bi-person-plus me-2"></i>Neuen Sportler erfassen
   </div>
-{/if}
+  <div class="card-body p-4">
+    {#if form?.success}
+      <div class="alert alert-success" role="alert">
+        <i class="bi bi-check-circle me-2"></i>Sportler erfolgreich erstellt!
+      </div>
+    {/if}
+    {#if form?.error}
+      <div class="alert alert-danger" role="alert">
+        <i class="bi bi-exclamation-circle me-2"></i>{form.error}
+      </div>
+    {/if}
 
-{#if form?.error}
-  <div class="alert alert-danger alert-dismissible fade show" role="alert">
-    {form.error}
+    <form method="POST" action="?/createSportler" use:enhance>
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label" for="name">Name</label>
+          <input class="form-control" id="name" name="name" type="text" placeholder="Vorname Nachname" required />
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="email">E-Mail</label>
+          <input class="form-control" id="email" name="email" type="email" placeholder="name@beispiel.ch" required />
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-2"></i>Sportler hinzufügen
+      </button>
+    </form>
   </div>
-{/if}
+</div>
 
-<form class="mb-5" method="POST" action="?/createSportler" use:enhance>
-  <div class="row mb-3">
-    <div class="col">
-      <label class="form-label" for="name">Name</label>
-      <input
-        class="form-control"
-        id="name"
-        name="name"
-        type="text"
-        required
-      />
-    </div>
+<hr class="section-divider" />
+
+<!-- Tabelle -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="h5 mb-0" style="color: var(--text-muted);">
+    <i class="bi bi-list-ul me-2"></i>Übersicht
+  </h2>
+  {#if pagination}
+    <span class="pagination-info">
+      {pagination.totalElements} Sportler total
+    </span>
+  {/if}
+</div>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table mb-0">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>E-Mail</th>
+          <th>ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#if sportler && sportler.length > 0}
+          {#each sportler as s}
+            <tr>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--accent-soft); display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 0.85rem; font-weight: 700; flex-shrink: 0;">
+                    {s.name.charAt(0).toUpperCase()}
+                  </div>
+                  <span class="fw-500">{s.name}</span>
+                </div>
+              </td>
+              <td style="color: var(--text-muted);">{s.email}</td>
+              <td><code style="color: var(--text-muted); font-size: 0.75rem;">{s.id}</code></td>
+            </tr>
+          {/each}
+        {:else}
+          <tr>
+            <td colspan="3" class="text-center py-5" style="color: var(--text-muted);">
+              <i class="bi bi-people" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
+              Noch keine Sportler vorhanden
+            </td>
+          </tr>
+        {/if}
+      </tbody>
+    </table>
   </div>
+</div>
 
-  <div class="row mb-3">
-    <div class="col">
-      <label class="form-label" for="email">Email</label>
-      <input
-        class="form-control"
-        id="email"
-        name="email"
-        type="email"
-        required
-      />
-    </div>
-  </div>
-
-  <button type="submit" class="btn btn-primary">Submit</button>
-</form>
-
-<h1>All Sportler</h1>
-
-<table class="table">
-  <thead>
-    <tr>
-      <th scope="col">Name</th>
-      <th scope="col">Email</th>
-      <th scope="col">ID</th>
-    </tr>
-  </thead>
-  <tbody>
-    {#each sportler as s}
-      <tr>
-        <td>{s.name}</td>
-        <td>{s.email}</td>
-        <td>{s.id}</td>
-      </tr>
-    {/each}
-  </tbody>
-</table>
-
-{#if pagination.totalPages > 0}
+{#if pagination && pagination.totalPages > 1}
   <div class="d-flex justify-content-between align-items-center mt-3">
-    <p class="mb-0">
+    <span class="pagination-info">
       Seite {pagination.page + 1} von {pagination.totalPages}
-      ({pagination.totalElements} Eintraege)
-    </p>
-
+    </span>
     <div class="d-flex gap-2">
       <a
-        class="btn btn-outline-secondary"
+        class="btn btn-outline-secondary btn-sm"
         class:disabled={pagination.page === 0}
         href={pagination.page === 0 ? "#" : createPageLink(pagination.page - 1)}
-        aria-disabled={pagination.page === 0}
       >
-        Zurueck
+        <i class="bi bi-chevron-left me-1"></i>Zurück
       </a>
-
       <a
-        class="btn btn-outline-secondary"
+        class="btn btn-outline-secondary btn-sm"
         class:disabled={pagination.page >= pagination.totalPages - 1}
         href={pagination.page >= pagination.totalPages - 1 ? "#" : createPageLink(pagination.page + 1)}
-        aria-disabled={pagination.page >= pagination.totalPages - 1}
       >
-        Weiter
+        Weiter<i class="bi bi-chevron-right ms-1"></i>
       </a>
     </div>
   </div>

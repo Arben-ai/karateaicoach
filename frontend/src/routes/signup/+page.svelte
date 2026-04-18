@@ -9,10 +9,23 @@
 
 <div class="container mt-5">
   <div class="row justify-content-center">
-    <div class="col-md-6">
+    <div class="col-md-5">
+      <div class="text-center mb-4">
+        <i class="bi bi-shield-fill" style="font-size: 2.5rem; color: var(--accent);"></i>
+        <h1 class="h4 mt-2 fw-700">KarateAI Coach</h1>
+        <p style="color: var(--text-muted);">Erstelle dein Konto</p>
+      </div>
+
       <div class="card">
-        <div class="card-header">Sign up</div>
-        <div class="card-body">
+        <div class="card-header">
+          <i class="bi bi-person-plus me-2"></i>Registrieren
+        </div>
+        <div class="card-body p-4">
+          {#if form?.error}
+            <div class="alert alert-danger" role="alert">
+              <i class="bi bi-exclamation-circle me-2"></i>{form.error}
+            </div>
+          {/if}
           <form
             method="POST"
             action="?/signup"
@@ -21,64 +34,34 @@
             use:enhance
             novalidate
           >
-            {#if form?.error}
-              <div class="alert alert-danger" role="alert">
-                {form.error}
+            <div class="row g-3 mb-3">
+              <div class="col">
+                <label for="firstName" class="form-label">Vorname</label>
+                <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Max" />
               </div>
-            {/if}
+              <div class="col">
+                <label for="lastName" class="form-label">Nachname</label>
+                <input type="text" class="form-control" id="lastName" name="lastName" placeholder="Mustermann" />
+              </div>
+            </div>
             <div class="mb-3">
               <label for="email" class="form-label">E-Mail</label>
-              <input
-                type="email"
-                class="form-control"
-                id="email"
-                name="email"
-                required
-              />
-              <div class="invalid-feedback">
-                Please provide an e-mail address.
-              </div>
+              <input type="email" class="form-control" id="email" name="email" placeholder="name@beispiel.ch" required />
             </div>
-            <div class="mb-3">
-              <label for="firstName" class="form-label">First Name</label>
-              <input
-                type="text"
-                class="form-control"
-                id="firstName"
-                name="firstName"
-              />
+            <div class="mb-4">
+              <label for="password" class="form-label">Passwort</label>
+              <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required />
             </div>
-            <div class="mb-3">
-              <label for="lastName" class="form-label">Last Name</label>
-              <input
-                type="text"
-                class="form-control"
-                id="lastName"
-                name="lastName"
-              />
-            </div>
-            <div class="mb-3">
-              <label for="password" class="form-label">Password</label>
-              <input
-                type="password"
-                class="form-control"
-                id="password"
-                name="password"
-                required
-              />
-              <div class="invalid-feedback">Please choose a password.</div>
-            </div>
-            <div class="row align-items-end">
-              <div class="col">
-                <button type="submit" class="btn btn-primary">Sign up</button>
-              </div>
-              <div class="col-auto">
-                <a href="/">Log in</a>
-              </div>
-            </div>
+            <button type="submit" class="btn btn-primary w-100">
+              <i class="bi bi-person-plus me-2"></i>Konto erstellen
+            </button>
           </form>
         </div>
       </div>
+
+      <p class="text-center mt-3" style="color: var(--text-muted); font-size: 0.9rem;">
+        Bereits ein Konto? <a href="/login" style="color: var(--accent);">Anmelden</a>
+      </p>
     </div>
   </div>
 </div>
