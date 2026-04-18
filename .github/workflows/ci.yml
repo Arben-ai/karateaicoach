@@ -26,5 +26,27 @@ jobs:
       - name: Make Maven wrapper executable
         run: chmod +x mvnw
 
-      - name: Run tests
-        run: ./mvnw -B test
+      - name: Run tests and generate JaCoCo report
+        run: ./mvnw -B verify
+
+      - name: Generate JaCoCo badge
+        id: jacoco
+        uses: cicirello/jacoco-coverage-badge@v2
+        with:
+          jacoco-csv-file: target/site/jacoco/jacoco.csv
+          badges-directory: .github/badges
+          generate-coverage-badge: true
+
+      - name: Commit and push badge
+        uses: EndBug/add-and-commit@v9
+        with:
+          default_author: github_actions
+          message: 'ci: update JaCoCo coverage badge'
+          add: '.github/badges/*.svg'
+
+      - name: Upload JaCoCo HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: target/site/jacoco/
+          retention-days: 30

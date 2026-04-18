@@ -3,7 +3,8 @@
   import "./styles.css";
 
   let { data, children } = $props();
-  let { user, isAuthenticated } = data;
+  let user = $derived(data.user);
+  let isAuthenticated = $derived(data.isAuthenticated);
 </script>
 
 <svelte:head>
@@ -23,6 +24,7 @@
       data-bs-target="#navbarNav"
       aria-controls="navbarNav"
       aria-expanded="false"
+      aria-label="Navigation umschalten"
     >
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -37,6 +39,11 @@
           </li>
 
           {#if user.user_roles && user.user_roles.includes("admin")}
+            <li class="nav-item">
+              <a class="nav-link" href="/trainingsfokus">
+                <i class="bi bi-bullseye me-1"></i>Trainingsfokus
+              </a>
+            </li>
             <li class="nav-item">
               <a class="nav-link" href="/trainingsplan">
                 <i class="bi bi-journal-text me-1"></i>Trainingspläne
