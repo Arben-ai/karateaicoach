@@ -8,6 +8,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import ch.zhaw.karateaicoach.repository.SportlerRepository;
 import ch.zhaw.karateaicoach.repository.TrainingsplanRepository;
+import ch.zhaw.karateaicoach.repository.TrainingsfokusRepository;
 
 @SpringBootTest
 class KarateaicoachApplicationTests {
@@ -17,6 +18,9 @@ class KarateaicoachApplicationTests {
 
 	@MockitoBean
 	SportlerRepository sportlerRepository;
+
+	@MockitoBean
+	TrainingsfokusRepository trainingsfokusRepository;
 
 	@MockitoBean
 	JwtDecoder jwtDecoder;
