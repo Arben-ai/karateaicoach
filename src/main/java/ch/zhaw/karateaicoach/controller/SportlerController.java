@@ -12,6 +12,7 @@ import ch.zhaw.karateaicoach.model.PaginatedResponseDTO;
 import ch.zhaw.karateaicoach.model.Sportler;
 import ch.zhaw.karateaicoach.model.SportlerCreateDTO;
 import ch.zhaw.karateaicoach.repository.SportlerRepository;
+import ch.zhaw.karateaicoach.service.UserService;
 
 @RestController
 @RequestMapping("/api")
@@ -19,6 +20,9 @@ public class SportlerController {
 
     @Autowired
     SportlerRepository sportlerRepository;
+
+    @Autowired
+    UserService userService;
 
     @PostMapping("/sportler")
     public ResponseEntity<Sportler> createSportler(@RequestBody SportlerCreateDTO dto) {
@@ -29,12 +33,25 @@ public class SportlerController {
                     dto.getGuertelgrad(),
                     dto.getGewicht());
 
+            sportler.setUserId(userService.getCurrentUserId());
+
             Sportler saved = sportlerRepository.save(sportler);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @GetMapping("/sportler/me")
+    public ResponseEntity<Sportler> getMySportler() {
+        String userId = userService.getCurrentUserId();
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        return sportlerRepository.findByUserId(userId)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
     @GetMapping("/sportler")
@@ -61,7 +78,23 @@ public class SportlerController {
     @GetMapping("/sportler/{id}")
     public ResponseEntity<Sportler> getSportlerById(@PathVariable String id) {
         return sportlerRepository.findById(id)
-                .map(sportler -> ResponseEntity.ok(sportler))
+                .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    }
+
+    @DeleteMapping("/sportler/{id}")
+    public ResponseEntity<Void> deleteSportler(@PathVariable String id) {
+        return sportlerRepository.findById(id).map(sportler -> {
+            String currentUserId = userService.getCurrentUserId();
+            boolean isOwner = currentUserId != null && currentUserId.equals(sportler.getUserId());
+            boolean isAdmin = userService.userHasRole("admin");
+
+            if (!isOwner && !isAdmin) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).<Void>build();
+            }
+
+            sportlerRepository.deleteById(id);
+            return ResponseEntity.ok().<Void>build();
+        }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 }

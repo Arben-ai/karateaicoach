@@ -13,6 +13,7 @@ public class Sportler {
     private String email;
     private String guertelgrad;
     private double gewicht;
+    private String userId;
 
     public Sportler() {}
 
@@ -28,4 +29,6 @@ public class Sportler {
     public String getEmail() { return email; }
     public String getGuertelgrad() { return guertelgrad; }
     public double getGewicht() { return gewicht; }
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
 }

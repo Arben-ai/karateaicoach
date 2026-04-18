@@ -12,6 +12,18 @@ import org.springframework.security.oauth2.jwt.Jwt;
 @Service
 public class UserService {
 
+    public String getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            return null;
+        }
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof Jwt jwt) {
+            return jwt.getSubject();
+        }
+        return authentication.getName();
+    }
+
     public boolean userHasRole(String role) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
