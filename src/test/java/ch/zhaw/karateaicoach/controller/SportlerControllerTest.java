@@ -29,13 +29,14 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import ch.zhaw.karateaicoach.model.Sportler;
 import ch.zhaw.karateaicoach.repository.SportlerRepository;
 import ch.zhaw.karateaicoach.security.TestSecurityConfig;
+import ch.zhaw.karateaicoach.service.UserService;
 
 @SpringJUnitWebConfig(SportlerControllerTest.TestConfig.class)
 class SportlerControllerTest {
 
     @Configuration
     @EnableWebMvc
-    @Import({ SportlerController.class, TestSecurityConfig.class })
+    @Import({ SportlerController.class, TestSecurityConfig.class, UserService.class })
     static class TestConfig {
 
         @Bean
