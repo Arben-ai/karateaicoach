@@ -1,34 +1,50 @@
-FROM eclipse-temurin:25-jdk AS backend-build
-WORKDIR /app
-COPY .mvn/ .mvn/
-COPY mvnw pom.xml ./
-RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
-COPY src ./src
-RUN ./mvnw -B package -DskipTests
+FROM eclipse-temurin:25-jdk-noble
 
-FROM node:22-slim AS frontend-build
-WORKDIR /app
-COPY frontend/package*.json ./
-RUN npm ci
-COPY frontend ./
-RUN npm run build
+RUN apt-get update && apt-get install -y supervisor curl \
+  && curl -sL https://deb.nodesource.com/setup_22.x | bash - \
+  && apt-get install -y nodejs \
+  && rm -rf /var/lib/apt/lists/*
 
-FROM eclipse-temurin:25-jre
-RUN apt-get update && apt-get install -y supervisor nodejs npm && rm -rf /var/lib/apt/lists/*
+WORKDIR /usr/src/app
 
-WORKDIR /app
+COPY mvnw mvnw
+COPY .mvn .mvn
+COPY pom.xml pom.xml
+COPY src src
+COPY frontend frontend
 
-COPY --from=backend-build /app/target/karateaicoach-0.0.1-SNAPSHOT.jar backend.jar
-COPY --from=frontend-build /app/build frontend/build
-COPY --from=frontend-build /app/package*.json frontend/
+RUN cd frontend && npm ci && npm run build
+RUN sed -i 's/\r$//' mvnw && chmod +x mvnw
+RUN ./mvnw package -DskipTests
 
-WORKDIR /app/frontend
-RUN npm ci --omit=dev
+RUN cat > /etc/supervisor/conf.d/supervisord.conf <<'EOF'
+[supervisord]
+nodaemon=true
+user=root
 
-WORKDIR /app
+[program:backend]
+command=java -jar /usr/src/app/target/karateaicoach-0.0.1-SNAPSHOT.jar
+directory=/usr/src/app
+autostart=true
+autorestart=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
 
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+[program:frontend]
+directory=/usr/src/app/frontend
+command=sh -c "node build"
+autostart=true
+autorestart=true
+stdout_logfile=/dev/stdout
+stdout_logfile_maxbytes=0
+stderr_logfile=/dev/stderr
+stderr_logfile_maxbytes=0
+EOF
 
-EXPOSE 8080 3000
+EXPOSE 3000 8080
+
+ENV NODE_ENV=production
 
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
