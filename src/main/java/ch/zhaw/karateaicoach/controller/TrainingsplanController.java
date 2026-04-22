@@ -1,5 +1,7 @@
 package ch.zhaw.karateaicoach.controller;
 
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,9 @@ import ch.zhaw.karateaicoach.service.UserService;
 @RestController
 @RequestMapping("/api")
 public class TrainingsplanController {
+
+    @Autowired
+    OpenAiChatModel chatModel;
 
     @Autowired
     TrainingsplanRepository trainingsplanRepository;
@@ -42,8 +47,13 @@ public class TrainingsplanController {
         }
 
         try {
+            var generatedTitle = chatModel.call(new Prompt(
+                "Der Titel lautet bisher: '" + dto.getTitel() + "'. Falls nötig, verbessere den Titel anhand des Trainingsfokus: " + dto.getFokus() + " und der Dauer: " + dto.getDauer() + " Minuten. Gib nur den neuen Titel zurück."
+            ));
+            var titel = generatedTitle.getResult().getOutput().getText();
+
             Trainingsplan plan = new Trainingsplan(
-                    dto.getTitel(),
+                    titel,
                     dto.getDauer(),
                     dto.getStatus(),
                     dto.getSportlerId());

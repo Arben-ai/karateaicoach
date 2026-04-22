@@ -2,6 +2,7 @@ package ch.zhaw.karateaicoach.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -20,6 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.jayway.jsonpath.JsonPath;
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.openai.OpenAiChatModel;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -50,6 +53,8 @@ import ch.zhaw.karateaicoach.service.UserService;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TrainingsplanControllerTest {
 
+    private static final String TEST_TITEL = "KI-generierter Trainingsplan";
+
     @Configuration
     @EnableWebMvc
     @Import({ TrainingsplanController.class, TestSecurityConfig.class, UserService.class })
@@ -69,6 +74,11 @@ class TrainingsplanControllerTest {
         SportlerRepository sportlerRepository() {
             return mock(SportlerRepository.class);
         }
+
+        @Bean
+        OpenAiChatModel chatModel() {
+            return mock(OpenAiChatModel.class, RETURNS_DEEP_STUBS);
+        }
     }
 
     @Autowired
@@ -79,6 +89,9 @@ class TrainingsplanControllerTest {
 
     @Autowired
     private SportlerService sportlerService;
+
+    @Autowired
+    private OpenAiChatModel chatModel;
 
     private MockMvc mockMvc;
 
@@ -92,6 +105,11 @@ class TrainingsplanControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                 .apply(springSecurity())
                 .build();
+
+        when(chatModel.call(any(Prompt.class))
+                .getResult()
+                .getOutput()
+                .getText()).thenReturn(TEST_TITEL);
 
         when(sportlerService.sportlerExists(anyString())).thenReturn(true);
 
@@ -136,6 +154,7 @@ class TrainingsplanControllerTest {
                         .content(requestBody))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").isNotEmpty())
+                .andExpect(jsonPath("$.titel").value(TEST_TITEL))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
@@ -168,7 +187,7 @@ class TrainingsplanControllerTest {
     void getTrainingsplan() throws Exception {
         mockMvc.perform(get("/api/trainingsplan/{id}", trainingsplanId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.titel").value("Kata Intensiv"))
+                .andExpect(jsonPath("$.titel").value(TEST_TITEL))
                 .andExpect(jsonPath("$.dauer").value(45));
     }
 

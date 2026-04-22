@@ -6,6 +6,7 @@ public class TrainingsplanCreateDTO {
     private int dauer;
     private TrainingsplanStatus status;
     private String sportlerId;
+    private String fokus;
 
     public TrainingsplanCreateDTO() {}
 
@@ -13,4 +14,5 @@ public class TrainingsplanCreateDTO {
     public int getDauer() { return dauer; }
     public TrainingsplanStatus getStatus() { return status; }
     public String getSportlerId() { return sportlerId; }
+    public String getFokus() { return fokus; }
 }
