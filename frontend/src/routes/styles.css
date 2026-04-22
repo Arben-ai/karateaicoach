@@ -1,13 +1,13 @@
 :root {
-  --bg-primary: #252528;
-  --bg-secondary: #313135;
-  --bg-card: #333338;
+  --bg-primary: #2e2e32;
+  --bg-secondary: #3a3a3f;
+  --bg-card: #3d3d43;
   --accent: #e63946;
   --accent-hover: #c1121f;
   --accent-soft: rgba(230, 57, 70, 0.15);
   --text-primary: #f5f5f5;
-  --text-muted: #9a9a9a;
-  --border: #434347;
+  --text-muted: #a8a8a8;
+  --border: #4e4e53;
 }
 
 body {
