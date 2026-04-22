@@ -1,104 +1,126 @@
 <script>
   import { enhance } from "$app/forms";
-  import { untrack } from "svelte";
   import { marked } from "marked";
 
-  let { form } = $props();
+  let { data } = $props();
+  let user = $derived(data.user);
+  let isAuthenticated = $derived(data.isAuthenticated);
 
-  let messages = $state([]);
-  let input = $state("");
-  let loading = $state(false);
-
-  $effect(() => {
-    if (form?.success && form.reply) {
-      untrack(() => messages.push({ role: "ai", text: form.reply }));
-    } else if (form?.error) {
-      untrack(() => messages.push({ role: "error", text: form.error }));
-    }
-  });
-
-  function handleSubmit() {
-    if (!input.trim()) return;
-    messages = [...messages, { role: "user", text: input }];
-    input = "";
-    loading = true;
-    return async ({ update }) => {
-      await update({ reset: false });
-      loading = false;
-    };
-  }
+  let message = $state("");
+  let messages = $state([
+    { type: "bot", text: "Hallo! Wie kann ich dir helfen?" },
+  ]);
 </script>
 
-<div class="d-flex justify-content-between align-items-center mb-1">
-  <h1 class="page-title"><i class="bi bi-chat-dots me-2"></i>KI-Assistent</h1>
-</div>
-<p class="page-subtitle">Frage den Assistenten nach Sportlern und Trainingsplänen oder lass ihn neue erstellen.</p>
+{#if isAuthenticated}
+  <div class="d-flex justify-content-between align-items-center mb-1">
+    <h1 class="page-title"><i class="bi bi-chat-dots me-2"></i>KI-Assistent</h1>
+  </div>
+  <p class="page-subtitle">Frage den Assistenten nach Sportlern und Trainingsplänen oder lass ihn neue erstellen.</p>
 
-<div class="card mb-3">
-  <div class="card-body p-0">
-    <div
-      class="chat-window p-3"
-      style="min-height: 400px; max-height: 500px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem;"
-    >
-      {#if messages.length === 0}
-        <div class="text-center py-5" style="color: var(--text-muted);">
-          <i class="bi bi-chat-square-dots" style="font-size: 2.5rem; display: block; margin-bottom: 0.75rem;"></i>
-          Stelle eine Frage oder gib einen Auftrag, z.B.:<br />
-          <em>„Zeige alle Sportler"</em> oder <em>„Erstelle einen Trainingsplan für Max"</em>
-        </div>
-      {/if}
-
+  <div class="chat-wrapper d-flex flex-column card">
+    <div class="chat-messages flex-grow-1 overflow-auto p-3 d-flex flex-column">
       {#each messages as msg}
-        {#if msg.role === "user"}
-          <div class="d-flex justify-content-end">
-            <div
-              class="px-3 py-2 rounded-3"
-              style="background: var(--accent-primary); color: white; max-width: 75%; white-space: pre-wrap;"
-            >
-              {msg.text}
-            </div>
-          </div>
-        {:else if msg.role === "ai"}
-          <div class="d-flex justify-content-start">
-            <div
-              class="px-3 py-2 rounded-3 chat-ai-message"
-              style="background: var(--card-bg); border: 1px solid var(--border-color); max-width: 75%; color: var(--text-primary);"
-            >
-              <i class="bi bi-robot me-1" style="color: var(--accent-primary);"></i>{@html marked(msg.text)}
-            </div>
+        {#if msg.type === "loading"}
+          <div class="message bot align-self-start typing">
+            <span></span><span></span><span></span>
           </div>
         {:else}
-          <div class="alert alert-danger py-2 mb-0">{msg.text}</div>
+          <div class="message {msg.type} align-self-{msg.type === 'user' ? 'end' : 'start'}">
+            {#if msg.type === "bot"}
+              {@html marked(msg.text)}
+            {:else}
+              {msg.text}
+            {/if}
+          </div>
         {/if}
       {/each}
+    </div>
 
-      {#if loading}
-        <div class="d-flex justify-content-start">
-          <div
-            class="px-3 py-2 rounded-3"
-            style="background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-muted);"
-          >
-            <span class="spinner-border spinner-border-sm me-2" role="status"></span>Denkt nach…
-          </div>
-        </div>
-      {/if}
+    <div class="chat-input p-3 border-top">
+      <form
+        method="POST"
+        action="?/send"
+        class="d-flex gap-2"
+        use:enhance={({ formData }) => {
+          const text = formData.get("message");
+          messages.push({ type: "user", text });
+          message = "";
+          messages.push({ type: "loading" });
+
+          return async ({ result }) => {
+            messages = messages.filter((m) => m.type !== "loading");
+            if (result.type === "success" && result.data?.reply) {
+              messages.push({ type: "bot", text: result.data.reply });
+            } else {
+              messages.push({ type: "bot", text: "Fehler beim Serverkontakt." });
+            }
+          };
+        }}
+      >
+        <textarea
+          name="message"
+          class="form-control"
+          placeholder="Nachricht eingeben…"
+          bind:value={message}
+          required
+          rows="1"
+        ></textarea>
+        <button type="submit" class="btn btn-primary align-self-end">
+          <i class="bi bi-send me-1"></i>Senden
+        </button>
+      </form>
     </div>
   </div>
-</div>
+{/if}
 
-<form method="POST" action="?/send" use:enhance={handleSubmit}>
-  <div class="input-group">
-    <input
-      class="form-control"
-      name="message"
-      type="text"
-      placeholder="Nachricht eingeben…"
-      bind:value={input}
-      disabled={loading}
-      autocomplete="off"
-    />
-    <button class="btn btn-primary" type="submit" disabled={loading || !input.trim()}>
-      <i class="bi bi-send me-1"></i>Senden
-    </button>
-  </div>
-</form>
+<style>
+  .chat-wrapper {
+    height: 75vh;
+    overflow: hidden;
+  }
+
+  .chat-messages {
+    gap: 0.75rem;
+    overflow-y: auto;
+  }
+
+  .message {
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    max-width: 75%;
+    white-space: pre-wrap;
+  }
+
+  .message.bot {
+    background-color: var(--card-bg, #3d3d43);
+    border: 1px solid var(--border-color, #4e4e53);
+    color: var(--text-primary, #f5f5f5);
+  }
+
+  .message.user {
+    background-color: var(--accent-primary, #e63946);
+    color: white;
+  }
+
+  .message.typing span {
+    height: 8px;
+    width: 8px;
+    margin: 0 3px;
+    display: inline-block;
+    background: var(--text-muted, #a8a8a8);
+    border-radius: 50%;
+    animation: blink 1.4s infinite both;
+  }
+
+  .message.typing span:nth-child(2) { animation-delay: 0.2s; }
+  .message.typing span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes blink {
+    0%   { opacity: 0.2; }
+    20%  { opacity: 1; }
+    100% { opacity: 0.2; }
+  }
+
+  textarea { min-height: 42px; resize: none; }
+</style>
