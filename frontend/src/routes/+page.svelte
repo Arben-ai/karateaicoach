@@ -70,22 +70,22 @@
   </div>
 
   <div class="row g-3 mt-2">
-    <div class="col-md-4">
-      <div class="stat-card">
+    <div class="col-md-4 d-flex">
+      <div class="stat-card w-100">
         <div class="stat-card-icon"><i class="bi bi-robot"></i></div>
         <div class="stat-card-title">KI-Trainingspläne</div>
         <div class="stat-card-text">Personalisierte Pläne basierend auf Gürtelgrad und Trainingszielen</div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="stat-card">
+    <div class="col-md-4 d-flex">
+      <div class="stat-card w-100">
         <div class="stat-card-icon"><i class="bi bi-graph-up"></i></div>
         <div class="stat-card-title">Fortschritt verfolgen</div>
         <div class="stat-card-text">Dokumentiere Trainingseinheiten und überwache die Entwicklung</div>
       </div>
     </div>
-    <div class="col-md-4">
-      <div class="stat-card">
+    <div class="col-md-4 d-flex">
+      <div class="stat-card w-100">
         <div class="stat-card-icon"><i class="bi bi-people-fill"></i></div>
         <div class="stat-card-title">Sportlerverwaltung</div>
         <div class="stat-card-text">Betreue mehrere Athleten und behalte den Überblick</div>
