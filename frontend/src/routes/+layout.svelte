@@ -52,6 +52,12 @@
           {/if}
 
           <li class="nav-item">
+            <a class="nav-link" href="/chat">
+              <i class="bi bi-chat-dots me-1"></i>Chat
+            </a>
+          </li>
+
+          <li class="nav-item">
             <a class="nav-link" href="/account">
               <i class="bi bi-person-circle me-1"></i>Account
             </a>
