@@ -43,7 +43,6 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import ch.zhaw.karateaicoach.model.Trainingsfokus;
-import ch.zhaw.karateaicoach.model.TrainingsfokusStatus;
 import ch.zhaw.karateaicoach.repository.SportlerRepository;
 import ch.zhaw.karateaicoach.repository.TrainingsfokusRepository;
 import ch.zhaw.karateaicoach.security.TestSecurityConfig;
