@@ -3,10 +3,8 @@ package ch.zhaw.karateaicoach.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,76 +25,24 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import ch.zhaw.karateaicoach.model.Trainingsfokus;
-import ch.zhaw.karateaicoach.repository.SportlerRepository;
-import ch.zhaw.karateaicoach.repository.TrainingsfokusRepository;
-import ch.zhaw.karateaicoach.security.TestSecurityConfig;
-import ch.zhaw.karateaicoach.service.SportlerService;
-import ch.zhaw.karateaicoach.service.UserService;
 
-@SpringJUnitWebConfig(TrainingsfokusControllerTest.TestConfig.class)
 @TestMethodOrder(OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TrainingsfokusControllerTest {
-
-    @Configuration
-    @EnableWebMvc
-    @Import({ TrainingsfokusController.class, TestSecurityConfig.class, UserService.class })
-    static class TestConfig {
-
-        @Bean
-        TrainingsfokusRepository trainingsfokusRepository() {
-            return mock(TrainingsfokusRepository.class);
-        }
-
-        @Bean
-        SportlerService sportlerService() {
-            return mock(SportlerService.class);
-        }
-
-        @Bean
-        SportlerRepository sportlerRepository() {
-            return mock(SportlerRepository.class);
-        }
-    }
-
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    @Autowired
-    private TrainingsfokusRepository trainingsfokusRepository;
-
-    @Autowired
-    private SportlerService sportlerService;
-
-    private MockMvc mockMvc;
+class TrainingsfokusControllerTest extends BaseControllerTest {
 
     private final Map<String, Trainingsfokus> repositoryState = new ConcurrentHashMap<>();
     private final AtomicInteger idSequence = new AtomicInteger(1);
-
     private String fokusId;
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .apply(springSecurity())
-                .build();
-
         when(sportlerService.sportlerExists(anyString())).thenReturn(true);
 
         when(trainingsfokusRepository.save(any(Trainingsfokus.class))).thenAnswer(invocation -> {

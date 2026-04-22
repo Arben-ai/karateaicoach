@@ -2,91 +2,29 @@ package ch.zhaw.karateaicoach.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-import org.springframework.ai.openai.OpenAiChatModel;
 import ch.zhaw.karateaicoach.model.Trainingsplan;
 import ch.zhaw.karateaicoach.model.TrainingsplanStatus;
-import ch.zhaw.karateaicoach.repository.SportlerRepository;
-import ch.zhaw.karateaicoach.repository.TrainingsplanRepository;
-import ch.zhaw.karateaicoach.security.TestSecurityConfig;
-import ch.zhaw.karateaicoach.service.SportlerService;
-import ch.zhaw.karateaicoach.service.UserService;
 
-@SpringJUnitWebConfig(TrainingsplanPaginationControllerTest.TestConfig.class)
-class TrainingsplanPaginationControllerTest {
-
-    @Configuration
-    @EnableWebMvc
-    @Import({ TrainingsplanController.class, TestSecurityConfig.class, UserService.class })
-    static class TestConfig {
-
-        @Bean
-        TrainingsplanRepository trainingsplanRepository() {
-            return mock(TrainingsplanRepository.class);
-        }
-
-        @Bean
-        SportlerService sportlerService() {
-            return mock(SportlerService.class);
-        }
-
-        @Bean
-        SportlerRepository sportlerRepository() {
-            return mock(SportlerRepository.class);
-        }
-
-        @Bean
-        OpenAiChatModel chatModel() {
-            return mock(OpenAiChatModel.class, RETURNS_DEEP_STUBS);
-        }
-    }
-
-    @Autowired
-    private WebApplicationContext webApplicationContext;
-
-    @Autowired
-    private TrainingsplanRepository trainingsplanRepository;
-
-    private MockMvc mockMvc;
-
-    @BeforeEach
-    void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
-                .apply(springSecurity())
-                .build();
-    }
+class TrainingsplanPaginationControllerTest extends BaseControllerTest {
 
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
     void getAllTrainingsplanReturnsPagedResponse() throws Exception {
         Trainingsplan first = new Trainingsplan("Kata Basics", 30, TrainingsplanStatus.DRAFT, "sp-1");
         Trainingsplan second = new Trainingsplan("Kumite Power", 45, TrainingsplanStatus.ACTIVE, "sp-2");
-
         ReflectionTestUtils.setField(first, "id", "tp-1");
         ReflectionTestUtils.setField(second, "id", "tp-2");
 
