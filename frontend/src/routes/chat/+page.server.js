@@ -39,10 +39,12 @@ export const actions = {
 
       return { success: true, reply: response.data };
     } catch (err) {
-      console.error("Chat error:", err);
+      const status = err.response?.status;
+      const detail = err.response?.data || err.message;
+      console.error("Chat error:", status, detail);
       return {
         success: false,
-        error: "Antwort konnte nicht geladen werden."
+        error: `Fehler ${status ?? ""}: ${detail ?? "Antwort konnte nicht geladen werden."}`
       };
     }
   }

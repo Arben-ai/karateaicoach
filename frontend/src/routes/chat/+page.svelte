@@ -9,9 +9,9 @@
 
   $effect(() => {
     if (form?.success && form.reply) {
-      messages = [...messages, { role: "ai", text: form.reply }];
+      messages.push({ role: "ai", text: form.reply });
     } else if (form?.error) {
-      messages = [...messages, { role: "error", text: form.error }];
+      messages.push({ role: "error", text: form.error });
     }
   });
 
