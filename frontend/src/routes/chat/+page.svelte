@@ -1,5 +1,6 @@
 <script>
   import { enhance } from "$app/forms";
+  import { untrack } from "svelte";
 
   let { form } = $props();
 
@@ -9,9 +10,9 @@
 
   $effect(() => {
     if (form?.success && form.reply) {
-      messages.push({ role: "ai", text: form.reply });
+      untrack(() => messages.push({ role: "ai", text: form.reply }));
     } else if (form?.error) {
-      messages.push({ role: "error", text: form.error });
+      untrack(() => messages.push({ role: "error", text: form.error }));
     }
   });
 
