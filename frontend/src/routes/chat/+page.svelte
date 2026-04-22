@@ -1,6 +1,7 @@
 <script>
   import { enhance } from "$app/forms";
   import { untrack } from "svelte";
+  import { marked } from "marked";
 
   let { form } = $props();
 
@@ -60,10 +61,10 @@
         {:else if msg.role === "ai"}
           <div class="d-flex justify-content-start">
             <div
-              class="px-3 py-2 rounded-3"
-              style="background: var(--card-bg); border: 1px solid var(--border-color); max-width: 75%; white-space: pre-wrap; color: var(--text-primary);"
+              class="px-3 py-2 rounded-3 chat-ai-message"
+              style="background: var(--card-bg); border: 1px solid var(--border-color); max-width: 75%; color: var(--text-primary);"
             >
-              <i class="bi bi-robot me-1" style="color: var(--accent-primary);"></i>{msg.text}
+              <i class="bi bi-robot me-1" style="color: var(--accent-primary);"></i>{@html marked(msg.text)}
             </div>
           </div>
         {:else}
