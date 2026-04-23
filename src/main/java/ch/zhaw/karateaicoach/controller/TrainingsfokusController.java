@@ -4,7 +4,6 @@ import ch.zhaw.karateaicoach.model.PaginatedResponseDTO;
 import ch.zhaw.karateaicoach.model.Trainingsfokus;
 import ch.zhaw.karateaicoach.model.TrainingsfokusCreateDTO;
 import ch.zhaw.karateaicoach.model.TrainingsfokusStatus;
-import ch.zhaw.karateaicoach.repository.SportlerRepository;
 import ch.zhaw.karateaicoach.repository.TrainingsfokusRepository;
 import ch.zhaw.karateaicoach.service.SportlerService;
 import ch.zhaw.karateaicoach.service.UserService;
@@ -22,9 +21,6 @@ public class TrainingsfokusController {
 
     @Autowired
     TrainingsfokusRepository trainingsfokusRepository;
-
-    @Autowired
-    SportlerRepository sportlerRepository;
 
     @Autowired
     SportlerService sportlerService;
@@ -66,7 +62,8 @@ public class TrainingsfokusController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
-        return sportlerRepository.findByUserId(userId)
+        String email = userService.getCurrentUserEmail();
+        return sportlerService.resolveCurrentSportler(userId, email)
                 .map(sportler -> {
                     Pageable pageable = PageRequest.of(page, size, Sort.by("schwerpunkt").ascending());
                     return ResponseEntity.<Object>ok(

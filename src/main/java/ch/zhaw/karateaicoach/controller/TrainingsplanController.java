@@ -14,7 +14,6 @@ import ch.zhaw.karateaicoach.model.PaginatedResponseDTO;
 import ch.zhaw.karateaicoach.model.Trainingsplan;
 import ch.zhaw.karateaicoach.model.TrainingsplanCreateDTO;
 import ch.zhaw.karateaicoach.model.TrainingsplanStatus;
-import ch.zhaw.karateaicoach.repository.SportlerRepository;
 import ch.zhaw.karateaicoach.repository.TrainingsplanRepository;
 import ch.zhaw.karateaicoach.service.SportlerService;
 import ch.zhaw.karateaicoach.service.UserService;
@@ -28,9 +27,6 @@ public class TrainingsplanController {
 
     @Autowired
     TrainingsplanRepository trainingsplanRepository;
-
-    @Autowired
-    SportlerRepository sportlerRepository;
 
     @Autowired
     SportlerService sportlerService;
@@ -80,7 +76,8 @@ public class TrainingsplanController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
-        return sportlerRepository.findByUserId(userId)
+        String email = userService.getCurrentUserEmail();
+        return sportlerService.resolveCurrentSportler(userId, email)
                 .map(sportler -> {
                     Pageable pageable = PageRequest.of(
                             page, size, Sort.by("erstelldatum").descending().and(Sort.by("id").ascending()));

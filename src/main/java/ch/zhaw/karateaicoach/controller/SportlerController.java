@@ -12,6 +12,7 @@ import ch.zhaw.karateaicoach.model.PaginatedResponseDTO;
 import ch.zhaw.karateaicoach.model.Sportler;
 import ch.zhaw.karateaicoach.model.SportlerCreateDTO;
 import ch.zhaw.karateaicoach.repository.SportlerRepository;
+import ch.zhaw.karateaicoach.service.SportlerService;
 import ch.zhaw.karateaicoach.service.UserService;
 
 @RestController
@@ -20,6 +21,9 @@ public class SportlerController {
 
     @Autowired
     SportlerRepository sportlerRepository;
+
+    @Autowired
+    SportlerService sportlerService;
 
     @Autowired
     UserService userService;
@@ -49,7 +53,8 @@ public class SportlerController {
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
-        return sportlerRepository.findByUserId(userId)
+        String email = userService.getCurrentUserEmail();
+        return sportlerService.resolveCurrentSportler(userId, email)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }

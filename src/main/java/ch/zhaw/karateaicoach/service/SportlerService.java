@@ -1,6 +1,7 @@
 package ch.zhaw.karateaicoach.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,5 +26,24 @@ public class SportlerService {
     public void createSportler(String name, String email) {
         Sportler sportler = new Sportler(name, email, "", 0);
         sportlerRepository.save(sportler);
+    }
+
+    public Optional<Sportler> resolveCurrentSportler(String userId, String email) {
+        Optional<Sportler> byUserId = sportlerRepository.findByUserId(userId);
+        if (byUserId.isPresent()) {
+            return byUserId;
+        }
+
+        if (email != null) {
+            Optional<Sportler> byEmail = sportlerRepository.findByEmailAndUserIdIsNull(email);
+            if (byEmail.isPresent()) {
+                Sportler sportler = byEmail.get();
+                sportler.setUserId(userId);
+                sportlerRepository.save(sportler);
+                return Optional.of(sportler);
+            }
+        }
+
+        return Optional.empty();
     }
 }
