@@ -1,5 +1,7 @@
 package ch.zhaw.karateaicoach.controller;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +48,33 @@ public class SportlerController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @PostMapping("/sportler/me")
+    public ResponseEntity<Sportler> createMySportler(@RequestBody(required = false) java.util.Map<String, String> body) {
+        String userId = userService.getCurrentUserId();
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        String email = userService.getCurrentUserEmail();
+        if (email == null && body != null) {
+            email = body.get("email");
+        }
+        if (email == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        Optional<Sportler> existing = sportlerRepository.findByUserId(userId);
+        if (existing.isPresent()) return ResponseEntity.ok(existing.get());
+        Optional<Sportler> byEmail = sportlerRepository.findByEmailAndUserIdIsNull(email);
+        if (byEmail.isPresent()) {
+            Sportler s = byEmail.get();
+            s.setUserId(userId);
+            return ResponseEntity.ok(sportlerRepository.save(s));
+        }
+        String name = body != null ? body.getOrDefault("name", email) : email;
+        Sportler sportler = new Sportler(name, email, "", 0);
+        sportler.setUserId(userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(sportlerRepository.save(sportler));
     }
 
     @GetMapping("/sportler/me")
