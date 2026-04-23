@@ -92,7 +92,8 @@ class SportlerControllerTest extends BaseControllerTest {
     @WithMockUser(username = "test-user")
     void getMySportlerReturnsFound() throws Exception {
         sportlerAnna.setUserId("test-user");
-        when(sportlerRepository.findByUserId("test-user")).thenReturn(Optional.of(sportlerAnna));
+        when(sportlerService.resolveCurrentSportler(anyString(), any(), any()))
+                .thenReturn(Optional.of(sportlerAnna));
 
         mockMvc.perform(get("/api/sportler/me"))
                 .andExpect(status().isOk())
@@ -102,7 +103,8 @@ class SportlerControllerTest extends BaseControllerTest {
     @Test
     @WithMockUser(username = "test-user")
     void getMySportlerReturnsNotFoundWhenNoMatch() throws Exception {
-        when(sportlerRepository.findByUserId("test-user")).thenReturn(Optional.empty());
+        when(sportlerService.resolveCurrentSportler(anyString(), any(), any()))
+                .thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/sportler/me"))
                 .andExpect(status().isNotFound());
