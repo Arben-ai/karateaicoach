@@ -233,7 +233,15 @@ KarateAI Coach ermöglicht leistungsorientierten Karateka und ihren Trainern ein
 - Sponsoring durch Sportmarken
 
 ## Diskussion Feedback Pitch
-> Diskussion des Feedbacks aus dem Pitch (bezogen auf Projektinhalt)
+
+**Positives Feedback:**
+- Die Idee ist klar und der Anwendungsfall direkt nachvollziehbar — man versteht sofort, welches Problem gelöst wird
+- Die Kombination aus Trainer-definiertem Trainingsfokus und KI-Generierung wurde als elegante Lösung gelobt
+
+**Kritisches Feedback / Fragen:**
+- Der Workflow zwischen Trainer und Sportler war nicht ganz klar — muss der Trainer zuerst aktiv einen Fokus setzen, bevor der Sportler einen Plan generieren kann?
+- Die Zielgruppe (Leistungskarateka) ist sehr spezifisch — ob das Modell auf andere Kampfsportarten erweiterbar wäre, wurde hinterfragt
+- Eine mobile App wäre für den Einsatz direkt in der Trainingshalle sinnvoller als eine Web-App
 
 # Anforderungen
 
