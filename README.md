@@ -444,8 +444,25 @@ Folgende Entitäten besitzen fachliche Zustände:
 
 Diese Zustände steuern die fachliche Logik des Systems (z.B. darf ein Trainingsplan nur generiert werden, wenn ein aktiver Trainingsfokus existiert).
 
-## UI-Mockup 
-> Mockup oder Skizze des UIs
+## UI-Mockup
+
+### Startseite (nicht eingeloggt)
+![Login](doc/Mockups/Login.png)
+
+### Dashboard
+![Dashboard](doc/Mockups/Dashboard.png)
+
+### Sportler
+![Sportler](doc/Mockups/Sportler.png)
+
+### Trainingsfokus
+![Trainingsfokus](doc/Mockups/Trainingsfokus.png)
+
+### KI-Assistent
+![KI-Assistent](doc/Mockups/KI-Assistent.png)
+
+### Account
+![Account](doc/Mockups/Account.png)
 
 # Implementation
 
