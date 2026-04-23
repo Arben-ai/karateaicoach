@@ -96,7 +96,7 @@
           <th>Schwerpunkt</th>
           <th>Beschreibung</th>
           <th>Status</th>
-          <th>Sportler ID</th>
+          <th>Sportler</th>
           <th></th>
         </tr>
       </thead>
@@ -111,7 +111,7 @@
                   {statusLabel(fokus.status)}
                 </span>
               </td>
-              <td><code style="color: var(--text-muted); font-size: 0.75rem;">{fokus.sportlerId}</code></td>
+              <td>{sportler.find(s => s.id === fokus.sportlerId)?.name ?? fokus.sportlerId}</td>
               <td>
                 <form method="POST" action="?/deleteTrainingsfokus" use:enhance>
                   <input type="hidden" name="id" value={fokus.id} />

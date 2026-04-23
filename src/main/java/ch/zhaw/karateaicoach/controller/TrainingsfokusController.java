@@ -63,7 +63,8 @@ public class TrainingsfokusController {
         }
 
         String email = userService.getCurrentUserEmail();
-        return sportlerService.resolveCurrentSportler(userId, email)
+        String name = userService.getCurrentUserName();
+        return sportlerService.resolveCurrentSportler(userId, email, name)
                 .map(sportler -> {
                     Pageable pageable = PageRequest.of(page, size, Sort.by("schwerpunkt").ascending());
                     return ResponseEntity.<Object>ok(

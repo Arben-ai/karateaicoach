@@ -36,6 +36,20 @@ public class UserService {
         return null;
     }
 
+    public String getCurrentUserName() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            return null;
+        }
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof Jwt jwt) {
+            String name = jwt.getClaimAsString("name");
+            if (name != null) return name;
+            return jwt.getClaimAsString("email");
+        }
+        return authentication.getName();
+    }
+
     public boolean userHasRole(String role) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

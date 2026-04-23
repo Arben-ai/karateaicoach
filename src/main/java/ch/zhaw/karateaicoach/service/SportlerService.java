@@ -28,7 +28,7 @@ public class SportlerService {
         sportlerRepository.save(sportler);
     }
 
-    public Optional<Sportler> resolveCurrentSportler(String userId, String email) {
+    public Optional<Sportler> resolveCurrentSportler(String userId, String email, String name) {
         Optional<Sportler> byUserId = sportlerRepository.findByUserId(userId);
         if (byUserId.isPresent()) {
             return byUserId;
@@ -42,6 +42,10 @@ public class SportlerService {
                 sportlerRepository.save(sportler);
                 return Optional.of(sportler);
             }
+
+            Sportler newSportler = new Sportler(name != null ? name : email, email, "", 0);
+            newSportler.setUserId(userId);
+            return Optional.of(sportlerRepository.save(newSportler));
         }
 
         return Optional.empty();

@@ -77,7 +77,8 @@ public class TrainingsplanController {
         }
 
         String email = userService.getCurrentUserEmail();
-        return sportlerService.resolveCurrentSportler(userId, email)
+        String name = userService.getCurrentUserName();
+        return sportlerService.resolveCurrentSportler(userId, email, name)
                 .map(sportler -> {
                     Pageable pageable = PageRequest.of(
                             page, size, Sort.by("erstelldatum").descending().and(Sort.by("id").ascending()));

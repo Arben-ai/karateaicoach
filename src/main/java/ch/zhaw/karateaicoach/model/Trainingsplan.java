@@ -19,6 +19,7 @@ public class Trainingsplan {
 
     // ✅ NEU: Trainingsfokus (z.B. Kata, Kumite)
     private String fokus;
+    private String inhalt;
 
     public Trainingsplan() {
     }
@@ -64,6 +65,14 @@ public class Trainingsplan {
     // ✅ Setter für Fokus
     public void setFokus(String fokus) {
         this.fokus = fokus;
+    }
+
+    public String getInhalt() {
+        return inhalt;
+    }
+
+    public void setInhalt(String inhalt) {
+        this.inhalt = inhalt;
     }
 
     public void setStatus(TrainingsplanStatus status) {

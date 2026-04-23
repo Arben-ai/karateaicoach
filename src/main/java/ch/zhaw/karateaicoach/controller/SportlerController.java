@@ -30,14 +30,15 @@ public class SportlerController {
 
     @PostMapping("/sportler")
     public ResponseEntity<Sportler> createSportler(@RequestBody SportlerCreateDTO dto) {
+        if (sportlerRepository.existsByEmail(dto.getEmail())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
         try {
             Sportler sportler = new Sportler(
                     dto.getName(),
                     dto.getEmail(),
                     dto.getGuertelgrad(),
                     dto.getGewicht());
-
-            sportler.setUserId(userService.getCurrentUserId());
 
             Sportler saved = sportlerRepository.save(sportler);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
@@ -54,7 +55,8 @@ public class SportlerController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
         String email = userService.getCurrentUserEmail();
-        return sportlerService.resolveCurrentSportler(userId, email)
+        String name = userService.getCurrentUserName();
+        return sportlerService.resolveCurrentSportler(userId, email, name)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }

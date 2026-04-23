@@ -85,6 +85,9 @@ export const actions = {
       });
       return { success: true };
     } catch (err) {
+      if (err.response?.status === 409) {
+        return { success: false, error: "Ein Sportler mit dieser E-Mail existiert bereits." };
+      }
       return { success: false, error: "Profil konnte nicht erstellt werden." };
     }
   },
