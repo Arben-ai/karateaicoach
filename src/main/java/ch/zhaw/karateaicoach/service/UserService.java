@@ -43,8 +43,12 @@ public class UserService {
         }
         Object principal = authentication.getPrincipal();
         if (principal instanceof Jwt jwt) {
+            String given = jwt.getClaimAsString("given_name");
+            String family = jwt.getClaimAsString("family_name");
+            if (given != null && family != null) return given + " " + family;
+            if (given != null) return given;
             String name = jwt.getClaimAsString("name");
-            if (name != null) return name;
+            if (name != null && !name.contains("@")) return name;
             return jwt.getClaimAsString("email");
         }
         return authentication.getName();
