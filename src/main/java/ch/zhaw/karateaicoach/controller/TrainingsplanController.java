@@ -14,6 +14,7 @@ import ch.zhaw.karateaicoach.model.PaginatedResponseDTO;
 import ch.zhaw.karateaicoach.model.Trainingsplan;
 import ch.zhaw.karateaicoach.model.TrainingsplanCreateDTO;
 import ch.zhaw.karateaicoach.model.TrainingsplanStatus;
+import ch.zhaw.karateaicoach.repository.SportlerRepository;
 import ch.zhaw.karateaicoach.repository.TrainingsplanRepository;
 import ch.zhaw.karateaicoach.service.SportlerService;
 import ch.zhaw.karateaicoach.service.UserService;
@@ -27,6 +28,9 @@ public class TrainingsplanController {
 
     @Autowired
     TrainingsplanRepository trainingsplanRepository;
+
+    @Autowired
+    SportlerRepository sportlerRepository;
 
     @Autowired
     SportlerService sportlerService;
@@ -64,6 +68,27 @@ public class TrainingsplanController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @GetMapping("/trainingsplan/me")
+    public ResponseEntity<?> getMyTrainingsplan(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        String userId = userService.getCurrentUserId();
+        if (userId == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
+        return sportlerRepository.findByUserId(userId)
+                .map(sportler -> {
+                    Pageable pageable = PageRequest.of(
+                            page, size, Sort.by("erstelldatum").descending().and(Sort.by("id").ascending()));
+                    return ResponseEntity.<Object>ok(
+                            PaginatedResponseDTO.fromPage(
+                                    trainingsplanRepository.findBySportlerId(sportler.getId(), pageable)));
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).<Object>body(null));
     }
 
     @GetMapping("/trainingsplan")

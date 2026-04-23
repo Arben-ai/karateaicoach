@@ -13,6 +13,8 @@ import ch.zhaw.karateaicoach.model.TrainingsplanStatusAggregationDTO;
 
 public interface TrainingsplanRepository extends MongoRepository<Trainingsplan, String> {
 
+    Page<Trainingsplan> findBySportlerId(String sportlerId, Pageable pageable);
+
     Page<Trainingsplan> findByDauerGreaterThan(int dauer, Pageable pageable);
 
     Page<Trainingsplan> findByStatus(TrainingsplanStatus status, Pageable pageable);

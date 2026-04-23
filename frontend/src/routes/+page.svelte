@@ -16,24 +16,64 @@
   </div>
 
   <div class="row g-3 mb-4">
-    <div class="col-md-4">
-      <div class="stat-card">
-        <div class="stat-card-icon"><i class="bi bi-people-fill"></i></div>
-        <div class="stat-card-title">Sportler</div>
-        <div class="stat-card-text">Verwalte deine Athleten</div>
-        <a href="/sportler" class="btn btn-outline-primary btn-sm mt-3">
-          <i class="bi bi-arrow-right me-1"></i>Öffnen
-        </a>
-      </div>
-    </div>
-
     {#if user.user_roles && user.user_roles.includes("admin")}
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-card-icon"><i class="bi bi-people-fill"></i></div>
+          <div class="stat-card-title">Sportler</div>
+          <div class="stat-card-text">Verwalte deine Athleten</div>
+          <a href="/sportler" class="btn btn-outline-primary btn-sm mt-3">
+            <i class="bi bi-arrow-right me-1"></i>Öffnen
+          </a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-card-icon"><i class="bi bi-bullseye"></i></div>
+          <div class="stat-card-title">Trainingsfokus</div>
+          <div class="stat-card-text">Schwerpunkte für Sportler definieren</div>
+          <a href="/trainingsfokus" class="btn btn-outline-primary btn-sm mt-3">
+            <i class="bi bi-arrow-right me-1"></i>Öffnen
+          </a>
+        </div>
+      </div>
       <div class="col-md-4">
         <div class="stat-card">
           <div class="stat-card-icon"><i class="bi bi-journal-text"></i></div>
           <div class="stat-card-title">Trainingspläne</div>
-          <div class="stat-card-text">Erstelle und verwalte Pläne</div>
+          <div class="stat-card-text">Übersicht aller Pläne verwalten</div>
           <a href="/trainingsplan" class="btn btn-outline-primary btn-sm mt-3">
+            <i class="bi bi-arrow-right me-1"></i>Öffnen
+          </a>
+        </div>
+      </div>
+    {:else}
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-card-icon"><i class="bi bi-bullseye"></i></div>
+          <div class="stat-card-title">Mein Feedback</div>
+          <div class="stat-card-text">Trainingsfokus vom Coach einsehen</div>
+          <a href="/mein-feedback" class="btn btn-outline-primary btn-sm mt-3">
+            <i class="bi bi-arrow-right me-1"></i>Öffnen
+          </a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-card-icon"><i class="bi bi-journal-text"></i></div>
+          <div class="stat-card-title">Meine Trainingspläne</div>
+          <div class="stat-card-text">Aktuelle und vergangene Pläne</div>
+          <a href="/meine-trainingsplaene" class="btn btn-outline-primary btn-sm mt-3">
+            <i class="bi bi-arrow-right me-1"></i>Öffnen
+          </a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card">
+          <div class="stat-card-icon"><i class="bi bi-chat-dots"></i></div>
+          <div class="stat-card-title">KI-Assistent</div>
+          <div class="stat-card-text">Trainingsplan mit KI erstellen</div>
+          <a href="/chat" class="btn btn-outline-primary btn-sm mt-3">
             <i class="bi bi-arrow-right me-1"></i>Öffnen
           </a>
         </div>

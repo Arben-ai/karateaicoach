@@ -4,11 +4,13 @@ import { env } from "$env/dynamic/private";
 
 const API_BASE_URL = env.API_BASE_URL;
 
-export async function load({ locals }) {
+export async function load({ locals, url }) {
   if (!locals.jwt_token) {
     throw redirect(303, "/login");
   }
-  return {};
+  return {
+    initialMessage: url.searchParams.get("message") ?? null
+  };
 }
 
 export const actions = {

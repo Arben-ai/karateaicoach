@@ -1,15 +1,25 @@
 <script>
   import { enhance } from "$app/forms";
   import { marked } from "marked";
+  import { onMount } from "svelte";
 
   let { data } = $props();
   let user = $derived(data.user);
   let isAuthenticated = $derived(data.isAuthenticated);
 
+  let initialMessage = $derived(data.initialMessage);
   let message = $state("");
   let messages = $state([
     { type: "bot", text: "Hallo! Wie kann ich dir helfen?" },
   ]);
+  let formRef = $state(null);
+
+  onMount(() => {
+    if (initialMessage) {
+      message = initialMessage;
+      setTimeout(() => formRef?.requestSubmit(), 100);
+    }
+  });
 </script>
 
 {#if isAuthenticated}
@@ -39,6 +49,7 @@
 
     <div class="chat-input p-3 border-top">
       <form
+        bind:this={formRef}
         method="POST"
         action="?/send"
         class="d-flex gap-2"

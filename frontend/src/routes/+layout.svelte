@@ -32,13 +32,12 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
         {#if isAuthenticated}
-          <li class="nav-item">
-            <a class="nav-link" href="/sportler">
-              <i class="bi bi-people me-1"></i>Sportler
-            </a>
-          </li>
-
           {#if user.user_roles && user.user_roles.includes("admin")}
+            <li class="nav-item">
+              <a class="nav-link" href="/sportler">
+                <i class="bi bi-people me-1"></i>Sportler
+              </a>
+            </li>
             <li class="nav-item">
               <a class="nav-link" href="/trainingsfokus">
                 <i class="bi bi-bullseye me-1"></i>Trainingsfokus
@@ -49,13 +48,23 @@
                 <i class="bi bi-journal-text me-1"></i>Trainingspläne
               </a>
             </li>
+          {:else}
+            <li class="nav-item">
+              <a class="nav-link" href="/mein-feedback">
+                <i class="bi bi-bullseye me-1"></i>Mein Feedback
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/meine-trainingsplaene">
+                <i class="bi bi-journal-text me-1"></i>Meine Trainingspläne
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/chat">
+                <i class="bi bi-chat-dots me-1"></i>Chat
+              </a>
+            </li>
           {/if}
-
-          <li class="nav-item">
-            <a class="nav-link" href="/chat">
-              <i class="bi bi-chat-dots me-1"></i>Chat
-            </a>
-          </li>
 
           <li class="nav-item">
             <a class="nav-link" href="/account">
