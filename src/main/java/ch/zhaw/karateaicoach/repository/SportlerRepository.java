@@ -11,4 +11,6 @@ public interface SportlerRepository extends MongoRepository<Sportler, String> {
     Optional<Sportler> findByEmailAndUserIdIsNull(String email);
 
     boolean existsByEmail(String email);
+
+    boolean existsByNameIgnoreCase(String name);
 }

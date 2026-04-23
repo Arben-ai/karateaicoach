@@ -35,6 +35,9 @@ public class SportlerController {
         if (sportlerRepository.existsByEmail(dto.getEmail())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
+        if (sportlerRepository.existsByNameIgnoreCase(dto.getName())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+        }
         try {
             Sportler sportler = new Sportler(
                     dto.getName(),
