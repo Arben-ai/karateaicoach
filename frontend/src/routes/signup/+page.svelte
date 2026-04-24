@@ -48,6 +48,25 @@
               <label for="email" class="form-label">E-Mail</label>
               <input type="email" class="form-control" id="email" name="email" placeholder="name@beispiel.ch" required />
             </div>
+            <div class="row g-3 mb-3">
+              <div class="col-md-8">
+                <label for="guertelgrad" class="form-label">Gürtelgrad</label>
+                <select class="form-select" id="guertelgrad" name="guertelgrad">
+                  <option value="">Kein Gürtelgrad</option>
+                  <option value="Weiss">Weiss</option>
+                  <option value="Gelb">Gelb</option>
+                  <option value="Orange">Orange</option>
+                  <option value="Grün">Grün</option>
+                  <option value="Blau">Blau</option>
+                  <option value="Braun">Braun</option>
+                  <option value="Schwarz">Schwarz</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label for="gewicht" class="form-label">Gewicht (kg)</label>
+                <input type="number" class="form-control" id="gewicht" name="gewicht" placeholder="70" min="0" />
+              </div>
+            </div>
             <div class="mb-4">
               <label for="password" class="form-label">Passwort</label>
               <input type="password" class="form-control" id="password" name="password" placeholder="••••••••" required />

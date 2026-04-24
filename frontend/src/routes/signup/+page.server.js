@@ -12,6 +12,8 @@ export const actions = {
     const password = data.get('password');
     const firstName = data.get('firstName');
     const lastName = data.get('lastName');
+    const guertelgrad = data.get('guertelgrad') || '';
+    const gewicht = parseFloat(data.get('gewicht')) || 0;
 
     try {
       await auth.signup(email, password, firstName, lastName, cookies);
@@ -19,7 +21,7 @@ export const actions = {
       const jwt_token = cookies.get('jwt_token');
       if (jwt_token) {
         const name = [firstName, lastName].filter(Boolean).join(' ') || email;
-        await axios.post(`${API_BASE_URL}/api/sportler/me`, { name, email }, {
+        await axios.post(`${API_BASE_URL}/api/sportler/me`, { name, email, guertelgrad, gewicht }, {
           headers: { Authorization: 'Bearer ' + jwt_token }
         }).catch((err) => console.error('Sportler create error:', err.response?.data ?? err.message));
       }

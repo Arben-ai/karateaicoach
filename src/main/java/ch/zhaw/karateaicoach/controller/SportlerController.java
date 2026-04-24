@@ -75,7 +75,12 @@ public class SportlerController {
             return ResponseEntity.ok(sportlerRepository.save(s));
         }
         String name = body != null ? body.getOrDefault("name", email) : email;
-        Sportler sportler = new Sportler(name, email, "", 0);
+        String guertelgrad = body != null ? body.getOrDefault("guertelgrad", "") : "";
+        double gewicht = 0;
+        if (body != null && body.containsKey("gewicht")) {
+            try { gewicht = Double.parseDouble(body.get("gewicht")); } catch (NumberFormatException ignored) {}
+        }
+        Sportler sportler = new Sportler(name, email, guertelgrad, gewicht);
         sportler.setUserId(userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(sportlerRepository.save(sportler));
     }
