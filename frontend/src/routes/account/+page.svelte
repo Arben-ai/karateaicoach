@@ -2,6 +2,7 @@
   let { data } = $props();
   let user = $derived(data.user);
   let isAuthenticated = $derived(data.isAuthenticated);
+  let sportler = $derived(data.sportler);
 </script>
 
 <div class="d-flex justify-content-between align-items-center mb-1">
@@ -52,6 +53,16 @@
             <div class="profile-info-row">
               <span class="profile-info-label">Benutzername</span>
               <span class="profile-info-value">@{user.nickname}</span>
+            </div>
+          {/if}
+          {#if sportler}
+            <div class="profile-info-row">
+              <span class="profile-info-label">Gürtelgrad</span>
+              <span class="profile-info-value">{sportler.guertelgrad || '—'}</span>
+            </div>
+            <div class="profile-info-row">
+              <span class="profile-info-label">Gewicht</span>
+              <span class="profile-info-value">{sportler.gewicht ? sportler.gewicht + ' kg' : '—'}</span>
             </div>
           {/if}
         </div>
