@@ -12,6 +12,7 @@ export async function load({ locals, url }) {
     locals.user.user_roles.some((r) => r.toLowerCase() === "admin");
   if (isAdmin) throw redirect(303, "/trainingsplan");
 
+  const highlightPlanId = url.searchParams.get("planId") ?? null;
   const page = Number.parseInt(url.searchParams.get("page") ?? "0", 10);
   const size = 5;
 
@@ -28,12 +29,14 @@ export async function load({ locals, url }) {
         size: response.data.size ?? size,
         totalElements: response.data.totalElements ?? 0,
         totalPages: response.data.totalPages ?? 1
-      }
+      },
+      highlightPlanId
     };
   } catch {
     return {
       trainingsplaene: [],
-      pagination: { page, size, totalElements: 0, totalPages: 1 }
+      pagination: { page, size, totalElements: 0, totalPages: 1 },
+      highlightPlanId
     };
   }
 }

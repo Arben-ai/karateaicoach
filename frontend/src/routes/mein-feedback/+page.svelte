@@ -144,20 +144,17 @@
             {#if fokus.status === 'AKTIV'}
               <div class="plan-area">
                 {#if plan}
-                  <!-- Plan exists: show it -->
-                  <div class="plan-card">
-                    <div class="plan-card-header">
-                      <i class="bi bi-check-circle-fill me-2" style="color: #28a745;"></i>
-                      <strong>{plan.titel}</strong>
+                  <!-- Plan exists: compact confirmation -->
+                  <div class="plan-ready-row">
+                    <div class="d-flex align-items-center gap-2">
+                      <i class="bi bi-check-circle-fill" style="color: #28a745; font-size: 1.1rem;"></i>
+                      <span style="font-size: 0.9rem; color: var(--text-primary);">
+                        KI-Trainingsplan <strong>{plan.titel}</strong> wurde erstellt.
+                      </span>
                     </div>
-                    <div class="plan-card-body prose">
-                      {@html marked(plan.inhalt ?? '')}
-                    </div>
-                    <div class="plan-card-footer">
-                      <a href={chatLink(fokus)} class="btn btn-outline-secondary btn-sm">
-                        <i class="bi bi-chat-dots me-1"></i>Im Chat weiter besprechen
-                      </a>
-                    </div>
+                    <a href="/meine-trainingsplaene?planId={plan.id}" class="btn btn-outline-success btn-sm">
+                      <i class="bi bi-journal-text me-1"></i>Zum Trainingsplan
+                    </a>
                   </div>
                 {:else}
                   <!-- No plan yet: show generate button -->
@@ -215,27 +212,35 @@
   }
 
   .inbox {
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .inbox-row {
-    border-bottom: 1px solid var(--border-color);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     cursor: pointer;
-    transition: background 0.15s;
+    overflow: hidden;
+    transition: box-shadow 0.15s, border-color 0.15s;
   }
-  .inbox-row:last-child { border-bottom: none; }
   .inbox-row--unread {
     background: var(--card-bg);
     border-left: 3px solid var(--accent);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
   }
   .inbox-row--read {
-    background: transparent;
+    background: var(--card-bg);
     border-left: 3px solid transparent;
   }
-  .inbox-row--expanded { background: var(--card-bg); }
-  .inbox-row:hover { background: var(--card-bg); }
+  .inbox-row--expanded {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    border-color: color-mix(in srgb, var(--accent) 35%, var(--border-color));
+  }
+  .inbox-row:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  }
 
   .inbox-row-header {
     display: flex;
@@ -385,48 +390,15 @@
     margin-bottom: 0;
   }
 
-  .plan-card {
+  .plan-ready-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
     background: color-mix(in srgb, #28a745 6%, transparent);
     border: 1px solid color-mix(in srgb, #28a745 25%, transparent);
-    border-radius: 10px;
-    overflow: hidden;
-  }
-
-  .plan-card-header {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid color-mix(in srgb, #28a745 20%, transparent);
-    font-size: 0.92rem;
-    color: var(--text-primary);
-  }
-
-  .plan-card-body {
-    padding: 1rem;
-    font-size: 0.88rem;
-    color: var(--text-primary);
-    line-height: 1.7;
-    max-height: 400px;
-    overflow-y: auto;
-  }
-
-  .plan-card-body :global(h1),
-  .plan-card-body :global(h2),
-  .plan-card-body :global(h3) {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-top: 1rem;
-    margin-bottom: 0.4rem;
-    color: var(--text-primary);
-  }
-  .plan-card-body :global(ul),
-  .plan-card-body :global(ol) {
-    padding-left: 1.25rem;
-    margin-bottom: 0.5rem;
-  }
-  .plan-card-body :global(p) { margin-bottom: 0.5rem; }
-  .plan-card-body :global(strong) { color: var(--text-primary); }
-
-  .plan-card-footer {
-    padding: 0.75rem 1rem;
-    border-top: 1px solid color-mix(in srgb, #28a745 20%, transparent);
+    border-radius: 8px;
+    flex-wrap: wrap;
   }
 </style>
