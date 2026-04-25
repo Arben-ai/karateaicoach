@@ -3,7 +3,7 @@ import { redirect, error } from "@sveltejs/kit";
 import { env } from "$env/dynamic/private";
 
 const API_BASE_URL = env.API_BASE_URL;
-const DEFAULT_PAGE_SIZE = 5;
+const DEFAULT_PAGE_SIZE = 8;
 const SPORTLER_SELECT_PAGE_SIZE = 100;
 
 function userIsAdmin(user) {
@@ -17,6 +17,8 @@ export async function load({ locals, url }) {
   const sizeParam = Number.parseInt(url.searchParams.get("size") ?? `${DEFAULT_PAGE_SIZE}`, 10);
   const page = Number.isNaN(pageParam) || pageParam < 0 ? 0 : pageParam;
   const size = Number.isNaN(sizeParam) || sizeParam < 1 ? DEFAULT_PAGE_SIZE : sizeParam;
+  const sportlerName = url.searchParams.get("sportlerName") ?? "";
+  const status = url.searchParams.get("status") ?? "";
 
   if (!jwt_token) {
     throw redirect(303, "/login");
@@ -26,9 +28,13 @@ export async function load({ locals, url }) {
     throw redirect(303, "/");
   }
 
+  const planParams = new URLSearchParams({ page, size });
+  if (sportlerName) planParams.set("sportlerName", sportlerName);
+  if (status) planParams.set("status", status);
+
   try {
     const trainingsplanResponse = await axios.get(
-      `${API_BASE_URL}/api/trainingsplan?page=${page}&size=${size}`,
+      `${API_BASE_URL}/api/trainingsplan?${planParams}`,
       {
         headers: {
           Authorization: "Bearer " + jwt_token
@@ -54,7 +60,9 @@ export async function load({ locals, url }) {
           ?? (trainingsplanResponse.data.content?.length ?? trainingsplanResponse.data.length ?? 0),
         totalPages: trainingsplanResponse.data.totalPages ?? 1
       },
-      sportler: sportlerResponse.data.content ?? sportlerResponse.data
+      sportler: sportlerResponse.data.content ?? sportlerResponse.data,
+      sportlerName,
+      status
     };
   } catch (err) {
     if (err.response?.status === 403) {
@@ -64,13 +72,10 @@ export async function load({ locals, url }) {
     console.log("Error loading trainingsplan:", err);
     return {
       trainingsplan: [],
-      trainingsplanPagination: {
-        page,
-        size,
-        totalElements: 0,
-        totalPages: 0
-      },
-      sportler: []
+      trainingsplanPagination: { page, size, totalElements: 0, totalPages: 0 },
+      sportler: [],
+      sportlerName,
+      status
     };
   }
 }

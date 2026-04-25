@@ -3,7 +3,7 @@ import { redirect, error } from "@sveltejs/kit";
 import { env } from "$env/dynamic/private";
 
 const API_BASE_URL = env.API_BASE_URL;
-const DEFAULT_PAGE_SIZE = 5;
+const DEFAULT_PAGE_SIZE = 8;
 
 function userIsAdmin(user) {
   return Array.isArray(user?.user_roles)
@@ -24,9 +24,15 @@ export async function load({ locals, url }) {
     const sizeParam = Number.parseInt(url.searchParams.get("size") ?? `${DEFAULT_PAGE_SIZE}`, 10);
     const page = Number.isNaN(pageParam) || pageParam < 0 ? 0 : pageParam;
     const size = Number.isNaN(sizeParam) || sizeParam < 1 ? DEFAULT_PAGE_SIZE : sizeParam;
+    const search = url.searchParams.get("search") ?? "";
+    const guertelgrad = url.searchParams.get("guertelgrad") ?? "";
+
+    const params = new URLSearchParams({ page, size });
+    if (search) params.set("search", search);
+    if (guertelgrad) params.set("guertelgrad", guertelgrad);
 
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/sportler?page=${page}&size=${size}`, {
+      const response = await axios.get(`${API_BASE_URL}/api/sportler?${params}`, {
         headers: { Authorization: "Bearer " + jwt_token }
       });
 
@@ -39,6 +45,8 @@ export async function load({ locals, url }) {
           totalElements: response.data.totalElements ?? (response.data.content?.length ?? 0),
           totalPages: response.data.totalPages ?? 1
         },
+        search,
+        guertelgrad,
         mySportler: null
       };
     } catch (err) {
@@ -46,6 +54,8 @@ export async function load({ locals, url }) {
         isAdmin: true,
         sportler: [],
         pagination: { page: 0, size: DEFAULT_PAGE_SIZE, totalElements: 0, totalPages: 0 },
+        search,
+        guertelgrad,
         mySportler: null
       };
     }
@@ -71,9 +81,12 @@ export const actions = {
     if (!jwt_token) throw error(401, "Authentication required");
 
     const data = await request.formData();
+    const gewicht = parseFloat(data.get("gewicht"));
     const sportler = {
       name: data.get("name"),
-      email: data.get("email")
+      email: data.get("email"),
+      guertelgrad: data.get("guertelgrad") || "",
+      gewicht: isNaN(gewicht) ? 0 : gewicht
     };
 
     try {

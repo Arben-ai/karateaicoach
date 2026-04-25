@@ -14,6 +14,7 @@ import ch.zhaw.karateaicoach.model.PaginatedResponseDTO;
 import ch.zhaw.karateaicoach.model.Trainingsplan;
 import ch.zhaw.karateaicoach.model.TrainingsplanCreateDTO;
 import ch.zhaw.karateaicoach.model.TrainingsplanStatus;
+import ch.zhaw.karateaicoach.repository.SportlerRepository;
 import ch.zhaw.karateaicoach.repository.TrainingsplanRepository;
 import ch.zhaw.karateaicoach.service.SportlerService;
 import ch.zhaw.karateaicoach.service.UserService;
@@ -27,6 +28,9 @@ public class TrainingsplanController {
 
     @Autowired
     TrainingsplanRepository trainingsplanRepository;
+
+    @Autowired
+    SportlerRepository sportlerRepository;
 
     @Autowired
     SportlerService sportlerService;
@@ -93,10 +97,10 @@ public class TrainingsplanController {
     public ResponseEntity<?> getAllTrainingsplan(
             @RequestParam(required = false) Integer minDauer,
             @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "") String sportlerName,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        // 🔒 ADMIN CHECK
         if (!userService.userHasRole("admin")) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
@@ -107,35 +111,37 @@ public class TrainingsplanController {
             }
 
             Pageable pageable = PageRequest.of(
-                    page,
-                    size,
+                    page, size,
                     Sort.by("erstelldatum").descending().and(Sort.by("id").ascending()));
 
-            if (minDauer == null && status == null) {
-                return ResponseEntity.ok(
-                        PaginatedResponseDTO.fromPage(trainingsplanRepository.findAll(pageable)));
+            boolean hasName = !sportlerName.isBlank();
+            boolean hasStatus = status != null && !status.isBlank();
+
+            if (hasName) {
+                java.util.List<String> ids = sportlerRepository
+                        .findByNameContainingIgnoreCase(sportlerName,
+                                PageRequest.of(0, 200, Sort.by("name")))
+                        .stream().map(s -> s.getId()).toList();
+                if (ids.isEmpty()) {
+                    return ResponseEntity.ok(PaginatedResponseDTO.fromPage(
+                            org.springframework.data.domain.Page.empty(pageable)));
+                }
+                if (hasStatus) {
+                    return ResponseEntity.ok(PaginatedResponseDTO.fromPage(
+                            trainingsplanRepository.findByStatusAndSportlerIdIn(
+                                    TrainingsplanStatus.valueOf(status), ids, pageable)));
+                }
+                return ResponseEntity.ok(PaginatedResponseDTO.fromPage(
+                        trainingsplanRepository.findBySportlerIdIn(ids, pageable)));
             }
 
-            if (status == null) {
-                return ResponseEntity.ok(
-                        PaginatedResponseDTO.fromPage(
-                                trainingsplanRepository.findByDauerGreaterThan(minDauer, pageable)));
-            }
-
-            TrainingsplanStatus enumStatus = TrainingsplanStatus.valueOf(status);
-
-            if (minDauer == null) {
-                return ResponseEntity.ok(
-                        PaginatedResponseDTO.fromPage(
-                                trainingsplanRepository.findByStatus(enumStatus, pageable)));
+            if (hasStatus) {
+                return ResponseEntity.ok(PaginatedResponseDTO.fromPage(
+                        trainingsplanRepository.findByStatus(TrainingsplanStatus.valueOf(status), pageable)));
             }
 
             return ResponseEntity.ok(
-                    PaginatedResponseDTO.fromPage(
-                            trainingsplanRepository.findByDauerGreaterThanAndStatus(
-                                    minDauer,
-                                    enumStatus,
-                                    pageable)));
+                    PaginatedResponseDTO.fromPage(trainingsplanRepository.findAll(pageable)));
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Invalid parameter");

@@ -101,7 +101,9 @@ public class SportlerController {
     @GetMapping("/sportler")
     public ResponseEntity<?> getAllSportler(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "") String search,
+            @RequestParam(defaultValue = "") String guertelgrad) {
         try {
             if (page < 0 || size < 1) {
                 return ResponseEntity.badRequest().body("Invalid pagination parameters");
@@ -112,8 +114,21 @@ public class SportlerController {
                     size,
                     Sort.by("name").ascending().and(Sort.by("id").ascending()));
 
-            return ResponseEntity.ok(
-                    PaginatedResponseDTO.fromPage(sportlerRepository.findAll(pageable)));
+            boolean hasSearch = !search.isBlank();
+            boolean hasGuertelgrad = !guertelgrad.isBlank();
+
+            org.springframework.data.domain.Page<Sportler> result;
+            if (hasSearch && hasGuertelgrad) {
+                result = sportlerRepository.findByNameContainingIgnoreCaseAndGuertelgradIgnoreCase(search, guertelgrad, pageable);
+            } else if (hasSearch) {
+                result = sportlerRepository.findByNameContainingIgnoreCase(search, pageable);
+            } else if (hasGuertelgrad) {
+                result = sportlerRepository.findByGuertelgradIgnoreCase(guertelgrad, pageable);
+            } else {
+                result = sportlerRepository.findAll(pageable);
+            }
+
+            return ResponseEntity.ok(PaginatedResponseDTO.fromPage(result));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }

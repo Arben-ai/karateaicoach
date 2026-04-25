@@ -4,6 +4,7 @@ import ch.zhaw.karateaicoach.model.PaginatedResponseDTO;
 import ch.zhaw.karateaicoach.model.Trainingsfokus;
 import ch.zhaw.karateaicoach.model.TrainingsfokusCreateDTO;
 import ch.zhaw.karateaicoach.model.TrainingsfokusStatus;
+import ch.zhaw.karateaicoach.repository.SportlerRepository;
 import ch.zhaw.karateaicoach.repository.TrainingsfokusRepository;
 import ch.zhaw.karateaicoach.service.SportlerService;
 import ch.zhaw.karateaicoach.service.UserService;
@@ -21,6 +22,9 @@ public class TrainingsfokusController {
 
     @Autowired
     TrainingsfokusRepository trainingsfokusRepository;
+
+    @Autowired
+    SportlerRepository sportlerRepository;
 
     @Autowired
     SportlerService sportlerService;
@@ -42,6 +46,8 @@ public class TrainingsfokusController {
             Trainingsfokus fokus = new Trainingsfokus(
                     dto.getBeschreibung(),
                     dto.getSchwerpunkt(),
+                    dto.getKategorie(),
+                    dto.getNotiz(),
                     dto.getStatus(),
                     dto.getSportlerId());
 
@@ -78,6 +84,8 @@ public class TrainingsfokusController {
     public ResponseEntity<?> getAllTrainingsfokus(
             @RequestParam(required = false) String sportlerId,
             @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "") String sportlerName,
+            @RequestParam(defaultValue = "") String kategorie,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
@@ -92,21 +100,44 @@ public class TrainingsfokusController {
         try {
             Pageable pageable = PageRequest.of(page, size, Sort.by("schwerpunkt").ascending());
 
+            boolean hasName = !sportlerName.isBlank();
+            boolean hasKategorie = !kategorie.isBlank();
+
+            if (hasName) {
+                java.util.List<String> ids = sportlerRepository
+                        .findByNameContainingIgnoreCase(sportlerName,
+                                PageRequest.of(0, 200, Sort.by("name")))
+                        .stream()
+                        .map(s -> s.getId())
+                        .toList();
+                if (ids.isEmpty()) {
+                    return ResponseEntity.ok(PaginatedResponseDTO.fromPage(
+                            org.springframework.data.domain.Page.empty(pageable)));
+                }
+                if (hasKategorie) {
+                    return ResponseEntity.ok(PaginatedResponseDTO.fromPage(
+                            trainingsfokusRepository.findByKategorieAndSportlerIdIn(kategorie, ids, pageable)));
+                }
+                return ResponseEntity.ok(PaginatedResponseDTO.fromPage(
+                        trainingsfokusRepository.findBySportlerIdIn(ids, pageable)));
+            }
+
+            if (hasKategorie) {
+                return ResponseEntity.ok(PaginatedResponseDTO.fromPage(
+                        trainingsfokusRepository.findByKategorie(kategorie, pageable)));
+            }
+
             if (sportlerId != null) {
-                return ResponseEntity.ok(
-                        PaginatedResponseDTO.fromPage(
-                                trainingsfokusRepository.findBySportlerId(sportlerId, pageable)));
+                return ResponseEntity.ok(PaginatedResponseDTO.fromPage(
+                        trainingsfokusRepository.findBySportlerId(sportlerId, pageable)));
             }
 
             if (status != null) {
-                TrainingsfokusStatus enumStatus = TrainingsfokusStatus.valueOf(status);
-                return ResponseEntity.ok(
-                        PaginatedResponseDTO.fromPage(
-                                trainingsfokusRepository.findByStatus(enumStatus, pageable)));
+                return ResponseEntity.ok(PaginatedResponseDTO.fromPage(
+                        trainingsfokusRepository.findByStatus(TrainingsfokusStatus.valueOf(status), pageable)));
             }
 
-            return ResponseEntity.ok(
-                    PaginatedResponseDTO.fromPage(trainingsfokusRepository.findAll(pageable)));
+            return ResponseEntity.ok(PaginatedResponseDTO.fromPage(trainingsfokusRepository.findAll(pageable)));
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body("Invalid parameter");

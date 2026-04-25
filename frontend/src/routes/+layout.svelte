@@ -96,6 +96,45 @@
   </div>
 </nav>
 
-<div class="container mt-4">
+<div class="container mt-4 mb-5">
   {@render children()}
 </div>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-inner">
+      <span class="footer-brand">
+        <i class="bi bi-shield-fill me-2"></i>KarateAI Coach
+      </span>
+      <span class="footer-divider">·</span>
+      <span class="footer-copy">© 2026 ZHAW School of Management and Law</span>
+      <span class="footer-divider">·</span>
+      <span class="footer-copy">Software Engineering 2</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: auto;
+    border-top: 1px solid var(--border-color);
+    padding: 1rem 0;
+    background: var(--card-bg);
+  }
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+  .footer-brand {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .footer-divider {
+    opacity: 0.4;
+  }
+</style>

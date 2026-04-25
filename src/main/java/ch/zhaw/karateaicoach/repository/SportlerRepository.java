@@ -13,4 +13,10 @@ public interface SportlerRepository extends MongoRepository<Sportler, String> {
     boolean existsByEmail(String email);
 
     boolean existsByNameIgnoreCase(String name);
+
+    org.springframework.data.domain.Page<Sportler> findByNameContainingIgnoreCase(String name, org.springframework.data.domain.Pageable pageable);
+
+    org.springframework.data.domain.Page<Sportler> findByGuertelgradIgnoreCase(String guertelgrad, org.springframework.data.domain.Pageable pageable);
+
+    org.springframework.data.domain.Page<Sportler> findByNameContainingIgnoreCaseAndGuertelgradIgnoreCase(String name, String guertelgrad, org.springframework.data.domain.Pageable pageable);
 }

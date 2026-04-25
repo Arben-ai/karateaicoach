@@ -11,4 +11,10 @@ public interface TrainingsfokusRepository extends MongoRepository<Trainingsfokus
     Page<Trainingsfokus> findBySportlerId(String sportlerId, Pageable pageable);
 
     Page<Trainingsfokus> findByStatus(TrainingsfokusStatus status, Pageable pageable);
+
+    Page<Trainingsfokus> findByKategorie(String kategorie, Pageable pageable);
+
+    Page<Trainingsfokus> findBySportlerIdIn(java.util.List<String> sportlerIds, Pageable pageable);
+
+    Page<Trainingsfokus> findByKategorieAndSportlerIdIn(String kategorie, java.util.List<String> sportlerIds, Pageable pageable);
 }

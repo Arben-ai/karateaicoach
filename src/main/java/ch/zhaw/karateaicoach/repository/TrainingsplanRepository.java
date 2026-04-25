@@ -21,6 +21,10 @@ public interface TrainingsplanRepository extends MongoRepository<Trainingsplan, 
 
     Page<Trainingsplan> findByDauerGreaterThanAndStatus(int dauer, TrainingsplanStatus status, Pageable pageable);
 
+    Page<Trainingsplan> findBySportlerIdIn(java.util.List<String> sportlerIds, Pageable pageable);
+
+    Page<Trainingsplan> findByStatusAndSportlerIdIn(TrainingsplanStatus status, java.util.List<String> sportlerIds, Pageable pageable);
+
     @Aggregation({
     "{ '$match': { 'sportlerId': ?0 } }",
     "{ '$group': { '_id': '$status', 'count': { '$sum': 1 }, 'trainingsplanIds': { '$push': '$_id' } } }"

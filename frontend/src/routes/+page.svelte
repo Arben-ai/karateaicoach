@@ -79,17 +79,6 @@
         </div>
       </div>
     {/if}
-
-    <div class="col-md-4">
-      <div class="stat-card">
-        <div class="stat-card-icon"><i class="bi bi-person-circle"></i></div>
-        <div class="stat-card-title">Mein Account</div>
-        <div class="stat-card-text">Profil und Einstellungen</div>
-        <a href="/account" class="btn btn-outline-primary btn-sm mt-3">
-          <i class="bi bi-arrow-right me-1"></i>Öffnen
-        </a>
-      </div>
-    </div>
   </div>
 
 {:else}

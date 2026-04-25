@@ -17,13 +17,19 @@ export async function load({ locals, url }) {
   const sizeParam = Number.parseInt(url.searchParams.get("size") ?? `${DEFAULT_PAGE_SIZE}`, 10);
   const page = Number.isNaN(pageParam) || pageParam < 0 ? 0 : pageParam;
   const size = Number.isNaN(sizeParam) || sizeParam < 1 ? DEFAULT_PAGE_SIZE : sizeParam;
+  const sportlerName = url.searchParams.get("sportlerName") ?? "";
+  const kategorie = url.searchParams.get("kategorie") ?? "";
 
   if (!jwt_token) throw redirect(303, "/login");
   if (!userIsAdmin(locals.user)) throw redirect(303, "/");
 
+  const fokusParams = new URLSearchParams({ page, size });
+  if (sportlerName) fokusParams.set("sportlerName", sportlerName);
+  if (kategorie) fokusParams.set("kategorie", kategorie);
+
   try {
     const [fokusResponse, sportlerResponse] = await Promise.all([
-      axios.get(`${API_BASE_URL}/api/trainingsfokus?page=${page}&size=${size}`, {
+      axios.get(`${API_BASE_URL}/api/trainingsfokus?${fokusParams}`, {
         headers: { Authorization: "Bearer " + jwt_token }
       }),
       axios.get(`${API_BASE_URL}/api/sportler?page=0&size=${SPORTLER_SELECT_PAGE_SIZE}`, {
@@ -39,14 +45,18 @@ export async function load({ locals, url }) {
         totalElements: fokusResponse.data.totalElements ?? (fokusResponse.data.content?.length ?? 0),
         totalPages: fokusResponse.data.totalPages ?? 1
       },
-      sportler: sportlerResponse.data.content ?? sportlerResponse.data
+      sportler: sportlerResponse.data.content ?? sportlerResponse.data,
+      sportlerName,
+      kategorie
     };
   } catch (err) {
     if (err.response?.status === 403) throw redirect(303, "/");
     return {
       trainingsfokus: [],
       pagination: { page, size, totalElements: 0, totalPages: 0 },
-      sportler: []
+      sportler: [],
+      sportlerName,
+      kategorie
     };
   }
 }
@@ -58,10 +68,17 @@ export const actions = {
     if (!userIsAdmin(locals.user)) throw redirect(303, "/");
 
     const data = await request.formData();
+    const schwerpunktRaw = data.get("schwerpunkt");
+    const schwerpunkt = schwerpunktRaw === "Andere"
+      ? (data.get("schwerpunktAndere") ?? "Andere").slice(0, 50)
+      : schwerpunktRaw;
+
     const fokus = {
-      beschreibung: data.get("beschreibung"),
-      schwerpunkt: data.get("schwerpunkt"),
-      status: data.get("status"),
+      kategorie: data.get("kategorie"),
+      schwerpunkt,
+      notiz: (data.get("notiz") ?? "").slice(0, 300),
+      beschreibung: "",
+      status: "AKTIV",
       sportlerId: data.get("sportlerId")
     };
 

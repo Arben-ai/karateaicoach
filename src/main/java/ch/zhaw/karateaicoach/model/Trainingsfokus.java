@@ -11,14 +11,18 @@ public class Trainingsfokus {
 
     private String beschreibung;
     private String schwerpunkt;
+    private String kategorie;
+    private String notiz;
     private TrainingsfokusStatus status;
     private String sportlerId;
 
     public Trainingsfokus() {}
 
-    public Trainingsfokus(String beschreibung, String schwerpunkt, TrainingsfokusStatus status, String sportlerId) {
+    public Trainingsfokus(String beschreibung, String schwerpunkt, String kategorie, String notiz, TrainingsfokusStatus status, String sportlerId) {
         this.beschreibung = beschreibung;
         this.schwerpunkt = schwerpunkt;
+        this.kategorie = kategorie;
+        this.notiz = notiz;
         this.status = status;
         this.sportlerId = sportlerId;
     }
@@ -26,10 +30,14 @@ public class Trainingsfokus {
     public String getId() { return id; }
     public String getBeschreibung() { return beschreibung; }
     public String getSchwerpunkt() { return schwerpunkt; }
+    public String getKategorie() { return kategorie; }
+    public String getNotiz() { return notiz; }
     public TrainingsfokusStatus getStatus() { return status; }
     public String getSportlerId() { return sportlerId; }
 
     public void setStatus(TrainingsfokusStatus status) { this.status = status; }
     public void setBeschreibung(String beschreibung) { this.beschreibung = beschreibung; }
     public void setSchwerpunkt(String schwerpunkt) { this.schwerpunkt = schwerpunkt; }
+    public void setKategorie(String kategorie) { this.kategorie = kategorie; }
+    public void setNotiz(String notiz) { this.notiz = notiz; }
 }
