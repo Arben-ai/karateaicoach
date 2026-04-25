@@ -15,6 +15,7 @@ import ch.zhaw.karateaicoach.model.Trainingsplan;
 import ch.zhaw.karateaicoach.model.TrainingsplanCreateDTO;
 import ch.zhaw.karateaicoach.model.TrainingsplanStatus;
 import ch.zhaw.karateaicoach.repository.SportlerRepository;
+import ch.zhaw.karateaicoach.repository.TrainingsfokusRepository;
 import ch.zhaw.karateaicoach.repository.TrainingsplanRepository;
 import ch.zhaw.karateaicoach.service.SportlerService;
 import ch.zhaw.karateaicoach.service.UserService;
@@ -31,6 +32,9 @@ public class TrainingsplanController {
 
     @Autowired
     SportlerRepository sportlerRepository;
+
+    @Autowired
+    TrainingsfokusRepository trainingsfokusRepository;
 
     @Autowired
     SportlerService sportlerService;
@@ -68,6 +72,52 @@ public class TrainingsplanController {
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @PostMapping("/trainingsplan/aus-fokus/{fokusId}")
+    public ResponseEntity<Trainingsplan> createPlanFromFokus(@PathVariable String fokusId) {
+        String userId = userService.getCurrentUserId();
+        if (userId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+
+        return trainingsfokusRepository.findById(fokusId)
+                .map(fokus -> {
+                    // Return existing plan if already generated for this fokus
+                    java.util.Optional<Trainingsplan> existing = trainingsplanRepository.findByTrainingsfokusId(fokusId);
+                    if (existing.isPresent()) return ResponseEntity.ok(existing.get());
+
+                    String email = userService.getCurrentUserEmail();
+                    String name = userService.getCurrentUserName();
+
+                    return sportlerService.resolveCurrentSportler(userId, email, name)
+                            .filter(sportler -> sportler.getId().equals(fokus.getSportlerId()))
+                            .map(sportler -> {
+                                String prompt = String.format(
+                                    "Erstelle einen detaillierten Karate-Trainingsplan für %s.\n" +
+                                    "Kategorie: %s\nSchwerpunkt: %s\nBeschreibung: %s\n\n" +
+                                    "Erstelle einen strukturierten Plan mit konkreten Übungen, Wiederholungen und Zeitangaben.",
+                                    sportler.getName(),
+                                    fokus.getKategorie() != null ? fokus.getKategorie() : "",
+                                    fokus.getSchwerpunkt(),
+                                    fokus.getBeschreibung() != null ? fokus.getBeschreibung() : "");
+
+                                String inhalt = chatModel.call(new Prompt(prompt))
+                                        .getResult().getOutput().getText();
+
+                                Trainingsplan plan = new Trainingsplan(
+                                        "KI-Plan: " + fokus.getSchwerpunkt(),
+                                        60,
+                                        TrainingsplanStatus.ACTIVE,
+                                        sportler.getId());
+                                plan.setFokus(fokus.getSchwerpunkt());
+                                plan.setInhalt(inhalt);
+                                plan.setTrainingsfokusId(fokusId);
+
+                                return ResponseEntity.status(HttpStatus.CREATED)
+                                        .body(trainingsplanRepository.save(plan));
+                            })
+                            .orElseGet(() -> ResponseEntity.status(HttpStatus.FORBIDDEN).<Trainingsplan>body(null));
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
     @GetMapping("/trainingsplan/me")

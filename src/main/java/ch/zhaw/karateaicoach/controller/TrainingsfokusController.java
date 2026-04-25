@@ -72,7 +72,8 @@ public class TrainingsfokusController {
         String name = userService.getCurrentUserName();
         return sportlerService.resolveCurrentSportler(userId, email, name)
                 .map(sportler -> {
-                    Pageable pageable = PageRequest.of(page, size, Sort.by("schwerpunkt").ascending());
+                    Pageable pageable = PageRequest.of(page, size,
+                            Sort.by("gelesen").ascending().and(Sort.by("createdAt").descending()));
                     return ResponseEntity.<Object>ok(
                             PaginatedResponseDTO.fromPage(
                                     trainingsfokusRepository.findBySportlerId(sportler.getId(), pageable)));
@@ -174,6 +175,25 @@ public class TrainingsfokusController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).<Trainingsfokus>body(null);
             }
         }).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    }
+
+    @PatchMapping("/trainingsfokus/{id}/gelesen")
+    public ResponseEntity<Trainingsfokus> markAsGelesen(@PathVariable String id) {
+        String userId = userService.getCurrentUserId();
+        if (userId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+
+        String email = userService.getCurrentUserEmail();
+        String name = userService.getCurrentUserName();
+
+        return trainingsfokusRepository.findById(id)
+                .map(fokus -> sportlerService.resolveCurrentSportler(userId, email, name)
+                        .filter(sportler -> sportler.getId().equals(fokus.getSportlerId()))
+                        .map(sportler -> {
+                            fokus.setGelesen(true);
+                            return ResponseEntity.ok(trainingsfokusRepository.save(fokus));
+                        })
+                        .orElseGet(() -> ResponseEntity.status(HttpStatus.FORBIDDEN).<Trainingsfokus>body(null)))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
     @DeleteMapping("/trainingsfokus/{id}")

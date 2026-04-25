@@ -31,4 +31,6 @@ public class Sportler {
     public double getGewicht() { return gewicht; }
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
+    public void setGuertelgrad(String guertelgrad) { this.guertelgrad = guertelgrad; }
+    public void setGewicht(double gewicht) { this.gewicht = gewicht; }
 }

@@ -1,7 +1,12 @@
 <script>
-  let { data } = $props();
+  import { enhance } from '$app/forms';
+
+  let { data, form } = $props();
   let isAuthenticated = $derived(data.isAuthenticated);
   let user = $derived(data.user);
+  let profileIncomplete = $derived(data.profileIncomplete);
+
+  const guertelgrade = ['Weiss', 'Gelb', 'Orange', 'Grün', 'Blau', 'Braun', 'Schwarz'];
 </script>
 
 {#if isAuthenticated}
@@ -81,6 +86,55 @@
     {/if}
   </div>
 
+  {#if profileIncomplete}
+    <div class="setup-overlay">
+      <div class="setup-card">
+        <div class="setup-icon-wrap">
+          <i class="bi bi-person-fill-gear setup-icon"></i>
+        </div>
+        <h2 class="setup-title">Fast fertig, {user.given_name ?? user.name}!</h2>
+        <p class="setup-text">
+          Damit dein Coach dir den perfekten Trainingsplan erstellen kann,
+          brauchen wir noch zwei Angaben von dir.
+        </p>
+
+        {#if form?.error}
+          <div class="alert alert-danger py-2 mb-3 text-start">
+            <i class="bi bi-exclamation-circle me-1"></i>{form.error}
+          </div>
+        {/if}
+
+        <form method="POST" action="?/completeProfile" use:enhance class="text-start">
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="guertelgrad">Gürtelgrad</label>
+            <select class="form-select" id="guertelgrad" name="guertelgrad" required>
+              <option value="" disabled selected>Gürtelgrad wählen…</option>
+              {#each guertelgrade as g}
+                <option value={g}>{g}</option>
+              {/each}
+            </select>
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-semibold" for="gewicht">Gewicht (kg)</label>
+            <input
+              class="form-control"
+              id="gewicht"
+              name="gewicht"
+              type="number"
+              placeholder="z.B. 70"
+              min="1"
+              max="300"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-check-lg me-2"></i>Profil abschliessen &amp; loslegen
+          </button>
+        </form>
+      </div>
+    </div>
+  {/if}
+
 {:else}
   <div class="hero-section">
     <div class="hero-icon">
@@ -122,3 +176,71 @@
     </div>
   </div>
 {/if}
+
+<style>
+  .setup-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease;
+  }
+
+  .setup-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    max-width: 420px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.25s ease;
+  }
+
+  .setup-icon-wrap {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    border: 2px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+  }
+
+  .setup-icon {
+    font-size: 1.75rem;
+    color: var(--accent);
+  }
+
+  .setup-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .setup-text {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>

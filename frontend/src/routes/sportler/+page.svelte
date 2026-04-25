@@ -64,6 +64,18 @@
     {form.deleted ? "Profil erfolgreich gelöscht." : "Profil erfolgreich erstellt!"}
   </div>
 {/if}
+{#if form?.auth0Warning}
+  <div class="alert alert-warning d-flex align-items-start gap-2" role="alert">
+    <i class="bi bi-exclamation-triangle-fill flex-shrink-0 mt-1"></i>
+    <div>
+      <strong>Anmeldekonto noch aktiv.</strong>
+      Der Sportler wurde aus der App entfernt, sein Auth0-Login-Konto existiert aber noch.
+      Damit er sich nicht erneut mit derselben E-Mail registrieren kann, muss der Account auch im
+      <a href="https://manage.auth0.com" target="_blank" rel="noopener" class="alert-link">Auth0 Dashboard</a>
+      unter <strong>User Management → Users</strong> gelöscht werden.
+    </div>
+  </div>
+{/if}
 {#if form?.error}
   <div class="alert alert-danger" role="alert">
     <i class="bi bi-exclamation-circle me-2"></i>{form.error}
@@ -334,7 +346,8 @@
         <button class="btn btn-outline-secondary" onclick={closeDeleteModal}>
           <i class="bi bi-x-lg me-1"></i>Abbrechen
         </button>
-        <form method="POST" action="?/deleteSportler" use:enhance onsubmit={closeDeleteModal}>
+        <form method="POST" action="?/deleteSportler"
+          use:enhance={() => async ({ update }) => { closeDeleteModal(); await update(); }}>
           <input type="hidden" name="id" value={deleteTarget.id} />
           <button type="submit" class="btn btn-danger">
             <i class="bi bi-trash me-1"></i>Löschen

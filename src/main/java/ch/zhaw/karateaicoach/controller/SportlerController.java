@@ -98,6 +98,25 @@ public class SportlerController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
+    @PatchMapping("/sportler/me")
+    public ResponseEntity<Sportler> updateMySportler(@RequestBody java.util.Map<String, Object> body) {
+        String userId = userService.getCurrentUserId();
+        if (userId == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        String email = userService.getCurrentUserEmail();
+        String name = userService.getCurrentUserName();
+        return sportlerService.resolveCurrentSportler(userId, email, name)
+                .map(sportler -> {
+                    if (body.containsKey("guertelgrad"))
+                        sportler.setGuertelgrad((String) body.get("guertelgrad"));
+                    if (body.containsKey("gewicht")) {
+                        Object g = body.get("gewicht");
+                        if (g instanceof Number) sportler.setGewicht(((Number) g).doubleValue());
+                    }
+                    return ResponseEntity.ok(sportlerRepository.save(sportler));
+                })
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
+    }
+
     @GetMapping("/sportler")
     public ResponseEntity<?> getAllSportler(
             @RequestParam(defaultValue = "0") int page,

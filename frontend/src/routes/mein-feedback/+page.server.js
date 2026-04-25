@@ -1,29 +1,63 @@
-import axios from "axios";
-import { redirect } from "@sveltejs/kit";
-import { env } from "$env/dynamic/private";
+import axios from 'axios';
+import { redirect, fail } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 
 const API_BASE_URL = env.API_BASE_URL;
 
 export async function load({ locals }) {
   const jwt_token = locals.jwt_token;
-  if (!jwt_token) throw redirect(303, "/login");
+  if (!jwt_token) throw redirect(303, '/login');
 
   const isAdmin = Array.isArray(locals.user?.user_roles) &&
-    locals.user.user_roles.some((r) => r.toLowerCase() === "admin");
-  if (isAdmin) throw redirect(303, "/trainingsfokus");
+    locals.user.user_roles.some((r) => r.toLowerCase() === 'admin');
+  if (isAdmin) throw redirect(303, '/trainingsfokus');
 
-  try {
-    const response = await axios.get(`${API_BASE_URL}/api/trainingsfokus/me?size=50`, {
-      headers: { Authorization: "Bearer " + jwt_token }
-    });
+  const [fokusRes, planRes] = await Promise.allSettled([
+    axios.get(`${API_BASE_URL}/api/trainingsfokus/me?size=50`, {
+      headers: { Authorization: 'Bearer ' + jwt_token }
+    }),
+    axios.get(`${API_BASE_URL}/api/trainingsplan/me?size=100`, {
+      headers: { Authorization: 'Bearer ' + jwt_token }
+    })
+  ]);
 
-    return {
-      trainingsfokusse: response.data.content ?? [],
-      pagination: {
-        totalElements: response.data.totalElements ?? 0
+  const trainingsfokusse = fokusRes.status === 'fulfilled'
+    ? (fokusRes.value.data.content ?? [])
+    : [];
+
+  const planByFokusId = {};
+  if (planRes.status === 'fulfilled') {
+    for (const plan of (planRes.value.data.content ?? [])) {
+      if (plan.trainingsfokusId) {
+        planByFokusId[plan.trainingsfokusId] = plan;
       }
-    };
-  } catch {
-    return { trainingsfokusse: [], pagination: { totalElements: 0 } };
+    }
   }
+
+  return { trainingsfokusse, planByFokusId };
 }
+
+export const actions = {
+  generatePlan: async ({ request, locals }) => {
+    const { jwt_token } = locals;
+    if (!jwt_token) return fail(401, { error: 'Nicht authentifiziert.' });
+
+    const data = await request.formData();
+    const fokusId = data.get('fokusId');
+    if (!fokusId) return fail(400, { error: 'Fokus-ID fehlt.' });
+
+    try {
+      const res = await axios.post(
+        `${API_BASE_URL}/api/trainingsplan/aus-fokus/${fokusId}`,
+        {},
+        {
+          headers: { Authorization: 'Bearer ' + jwt_token },
+          timeout: 90000
+        }
+      );
+      return { success: true, plan: res.data, fokusId };
+    } catch {
+      return fail(500, { error: 'Trainingsplan konnte nicht erstellt werden.' });
+    }
+  }
+};

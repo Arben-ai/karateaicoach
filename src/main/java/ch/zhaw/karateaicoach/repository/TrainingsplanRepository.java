@@ -23,6 +23,8 @@ public interface TrainingsplanRepository extends MongoRepository<Trainingsplan, 
 
     Page<Trainingsplan> findBySportlerIdIn(java.util.List<String> sportlerIds, Pageable pageable);
 
+    java.util.Optional<Trainingsplan> findByTrainingsfokusId(String trainingsfokusId);
+
     Page<Trainingsplan> findByStatusAndSportlerIdIn(TrainingsplanStatus status, java.util.List<String> sportlerIds, Pageable pageable);
 
     @Aggregation({

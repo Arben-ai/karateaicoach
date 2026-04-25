@@ -118,7 +118,7 @@ export const actions = {
         url: `${API_BASE_URL}/api/sportler/${id}`,
         headers: { Authorization: "Bearer " + jwt_token }
       });
-      return { success: true };
+      return { success: true, deleted: true, auth0Warning: true };
     } catch (err) {
       return {
         success: false,

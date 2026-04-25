@@ -23,3 +23,24 @@ export async function load({ locals }) {
 
     return { user, isAuthenticated, sportler };
 }
+
+export const actions = {
+    updateProfile: async ({ request, locals }) => {
+        const { jwt_token } = locals;
+        if (!jwt_token) return { success: false, error: 'Nicht authentifiziert.' };
+
+        const data = await request.formData();
+        const guertelgrad = data.get('guertelgrad') ?? '';
+        const gewichtRaw = parseFloat(data.get('gewicht'));
+        const gewicht = isNaN(gewichtRaw) ? 0 : gewichtRaw;
+
+        try {
+            await axios.patch(`${API_BASE_URL}/api/sportler/me`, { guertelgrad, gewicht }, {
+                headers: { Authorization: 'Bearer ' + jwt_token }
+            });
+            return { success: true };
+        } catch {
+            return { success: false, error: 'Profil konnte nicht aktualisiert werden.' };
+        }
+    }
+};
