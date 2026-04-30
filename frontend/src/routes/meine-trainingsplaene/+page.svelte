@@ -46,6 +46,7 @@
   }
 </script>
 
+<div class="page-content">
 <div class="d-flex justify-content-between align-items-center mb-1">
   <h1 class="page-title"><i class="bi bi-journal-text me-2"></i>Meine Trainingspläne</h1>
   {#if pagination}
@@ -135,6 +136,8 @@
     </div>
   </div>
 {/if}
+
+</div><!-- /page-content -->
 
 <style>
   .plan-list {

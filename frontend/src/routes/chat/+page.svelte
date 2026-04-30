@@ -8,11 +8,17 @@
   let isAuthenticated = $derived(data.isAuthenticated);
 
   let initialMessage = $derived(data.initialMessage);
+  let mode = $derived(data.mode);
+  let fokusId = $derived(data.fokusId);
+  let schwerpunkt = $derived(data.schwerpunkt);
+
   let message = $state("");
   let messages = $state([
     { type: "bot", text: "Hallo! Wie kann ich dir helfen?" },
   ]);
   let formRef = $state(null);
+  let generatingPlan = $state(false);
+  let savedPlanId = $state(null);
 
   onMount(() => {
     if (initialMessage) {
@@ -23,6 +29,7 @@
 </script>
 
 {#if isAuthenticated}
+  <div class="page-content">
   <div class="d-flex justify-content-between align-items-center mb-1">
     <h1 class="page-title"><i class="bi bi-chat-dots me-2"></i>KI-Assistent</h1>
   </div>
@@ -46,6 +53,59 @@
         {/if}
       {/each}
     </div>
+
+    {#if mode === "plan" && fokusId}
+      <div class="save-plan-bar border-top p-3">
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+          {#if savedPlanId}
+            <div class="flex-grow-1" style="font-size: 0.9rem; color: #15803d;">
+              <i class="bi bi-check-circle-fill me-2"></i>Trainingsplan wurde gespeichert.
+            </div>
+            <a href="/meine-trainingsplaene?planId={savedPlanId}" class="btn btn-outline-success btn-sm">
+              <i class="bi bi-journal-text me-1"></i>Zum Trainingsplan
+            </a>
+          {:else}
+            <div class="flex-grow-1" style="font-size: 0.9rem; color: var(--text-muted);">
+              <i class="bi bi-robot me-2" style="color: var(--accent);"></i>
+              Trainingsplan für <strong>{schwerpunkt}</strong>
+              {#if generatingPlan}
+                — <em>KI generiert deinen Plan, bitte warten (ca. 30–60 Sek.)…</em>
+              {:else}
+                — Passt der Vorschlag? Klicke um den Plan zu speichern.
+              {/if}
+            </div>
+            <form
+              method="POST"
+              action="?/savePlan"
+              use:enhance={() => {
+                generatingPlan = true;
+                return async ({ result }) => {
+                  generatingPlan = false;
+                  if (result.type === "success" && result.data?.planSaved) {
+                    savedPlanId = result.data.planId;
+                    const text = result.data.planTitel
+                      ? `Dein Trainingsplan **${result.data.planTitel}** wurde gespeichert!`
+                      : "Dein Trainingsplan wurde gespeichert!";
+                    messages.push({ type: "bot", text });
+                  } else if (result.data?.error) {
+                    messages.push({ type: "bot", text: `Fehler: ${result.data.error}` });
+                  }
+                };
+              }}
+            >
+              <input type="hidden" name="fokusId" value={fokusId} />
+              <button type="submit" class="btn btn-success" disabled={generatingPlan}>
+                {#if generatingPlan}
+                  <span class="spinner-border spinner-border-sm me-2"></span>Generiert…
+                {:else}
+                  <i class="bi bi-journal-check me-2"></i>Trainingsplan verwenden
+                {/if}
+              </button>
+            </form>
+          {/if}
+        </div>
+      </div>
+    {/if}
 
     <div class="chat-input p-3 border-top">
       <form
@@ -83,6 +143,7 @@
       </form>
     </div>
   </div>
+  </div><!-- /page-content -->
 {/if}
 
 <style>
@@ -134,4 +195,9 @@
   }
 
   textarea { min-height: 42px; resize: none; }
+
+  .save-plan-bar {
+    background: rgba(40, 167, 69, 0.06);
+    border-color: rgba(40, 167, 69, 0.2) !important;
+  }
 </style>

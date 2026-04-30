@@ -1,5 +1,4 @@
 <script>
-  import { enhance } from '$app/forms';
   import { marked } from 'marked';
 
   let { data } = $props();
@@ -7,11 +6,10 @@
 
   let expandedId = $state(null);
   let localReadIds = $state(new Set());
-  let generatingIds = $state(new Set());
-  let localPlans = $state({});
+  let confirmFokus = $state(null);
 
   function getPlan(fokusId) {
-    return localPlans[fokusId] ?? data.planByFokusId?.[fokusId] ?? null;
+    return data.planByFokusId?.[fokusId] ?? null;
   }
 
   function isRead(fokus) {
@@ -53,6 +51,7 @@
   }
 </script>
 
+<div class="page-content">
 <div class="d-flex justify-content-between align-items-center mb-1">
   <h1 class="page-title"><i class="bi bi-envelope-fill me-2"></i>Mein Feedback</h1>
   {#if unreadCount > 0}
@@ -68,7 +67,6 @@
       {@const expanded = expandedId === fokus.id}
       {@const katColor = kategorieColor(fokus.kategorie)}
       {@const plan = getPlan(fokus.id)}
-      {@const isGenerating = generatingIds.has(fokus.id)}
 
       <!-- svelte-ignore a11y_no_static_element_interactions -->
       <!-- svelte-ignore a11y_click_events_have_key_events -->
@@ -157,33 +155,14 @@
                     </a>
                   </div>
                 {:else}
-                  <!-- No plan yet: show generate button -->
-                  <form
-                    method="POST"
-                    action="?/generatePlan"
-                    use:enhance={() => {
-                      generatingIds = new Set([...generatingIds, fokus.id]);
-                      return async ({ result }) => {
-                        generatingIds.delete(fokus.id);
-                        generatingIds = new Set(generatingIds);
-                        if (result.type === 'success' && result.data?.plan) {
-                          localPlans = { ...localPlans, [fokus.id]: result.data.plan };
-                        }
-                      };
-                    }}
+                  <!-- No plan yet: open confirmation modal -->
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    onclick={(e) => { e.stopPropagation(); confirmFokus = fokus; }}
                   >
-                    <input type="hidden" name="fokusId" value={fokus.id} />
-                    <button type="submit" class="btn btn-primary btn-sm" disabled={isGenerating}>
-                      {#if isGenerating}
-                        <span class="spinner-border spinner-border-sm me-2"></span>KI erstellt deinen Plan…
-                      {:else}
-                        <i class="bi bi-robot me-2"></i>Trainingsplan mit KI erstellen
-                      {/if}
-                    </button>
-                    {#if isGenerating}
-                      <p class="generating-hint">Das kann einige Sekunden dauern.</p>
-                    {/if}
-                  </form>
+                    <i class="bi bi-robot me-2"></i>Trainingsplan mit KI erstellen
+                  </button>
                 {/if}
               </div>
             {/if}
@@ -197,6 +176,39 @@
     <div class="card-body text-center py-5" style="color: var(--text-muted);">
       <i class="bi bi-envelope-open" style="font-size: 2rem; display: block; margin-bottom: 0.5rem;"></i>
       Noch kein Feedback vom Coach vorhanden
+    </div>
+  </div>
+{/if}
+
+</div><!-- /page-content -->
+
+<!-- Confirmation modal -->
+{#if confirmFokus}
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <div class="modal-backdrop" onclick={() => confirmFokus = null}>
+    <div class="modal-box" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
+      <div class="modal-box-header">
+        <i class="bi bi-robot me-2"></i>Trainingsplan mit KI erstellen
+      </div>
+      <div class="modal-box-body">
+        <p class="modal-desc">
+          Du wirst zum KI-Assistenten weitergeleitet. Dort siehst du live, wie dein Trainingsplan
+          für den Schwerpunkt <strong>{confirmFokus.schwerpunkt}</strong> erstellt wird.
+          Du kannst danach Anpassungen per Chat vornehmen und den Plan am Ende übernehmen.
+        </p>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline-secondary" onclick={() => confirmFokus = null}>
+            Abbrechen
+          </button>
+          <a
+            href="/chat?fokusId={confirmFokus.id}&mode=plan&schwerpunkt={encodeURIComponent(confirmFokus.schwerpunkt)}&kategorie={encodeURIComponent(confirmFokus.kategorie ?? '')}"
+            class="btn btn-primary"
+          >
+            <i class="bi bi-arrow-right-circle me-2"></i>Weiter zum Chat
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 {/if}
@@ -383,11 +395,46 @@
     border-top: 1px solid var(--border-color);
   }
 
-  .generating-hint {
-    font-size: 0.8rem;
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+    padding: 1rem;
+  }
+  .modal-box {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+  }
+  .modal-box-header {
+    padding: 1rem 1.25rem;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+  }
+  .modal-box-body {
+    padding: 1.5rem 1.25rem;
+  }
+  .modal-desc {
+    font-size: 0.92rem;
     color: var(--text-muted);
-    margin-top: 0.5rem;
-    margin-bottom: 0;
+    line-height: 1.6;
+    margin-bottom: 1.25rem;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
   }
 
   .plan-ready-row {

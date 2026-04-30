@@ -96,45 +96,189 @@
   </div>
 </nav>
 
-<div class="container mt-4 mb-5">
+<main class="page-main">
   {@render children()}
-</div>
+</main>
 
 <footer class="site-footer">
-  <div class="container">
-    <div class="footer-inner">
-      <span class="footer-brand">
-        <i class="bi bi-shield-fill me-2"></i>KarateAI Coach
-      </span>
-      <span class="footer-divider">·</span>
-      <span class="footer-copy">© 2026 ZHAW School of Management and Law</span>
-      <span class="footer-divider">·</span>
-      <span class="footer-copy">Software Engineering 2</span>
+  <div class="footer-main">
+    <div class="footer-grid">
+
+      <!-- Brand column -->
+      <div class="footer-col footer-col-brand">
+        <div class="footer-brand">
+          <i class="bi bi-shield-fill footer-brand-icon"></i>
+          KarateAI Coach
+        </div>
+        <p class="footer-tagline">
+          KI-gestützte Trainingspläne für Karateka — personalisiert, effizient und immer dabei.
+        </p>
+        <p class="footer-copy-small">© 2026 ZHAW School of Management and Law</p>
+      </div>
+
+      <!-- Navigation column -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Navigation</h4>
+        <ul class="footer-links">
+          <li><a href="/">Startseite</a></li>
+          <li><a href="/login">Anmelden</a></li>
+          <li><a href="/signup">Registrieren</a></li>
+          <li><a href="/chat">KI-Assistent</a></li>
+        </ul>
+      </div>
+
+      <!-- Project column -->
+      <div class="footer-col">
+        <h4 class="footer-heading">Projekt</h4>
+        <ul class="footer-links">
+          <li>
+            <a href="https://www.zhaw.ch/de/sml/" target="_blank" rel="noopener">
+              ZHAW School of Management
+            </a>
+          </li>
+          <li>
+            <a href="https://github.com/Arben-ai" target="_blank" rel="noopener">
+              GitHub
+            </a>
+          </li>
+          <li><span class="footer-tag">Software Engineering 2</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-bottom-inner">
+      <span>Made with <i class="bi bi-heart-fill footer-heart"></i> and AI</span>
+      <span class="footer-bottom-divider"></span>
+      <span>KarateAI Coach &nbsp;·&nbsp; 2026</span>
     </div>
   </div>
 </footer>
 
 <style>
   .site-footer {
-    margin-top: auto;
+    margin-top: 4rem;
+    background: var(--bg-secondary);
     border-top: 1px solid var(--border-color);
-    padding: 1rem 0;
-    background: var(--card-bg);
   }
-  .footer-inner {
+
+  .footer-main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3.5rem 1.5rem 2.5rem;
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 3rem;
+  }
+
+  @media (max-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+
+  .footer-col-brand {
+    padding-right: 2rem;
+  }
+
+  .footer-brand {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .footer-brand-icon {
+    font-size: 1.1rem;
+  }
+
+  .footer-tagline {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+    margin-bottom: 1rem;
+  }
+
+  .footer-copy-small {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    opacity: 0.6;
+    margin: 0;
+  }
+
+  .footer-heading {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  .footer-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .footer-links a {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .footer-links a:hover {
+    color: var(--text-primary);
+  }
+
+  .footer-tag {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    opacity: 0.6;
+  }
+
+  .footer-bottom {
+    border-top: 1px solid var(--border-color);
+    padding: 1rem 1.5rem;
+  }
+
+  .footer-bottom-inner {
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    font-size: 0.8rem;
+    gap: 1rem;
+    font-size: 0.78rem;
     color: var(--text-muted);
+    opacity: 0.7;
   }
-  .footer-brand {
+
+  .footer-bottom-divider {
+    width: 1px;
+    height: 12px;
+    background: var(--border-color);
+  }
+
+  .footer-heart {
     color: var(--accent);
-    font-weight: 600;
-  }
-  .footer-divider {
-    opacity: 0.4;
+    font-size: 0.7rem;
+    vertical-align: middle;
   }
 </style>

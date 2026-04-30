@@ -15,6 +15,7 @@
   );
 </script>
 
+<div class="page-content">
 <div class="d-flex justify-content-between align-items-center mb-1">
   <h1 class="page-title"><i class="bi bi-person-circle me-2"></i>Account</h1>
 </div>
@@ -131,3 +132,5 @@
     <a href="/login" class="btn btn-primary">Zum Login</a>
   </div>
 {/if}
+
+</div><!-- /page-content -->

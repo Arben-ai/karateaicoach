@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { redirect, fail } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
 const API_BASE_URL = env.API_BASE_URL;
@@ -36,28 +36,3 @@ export async function load({ locals }) {
 
   return { trainingsfokusse, planByFokusId };
 }
-
-export const actions = {
-  generatePlan: async ({ request, locals }) => {
-    const { jwt_token } = locals;
-    if (!jwt_token) return fail(401, { error: 'Nicht authentifiziert.' });
-
-    const data = await request.formData();
-    const fokusId = data.get('fokusId');
-    if (!fokusId) return fail(400, { error: 'Fokus-ID fehlt.' });
-
-    try {
-      const res = await axios.post(
-        `${API_BASE_URL}/api/trainingsplan/aus-fokus/${fokusId}`,
-        {},
-        {
-          headers: { Authorization: 'Bearer ' + jwt_token },
-          timeout: 90000
-        }
-      );
-      return { success: true, plan: res.data, fokusId };
-    } catch {
-      return fail(500, { error: 'Trainingsplan konnte nicht erstellt werden.' });
-    }
-  }
-};
