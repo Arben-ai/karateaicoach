@@ -17,6 +17,11 @@ public class Trainingsfokus {
     private String sportlerId;
     private boolean gelesen = false;
     private java.time.Instant createdAt;
+    private Integer dauerWochen;
+    private Integer einheitenProWoche;
+    private Integer minutenProEinheit;
+    private String turniername;
+    private String turnierdatum;
 
     public Trainingsfokus() {}
 
@@ -39,6 +44,9 @@ public class Trainingsfokus {
     public String getSportlerId() { return sportlerId; }
     public boolean isGelesen() { return gelesen; }
     public java.time.Instant getCreatedAt() { return createdAt; }
+    public Integer getDauerWochen() { return dauerWochen; }
+    public Integer getEinheitenProWoche() { return einheitenProWoche; }
+    public Integer getMinutenProEinheit() { return minutenProEinheit; }
 
     public void setStatus(TrainingsfokusStatus status) { this.status = status; }
     public void setBeschreibung(String beschreibung) { this.beschreibung = beschreibung; }
@@ -46,4 +54,11 @@ public class Trainingsfokus {
     public void setKategorie(String kategorie) { this.kategorie = kategorie; }
     public void setNotiz(String notiz) { this.notiz = notiz; }
     public void setGelesen(boolean gelesen) { this.gelesen = gelesen; }
+    public void setDauerWochen(Integer dauerWochen) { this.dauerWochen = dauerWochen; }
+    public void setEinheitenProWoche(Integer einheitenProWoche) { this.einheitenProWoche = einheitenProWoche; }
+    public void setMinutenProEinheit(Integer minutenProEinheit) { this.minutenProEinheit = minutenProEinheit; }
+    public String getTurniername() { return turniername; }
+    public String getTurnierdatum() { return turnierdatum; }
+    public void setTurniername(String turniername) { this.turniername = turniername; }
+    public void setTurnierdatum(String turnierdatum) { this.turnierdatum = turnierdatum; }
 }

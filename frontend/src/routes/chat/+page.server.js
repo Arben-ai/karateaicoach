@@ -16,9 +16,52 @@ export async function load({ locals, url }) {
 
   let initialMessage = url.searchParams.get("message") ?? null;
 
-  if (mode === "plan" && schwerpunkt) {
-    const kat = kategorie ? ` (${kategorie})` : "";
-    initialMessage = `Zeige mir bitte, wie ein Trainingsplan für den Schwerpunkt "${schwerpunkt}"${kat} aussehen würde.`;
+  if (mode === "plan" && fokusId) {
+    const jwt = locals.jwt_token;
+    const headers = { Authorization: "Bearer " + jwt };
+
+    const [fokusRes, sportlerRes] = await Promise.allSettled([
+      axios.get(`${API_BASE_URL}/api/trainingsfokus/me?size=50`, { headers }),
+      axios.get(`${API_BASE_URL}/api/sportler/me`, { headers })
+    ]);
+
+    const fokusse = fokusRes.status === "fulfilled" ? (fokusRes.value.data.content ?? []) : [];
+    const fokus = fokusse.find(f => f.id === fokusId);
+    const sportler = sportlerRes.status === "fulfilled" ? sportlerRes.value.data : null;
+
+    const sw = fokus?.schwerpunkt ?? schwerpunkt ?? "unbekannt";
+    const kat = fokus?.kategorie ?? kategorie ?? null;
+    const notiz = fokus?.notiz ?? null;
+    const guertelgrad = sportler?.guertelgrad || null;
+    const gewicht = sportler?.gewicht ? `${sportler.gewicht} kg` : null;
+    const dauerWochen = fokus?.dauerWochen ?? null;
+    const einheitenProWoche = fokus?.einheitenProWoche ?? null;
+    const minutenProEinheit = fokus?.minutenProEinheit ?? null;
+    const turniername = fokus?.turniername ?? null;
+    const turnierdatum = fokus?.turnierdatum ?? null;
+
+    const turnierdatumFormatiert = turnierdatum
+      ? new Date(turnierdatum).toLocaleDateString("de-CH", { day: "2-digit", month: "2-digit", year: "numeric" })
+      : null;
+
+    const lines = [
+      `Ich bin Mitglied des Nationalkaders und bereite mich auf einen Wettkampf vor. Erstelle mir bitte einen detaillierten, wettkampforientierten Trainingsplan:`,
+      ``,
+      turniername && turnierdatumFormatiert
+        ? `- Zielturnier: ${turniername} am ${turnierdatumFormatiert}${dauerWochen ? ` (in ${dauerWochen} Woche${dauerWochen > 1 ? "n" : ""})` : ""}`
+        : null,
+      `- Trainingsschwerpunkt für diesen Plan: ${sw}`,
+      kat ? `- Kategorie: ${kat}` : null,
+      guertelgrad ? `- Mein Gürtelgrad: ${guertelgrad}` : null,
+      gewicht ? `- Mein Gewicht: ${gewicht}` : null,
+      einheitenProWoche ? `- Trainingseinheiten pro Woche: ${einheitenProWoche}×` : null,
+      minutenProEinheit ? `- Dauer pro Einheit: ${minutenProEinheit} Minuten` : null,
+      notiz ? `- Spezifische Anweisung vom Coach: "${notiz}"` : null,
+      ``,
+      `Bitte strukturiere jede Einheit mit Aufwärmen, Hauptteil und Cooldown. Passe Intensität und Volumen dem Gürtelgrad und${dauerWochen ? ` dem verbleibenden Zeitfenster von ${dauerWochen} Woche${dauerWochen > 1 ? "n" : ""} bis zum Turnier` : " dem Wettkampfziel"} an.`
+    ].filter(l => l !== null);
+
+    initialMessage = lines.join("\n");
   }
 
   return { initialMessage, mode, fokusId, schwerpunkt, kategorie };

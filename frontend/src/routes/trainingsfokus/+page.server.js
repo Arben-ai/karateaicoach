@@ -73,13 +73,29 @@ export const actions = {
       ? (data.get("schwerpunktAndere") ?? "Andere").slice(0, 50)
       : schwerpunktRaw;
 
+    const parseIntOrNull = (v) => { const n = parseInt(v); return isNaN(n) ? null : n; };
+
+    const turnierdatum = data.get("turnierdatum") || null;
+    let dauerWochen = null;
+    if (turnierdatum) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const diff = new Date(turnierdatum) - today;
+      if (diff > 0) dauerWochen = Math.ceil(diff / (7 * 24 * 60 * 60 * 1000));
+    }
+
     const fokus = {
       kategorie: data.get("kategorie"),
       schwerpunkt,
       notiz: (data.get("notiz") ?? "").slice(0, 300),
       beschreibung: "",
       status: "AKTIV",
-      sportlerId: data.get("sportlerId")
+      sportlerId: data.get("sportlerId"),
+      turniername: data.get("turniername") || null,
+      turnierdatum,
+      dauerWochen,
+      einheitenProWoche: parseIntOrNull(data.get("einheitenProWoche")),
+      minutenProEinheit: parseIntOrNull(data.get("minutenProEinheit"))
     };
 
     try {

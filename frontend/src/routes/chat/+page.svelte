@@ -20,11 +20,47 @@
   let generatingPlan = $state(false);
   let savedPlanId = $state(null);
 
+  function storageKey() {
+    return mode === "plan" && fokusId
+      ? `karate_chat_plan_${fokusId}`
+      : "karate_chat_general";
+  }
+
+  function saveMessages(msgs) {
+    const toSave = msgs.filter((m) => m.type !== "loading");
+    if (toSave.length > 1) {
+      localStorage.setItem(storageKey(), JSON.stringify(toSave));
+    }
+  }
+
+  function clearChat() {
+    localStorage.removeItem(storageKey());
+    messages = [{ type: "bot", text: "Hallo! Wie kann ich dir helfen?" }];
+    savedPlanId = null;
+  }
+
   onMount(() => {
-    if (initialMessage) {
+    const saved = localStorage.getItem(storageKey());
+    let hasHistory = false;
+
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 1) {
+          messages = parsed;
+          hasHistory = true;
+        }
+      } catch {}
+    }
+
+    if (!hasHistory && initialMessage) {
       message = initialMessage;
       setTimeout(() => formRef?.requestSubmit(), 100);
     }
+  });
+
+  $effect(() => {
+    if (messages.length > 1) saveMessages(messages);
   });
 </script>
 
@@ -32,6 +68,11 @@
   <div class="page-content">
   <div class="d-flex justify-content-between align-items-center mb-1">
     <h1 class="page-title"><i class="bi bi-chat-dots me-2"></i>KI-Assistent</h1>
+    {#if messages.length > 1}
+      <button class="btn btn-outline-secondary btn-sm" onclick={clearChat}>
+        <i class="bi bi-plus-circle me-1"></i>Neues Gespräch
+      </button>
+    {/if}
   </div>
   <p class="page-subtitle">Frage den Assistenten nach Sportlern und Trainingsplänen oder lass ihn neue erstellen.</p>
 
@@ -161,18 +202,29 @@
     padding: 0.5rem 1rem;
     border-radius: 10px;
     max-width: 75%;
-    white-space: pre-wrap;
   }
 
   .message.bot {
     background-color: var(--card-bg, #3d3d43);
     border: 1px solid var(--border-color, #4e4e53);
     color: var(--text-primary, #f5f5f5);
+    font-size: 0.9rem;
+    line-height: 1.55;
   }
+
+  .message.bot :global(p) { margin-bottom: 0.3rem; }
+  .message.bot :global(p:last-child) { margin-bottom: 0; }
+  .message.bot :global(ul),
+  .message.bot :global(ol) { margin-bottom: 0.3rem; padding-left: 1.25rem; }
+  .message.bot :global(li) { margin-bottom: 0.1rem; }
+  .message.bot :global(h1),
+  .message.bot :global(h2),
+  .message.bot :global(h3) { font-size: 0.95rem; font-weight: 700; margin: 0.5rem 0 0.2rem; }
 
   .message.user {
     background-color: var(--accent-primary, #e63946);
     color: white;
+    white-space: pre-wrap;
   }
 
   .message.typing span {

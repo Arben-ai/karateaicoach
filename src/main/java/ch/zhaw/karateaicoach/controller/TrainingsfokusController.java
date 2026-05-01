@@ -50,6 +50,11 @@ public class TrainingsfokusController {
                     dto.getNotiz(),
                     dto.getStatus(),
                     dto.getSportlerId());
+            fokus.setDauerWochen(dto.getDauerWochen());
+            fokus.setEinheitenProWoche(dto.getEinheitenProWoche());
+            fokus.setMinutenProEinheit(dto.getMinutenProEinheit());
+            fokus.setTurniername(dto.getTurniername());
+            fokus.setTurnierdatum(dto.getTurnierdatum());
 
             Trainingsfokus saved = trainingsfokusRepository.save(fokus);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);

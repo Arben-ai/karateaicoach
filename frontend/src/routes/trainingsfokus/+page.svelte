@@ -35,6 +35,21 @@
     status === "AKTIV" ? "Aktiv" : "Inaktiv";
 
   let schwerpunktSelected = $state("");
+  let turnierdatum = $state("");
+
+  let weeksUntilTurnier = $derived(() => {
+    if (!turnierdatum) return null;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diff = new Date(turnierdatum) - today;
+    if (diff <= 0) return null;
+    return Math.ceil(diff / (7 * 24 * 60 * 60 * 1000));
+  });
+
+  function formatDateDE(iso) {
+    if (!iso) return "";
+    return new Date(iso).toLocaleDateString("de-CH", { day: "2-digit", month: "2-digit", year: "numeric" });
+  }
 </script>
 
 <!-- ── SEKTION 1: Titel + Formular ── -->
@@ -64,6 +79,15 @@
         <form method="POST" action="?/createTrainingsfokus" use:enhance>
           <div class="row g-3 mb-3">
             <div class="col-md-4">
+              <label class="form-label" for="sportlerId">Sportler</label>
+              <select class="form-select" id="sportlerId" name="sportlerId" required>
+                <option value="">Sportler wählen...</option>
+                {#each sportler as s}
+                  <option value={s.id}>{s.name}</option>
+                {/each}
+              </select>
+            </div>
+            <div class="col-md-4">
               <label class="form-label" for="kategorie">Kategorie</label>
               <select class="form-select" id="kategorie" name="kategorie" required>
                 <option value="">Kategorie wählen...</option>
@@ -88,7 +112,6 @@
                 <option value="Schnelligkeit">Schnelligkeit</option>
                 <option value="Selbstverteidigung">Selbstverteidigung</option>
                 <option value="Taktik">Taktik</option>
-                <option value="Wettkampfvorbereitung">Wettkampfvorbereitung</option>
                 <option value="Andere">Andere</option>
               </select>
               {#if schwerpunktSelected === "Andere"}
@@ -103,13 +126,62 @@
                 <div class="form-text">Maximal 50 Zeichen</div>
               {/if}
             </div>
-            <div class="col-md-4">
-              <label class="form-label" for="sportlerId">Sportler</label>
-              <select class="form-select" id="sportlerId" name="sportlerId" required>
-                <option value="">Sportler wählen...</option>
-                {#each sportler as s}
-                  <option value={s.id}>{s.name}</option>
-                {/each}
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label" for="turniername">Turniername</label>
+              <input
+                class="form-control"
+                type="text"
+                id="turniername"
+                name="turniername"
+                placeholder="z.B. Zürich Open 2026"
+                maxlength="100"
+                required
+              />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="turnierdatum">Turnierdatum</label>
+              <input
+                class="form-control"
+                type="date"
+                id="turnierdatum"
+                name="turnierdatum"
+                bind:value={turnierdatum}
+                min={new Date().toISOString().split("T")[0]}
+                required
+              />
+              {#if weeksUntilTurnier()}
+                <div class="turnier-info mt-2">
+                  <i class="bi bi-calendar-event me-1"></i>
+                  Plan läuft <strong>{weeksUntilTurnier()} Woche{weeksUntilTurnier() !== 1 ? "n" : ""}</strong>
+                  bis zum Turnier ({formatDateDE(turnierdatum)})
+                </div>
+              {/if}
+            </div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label" for="einheitenProWoche">Einheiten pro Woche</label>
+              <select class="form-select" id="einheitenProWoche" name="einheitenProWoche" required>
+                <option value="">Häufigkeit wählen...</option>
+                <option value="1">1× pro Woche</option>
+                <option value="2">2× pro Woche</option>
+                <option value="3">3× pro Woche</option>
+                <option value="4">4× pro Woche</option>
+                <option value="5">5× pro Woche</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="minutenProEinheit">Dauer pro Einheit</label>
+              <select class="form-select" id="minutenProEinheit" name="minutenProEinheit" required>
+                <option value="">Dauer wählen...</option>
+                <option value="30">30 Minuten</option>
+                <option value="45">45 Minuten</option>
+                <option value="60">60 Minuten</option>
+                <option value="75">75 Minuten</option>
+                <option value="90">90 Minuten</option>
+                <option value="120">120 Minuten</option>
               </select>
             </div>
           </div>
@@ -364,5 +436,15 @@
   .fokus-card-actions {
     display: flex;
     align-items: center;
+  }
+
+  .turnier-info {
+    font-size: 0.82rem;
+    color: #15803d;
+    background: rgba(34, 197, 94, 0.08);
+    border: 1px solid rgba(34, 197, 94, 0.25);
+    border-radius: 6px;
+    padding: 0.35rem 0.65rem;
+    display: inline-block;
   }
 </style>

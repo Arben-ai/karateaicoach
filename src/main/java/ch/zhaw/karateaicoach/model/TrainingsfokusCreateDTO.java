@@ -8,6 +8,9 @@ public class TrainingsfokusCreateDTO {
     private String notiz;
     private TrainingsfokusStatus status;
     private String sportlerId;
+    private Integer dauerWochen;
+    private Integer einheitenProWoche;
+    private Integer minutenProEinheit;
 
     public TrainingsfokusCreateDTO() {}
 
@@ -17,4 +20,11 @@ public class TrainingsfokusCreateDTO {
     public String getNotiz() { return notiz; }
     public TrainingsfokusStatus getStatus() { return status; }
     public String getSportlerId() { return sportlerId; }
+    public Integer getDauerWochen() { return dauerWochen; }
+    public Integer getEinheitenProWoche() { return einheitenProWoche; }
+    public Integer getMinutenProEinheit() { return minutenProEinheit; }
+    private String turniername;
+    private String turnierdatum;
+    public String getTurniername() { return turniername; }
+    public String getTurnierdatum() { return turnierdatum; }
 }
