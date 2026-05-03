@@ -116,6 +116,7 @@ class SportlerControllerTest extends BaseControllerTest {
         Sportler saved = new Sportler("Hans", "hans@test.com", "Grün", 70.0);
         ReflectionTestUtils.setField(saved, "id", "sp-new");
         when(sportlerRepository.save(any(Sportler.class))).thenReturn(saved);
+        when(mailValidatorService.isValid(any())).thenReturn(true);
 
         String requestBody = """
                 {
