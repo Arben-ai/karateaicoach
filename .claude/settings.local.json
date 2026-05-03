@@ -5,7 +5,13 @@
       "Bash(unzip -l ~/.m2/repository/org/springframework/ai/spring-ai-client-chat/2.0.0-M4/spring-ai-client-chat-2.0.0-M4.jar)",
       "Bash(xargs -I{} bash -c 'unzip -l \"{}\" 2>/dev/null | grep -i \"ChatResponse\\\\|Generation\\\\|AssistantMessage\" | head -5 | sed \"s|^|{}: |\"')",
       "Bash(./mvnw jacoco:report -q)",
-      "Bash(./mvnw test *)"
+      "Bash(./mvnw test *)",
+      "Bash(git -C \"c:\\\\Users\\\\arben\\\\KarateAI Coach\\\\karateaicoach\" status)",
+      "Bash(git -C \"c:\\\\Users\\\\arben\\\\KarateAI Coach\\\\karateaicoach\" log --oneline -5)",
+      "Bash(git -C \"c:\\\\Users\\\\arben\\\\KarateAI Coach\\\\karateaicoach\" log --oneline -10)",
+      "Bash(git -C \"c:\\\\Users\\\\arben\\\\KarateAI Coach\\\\karateaicoach\" add src/test/java/ch/zhaw/karateaicoach/controller/BaseControllerTest.java src/test/resources/application.properties)",
+      "Bash(git -C 'c:\\\\Users\\\\arben\\\\KarateAI Coach\\\\karateaicoach' commit -m ' *)",
+      "Bash(git -C \"c:\\\\Users\\\\arben\\\\KarateAI Coach\\\\karateaicoach\" push)"
     ]
   }
 }
