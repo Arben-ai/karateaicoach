@@ -10,16 +10,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ch.zhaw.karateaicoach.model.MailInformation;
 import ch.zhaw.karateaicoach.model.PaginatedResponseDTO;
 import ch.zhaw.karateaicoach.model.Sportler;
 import ch.zhaw.karateaicoach.model.SportlerCreateDTO;
 import ch.zhaw.karateaicoach.repository.SportlerRepository;
+import ch.zhaw.karateaicoach.service.MailValidatorService;
 import ch.zhaw.karateaicoach.service.SportlerService;
 import ch.zhaw.karateaicoach.service.UserService;
 
 @RestController
 @RequestMapping("/api")
 public class SportlerController {
+
+    private static final Logger logger = LoggerFactory.getLogger(SportlerController.class);
 
     @Autowired
     SportlerRepository sportlerRepository;
@@ -30,8 +37,15 @@ public class SportlerController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    MailValidatorService mailValidatorService;
+
     @PostMapping("/sportler")
     public ResponseEntity<Sportler> createSportler(@RequestBody SportlerCreateDTO dto) {
+        MailInformation mailInfo = mailValidatorService.validateEmail(dto.getEmail());
+        if (!mailValidatorService.isValid(mailInfo)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
         if (sportlerRepository.existsByEmail(dto.getEmail())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
         }
@@ -66,6 +80,10 @@ public class SportlerController {
         if (email == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
+        MailInformation mailInfo = mailValidatorService.validateEmail(email);
+        if (!mailValidatorService.isValid(mailInfo)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
         Optional<Sportler> existing = sportlerRepository.findByUserId(userId);
         if (existing.isPresent()) return ResponseEntity.ok(existing.get());
         Optional<Sportler> byEmail = sportlerRepository.findByEmailAndUserIdIsNull(email);
@@ -78,7 +96,9 @@ public class SportlerController {
         String guertelgrad = body != null ? body.getOrDefault("guertelgrad", "") : "";
         double gewicht = 0;
         if (body != null && body.containsKey("gewicht")) {
-            try { gewicht = Double.parseDouble(body.get("gewicht")); } catch (NumberFormatException ignored) {}
+            try { gewicht = Double.parseDouble(body.get("gewicht")); } catch (NumberFormatException e) {
+                logger.warn("Invalid gewicht value: {}", body.get("gewicht"));
+            }
         }
         Sportler sportler = new Sportler(name, email, guertelgrad, gewicht);
         sportler.setUserId(userId);

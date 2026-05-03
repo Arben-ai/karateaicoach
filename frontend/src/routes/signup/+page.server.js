@@ -13,6 +13,15 @@ export const actions = {
     const firstName = data.get('firstName');
     const lastName = data.get('lastName');
     try {
+      const validationResponse = await axios({
+        method: 'get',
+        url: `https://disify.com/api/email/${email}`
+      });
+
+      if (!validationResponse.data.format || validationResponse.data.disposable || !validationResponse.data.dns) {
+        return { error: `Die E-Mail-Adresse ${email} ist ungültig oder gehört zu einer temporären Domain.` };
+      }
+
       await auth.signup(email, password, firstName, lastName, cookies);
 
       const jwt_token = cookies.get('jwt_token');
