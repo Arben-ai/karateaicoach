@@ -35,4 +35,4 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           AUTH0_DOMAIN: ${{ secrets.AUTH0_DOMAIN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=ch.zhaw.arben.karateaicoach
