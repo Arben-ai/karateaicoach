@@ -1,7 +1,6 @@
 package ch.zhaw.karateaicoach.controller;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,17 +16,18 @@ import ch.zhaw.karateaicoach.service.UserService;
 @RequestMapping("/api/chat")
 public class ChatController {
 
-    @Autowired
-    private ChatClient chatClient;
+    private final ChatClient chatClient;
+    private final UserService userService;
+    private final SportlerService sportlerService;
+    private final TrainingsplanRepository trainingsplanRepository;
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private SportlerService sportlerService;
-
-    @Autowired
-    private TrainingsplanRepository trainingsplanRepository;
+    public ChatController(ChatClient chatClient, UserService userService,
+            SportlerService sportlerService, TrainingsplanRepository trainingsplanRepository) {
+        this.chatClient = chatClient;
+        this.userService = userService;
+        this.sportlerService = sportlerService;
+        this.trainingsplanRepository = trainingsplanRepository;
+    }
 
     @PostMapping
     public String chat(@RequestBody String message) {

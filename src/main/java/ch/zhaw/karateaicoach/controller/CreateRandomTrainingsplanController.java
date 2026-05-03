@@ -1,7 +1,6 @@
 package ch.zhaw.karateaicoach.controller;
 
 import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,8 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class CreateRandomTrainingsplanController {
 
-    @Autowired
-    private ChatClient chatClient;
+    private final ChatClient chatClient;
+
+    public CreateRandomTrainingsplanController(ChatClient chatClient) {
+        this.chatClient = chatClient;
+    }
 
     @PostMapping("/trainingsplan/random")
     public ResponseEntity<String> createRandom() {
