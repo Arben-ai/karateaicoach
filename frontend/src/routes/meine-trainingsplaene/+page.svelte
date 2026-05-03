@@ -8,6 +8,7 @@
 
   let expandedId = $state(null);
   let flashingId = $state(null);
+  let expandedSections = $state({});
 
   onMount(async () => {
     const id = data.highlightPlanId;
@@ -24,6 +25,12 @@
 
   function toggle(id) {
     expandedId = expandedId === id ? null : id;
+    if (expandedId === id) expandedSections = {};
+  }
+
+  function toggleSection(planId, sectionIdx) {
+    const key = `${planId}-${sectionIdx}`;
+    expandedSections = { ...expandedSections, [key]: !expandedSections[key] };
   }
 
   const createPageLink = (page) => `/meine-trainingsplaene?page=${page}`;
@@ -43,6 +50,77 @@
   function chatLink(plan) {
     const msg = `Ich habe einen Trainingsplan mit dem Fokus "${plan.fokus ?? plan.titel}". Kannst du mir weitere Tipps geben oder den Plan anpassen?`;
     return `/chat?message=${encodeURIComponent(msg)}`;
+  }
+
+  function parseSections(markdown) {
+    if (!markdown) return [];
+    const lines = markdown.split('\n');
+
+    // 1. Try markdown headings (###, ##, etc.)
+    let minLevel = null;
+    for (const line of lines) {
+      const m = line.match(/^(#{1,6}) /);
+      if (m) {
+        const lvl = m[1].length;
+        if (minLevel === null || lvl < minLevel) minLevel = lvl;
+      }
+    }
+
+    if (minLevel !== null) {
+      const prefix = '#'.repeat(minLevel) + ' ';
+      return splitAtHeaders(lines,
+        (line) => line.startsWith(prefix),
+        (line) => line.replace(/^#+\s+/, ''));
+    }
+
+    // 2. Fallback: detect standalone short lines preceded by a blank line.
+    // Catches plain-text headers like "Kurzziel für Laura Fischer", "Woche 1 (Basis)", etc.
+    const isStandaloneHeader = (line, prevLine) => {
+      const t = line.trim();
+      if (!t || t.length > 80) return false;
+      if (/^[-*#]/.test(t)) return false;      // list markers / headings
+      if (/^\d+[.)]\s/.test(t)) return false;  // numbered list items
+      if (/[,]$/.test(t)) return false;         // ends with comma → sentence fragment
+      return (prevLine ?? '').trim() === '';    // must follow a blank line
+    };
+
+    const sections = [];
+    let title = null;
+    let buf = [];
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (isStandaloneHeader(line, lines[i - 1] ?? '')) {
+        if (title !== null || buf.join('').trim()) {
+          sections.push({ title, content: buf.join('\n').trim() });
+        }
+        title = line.trim().replace(/^\*\*|\*\*$/g, '');
+        buf = [];
+      } else {
+        buf.push(line);
+      }
+    }
+    if (title !== null || buf.join('').trim()) {
+      sections.push({ title, content: buf.join('\n').trim() });
+    }
+
+    return sections.length > 1 ? sections : [{ title: null, content: markdown.trim() }];
+  }
+
+  function splitAtHeaders(lines, isHeader, getTitle) {
+    const sections = [];
+    let title = null;
+    let buf = [];
+    for (const line of lines) {
+      if (isHeader(line)) {
+        if (title !== null || buf.join('').trim()) sections.push({ title, content: buf.join('\n').trim() });
+        title = getTitle(line).trim().replace(/^\*\*|\*\*$/g, '');
+        buf = [];
+      } else {
+        buf.push(line);
+      }
+    }
+    if (title !== null || buf.join('').trim()) sections.push({ title, content: buf.join('\n').trim() });
+    return sections;
   }
 </script>
 
@@ -88,8 +166,31 @@
         {#if expanded}
           <div class="plan-card-body">
             {#if plan.inhalt}
-              <div class="plan-content">
-                {@html marked(plan.inhalt)}
+              {@const sections = parseSections(plan.inhalt)}
+              <div class="plan-sections">
+                {#each sections as section, i}
+                  {#if section.title}
+                    <div class="plan-section">
+                      <div class="plan-section-header">
+                        <i class="bi bi-calendar-week me-2"></i>{section.title}
+                      </div>
+                      {#if section.content}
+                        <div class="plan-section-body">
+                          {@html marked(section.content)}
+                        </div>
+                      {/if}
+                    </div>
+                  {:else if section.content}
+                    <div class="plan-section">
+                      <div class="plan-section-header plan-section-header--intro">
+                        <i class="bi bi-info-circle me-2"></i>Übersicht
+                      </div>
+                      <div class="plan-section-body">
+                        {@html marked(section.content)}
+                      </div>
+                    </div>
+                  {/if}
+                {/each}
               </div>
             {:else}
               <p style="color: var(--text-muted); font-style: italic;">Kein Inhalt vorhanden.</p>
@@ -101,6 +202,7 @@
             </div>
           </div>
         {/if}
+
       </div>
     {/each}
   </div>
@@ -207,35 +309,63 @@
 
   .plan-card-body {
     border-top: 1px solid var(--border-color);
-    padding: 1.25rem;
+    padding: 1.5rem 1.5rem 1.25rem;
+    background: var(--bg-page);
   }
 
-  .plan-content {
+  .plan-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .plan-section {
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+    background: var(--bg-primary);
+  }
+
+  .plan-section-header {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0.6rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+  }
+
+  .plan-section-header--intro {
+    color: var(--text-muted);
+  }
+
+  .plan-section-body {
+    padding: 0.9rem 1rem;
     font-size: 0.88rem;
     color: var(--text-primary);
-    line-height: 1.75;
-    max-height: 500px;
-    overflow-y: auto;
-    padding-right: 0.25rem;
+    line-height: 1.7;
+    border-top: 1px solid var(--border-color);
   }
 
-  .plan-content :global(h1),
-  .plan-content :global(h2),
-  .plan-content :global(h3) {
-    font-size: 0.97rem;
+  .plan-section-body :global(h3),
+  .plan-section-body :global(h4) {
+    font-size: 0.88rem;
     font-weight: 700;
-    margin-top: 1.1rem;
-    margin-bottom: 0.35rem;
     color: var(--text-primary);
+    margin: 0.85rem 0 0.35rem;
+    padding-bottom: 0.2rem;
+    border-bottom: 1px solid var(--border-color);
   }
-  .plan-content :global(ul),
-  .plan-content :global(ol) {
-    padding-left: 1.25rem;
-    margin-bottom: 0.5rem;
-  }
-  .plan-content :global(li) { margin-bottom: 0.2rem; }
-  .plan-content :global(p) { margin-bottom: 0.5rem; }
-  .plan-content :global(strong) { color: var(--text-primary); }
+  .plan-section-body :global(h3:first-child),
+  .plan-section-body :global(h4:first-child) { margin-top: 0; }
+  .plan-section-body :global(ul),
+  .plan-section-body :global(ol) { padding-left: 1.3rem; margin-bottom: 0.5rem; }
+  .plan-section-body :global(li) { margin-bottom: 0.25rem; }
+  .plan-section-body :global(p) { margin-bottom: 0.5rem; }
+  .plan-section-body :global(p:last-child) { margin-bottom: 0; }
+  .plan-section-body :global(strong) { font-weight: 600; color: var(--text-primary); }
 
   .plan-card-footer {
     margin-top: 1rem;

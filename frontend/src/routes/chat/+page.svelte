@@ -209,17 +209,30 @@
     border: 1px solid var(--border-color, #4e4e53);
     color: var(--text-primary, #f5f5f5);
     font-size: 0.9rem;
-    line-height: 1.55;
+    line-height: 1.65;
+    max-width: 85%;
   }
 
-  .message.bot :global(p) { margin-bottom: 0.3rem; }
+  .message.bot :global(p) { margin-bottom: 0.6rem; }
   .message.bot :global(p:last-child) { margin-bottom: 0; }
   .message.bot :global(ul),
-  .message.bot :global(ol) { margin-bottom: 0.3rem; padding-left: 1.25rem; }
-  .message.bot :global(li) { margin-bottom: 0.1rem; }
+  .message.bot :global(ol) { margin-bottom: 0.6rem; padding-left: 1.4rem; }
+  .message.bot :global(li) { margin-bottom: 0.25rem; }
   .message.bot :global(h1),
   .message.bot :global(h2),
-  .message.bot :global(h3) { font-size: 0.95rem; font-weight: 700; margin: 0.5rem 0 0.2rem; }
+  .message.bot :global(h3) {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 1rem 0 0.35rem;
+    padding-bottom: 0.2rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .message.bot :global(h1:first-child),
+  .message.bot :global(h2:first-child),
+  .message.bot :global(h3:first-child) { margin-top: 0; }
+  .message.bot :global(strong) { color: var(--text-primary); font-weight: 600; }
+  .message.bot :global(hr) { border-color: var(--border-color); margin: 0.75rem 0; }
 
   .message.user {
     background-color: var(--accent-primary, #e63946);

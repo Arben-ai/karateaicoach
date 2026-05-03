@@ -91,14 +91,40 @@ public class TrainingsplanController {
                     return sportlerService.resolveCurrentSportler(userId, email, name)
                             .filter(sportler -> sportler.getId().equals(fokus.getSportlerId()))
                             .map(sportler -> {
+                                String dauerInfo = fokus.getDauerWochen() != null
+                                    ? fokus.getDauerWochen() + " Wochen" : "mehrere Wochen";
+                                String einheitenInfo = fokus.getEinheitenProWoche() != null
+                                    ? fokus.getEinheitenProWoche() + "x pro Woche" : "";
+                                String minutenInfo = fokus.getMinutenProEinheit() != null
+                                    ? fokus.getMinutenProEinheit() + " Minuten pro Einheit" : "";
+                                String turnierInfo = (fokus.getTurniername() != null && fokus.getTurnierdatum() != null)
+                                    ? "Zielturnier: " + fokus.getTurniername() + " am " + fokus.getTurnierdatum() : "";
+                                String guertelInfo = sportler.getGuertelgrad() != null
+                                    ? "Gürtelgrad: " + sportler.getGuertelgrad() : "";
+                                String gewichtInfo = sportler.getGewicht() > 0
+                                    ? "Gewicht: " + sportler.getGewicht() + " kg" : "";
+                                String notizInfo = fokus.getNotiz() != null && !fokus.getNotiz().isBlank()
+                                    ? "Coach-Anweisung: " + fokus.getNotiz() : "";
+
                                 String prompt = String.format(
-                                    "Erstelle einen detaillierten Karate-Trainingsplan für %s.\n" +
-                                    "Kategorie: %s\nSchwerpunkt: %s\nBeschreibung: %s\n\n" +
-                                    "Erstelle einen strukturierten Plan mit konkreten Übungen, Wiederholungen und Zeitangaben.",
+                                    "Erstelle einen detaillierten, wettkampforientierten Karate-Trainingsplan für %s.\n" +
+                                    "Kategorie: %s\nSchwerpunkt: %s\nPlandauer: %s\n%s\n%s\n%s\n%s\n%s\n%s\n\n" +
+                                    "WICHTIG – Formatierung:\n" +
+                                    "- Verwende ### (3 Rauten) für Hauptabschnitte (z.B. ### Woche 1, ### Warm-up)\n" +
+                                    "- Verwende #### (4 Rauten) für Unterabschnitte\n" +
+                                    "- Verwende Bullet-Listen für Übungen\n" +
+                                    "- Keine plain-text Überschriften ohne #-Zeichen\n" +
+                                    "- Strukturiere jede Einheit mit Aufwärmen, Hauptteil und Cooldown",
                                     sportler.getName(),
                                     fokus.getKategorie() != null ? fokus.getKategorie() : "",
                                     fokus.getSchwerpunkt(),
-                                    fokus.getBeschreibung() != null ? fokus.getBeschreibung() : "");
+                                    dauerInfo,
+                                    einheitenInfo,
+                                    minutenInfo,
+                                    turnierInfo,
+                                    guertelInfo,
+                                    gewichtInfo,
+                                    notizInfo);
 
                                 String inhalt = chatModel.call(new Prompt(prompt))
                                         .getResult().getOutput().getText();
@@ -166,6 +192,7 @@ public class TrainingsplanController {
 
             boolean hasName = !sportlerName.isBlank();
             boolean hasStatus = status != null && !status.isBlank();
+            boolean hasDauer = minDauer != null;
 
             if (hasName) {
                 java.util.List<String> ids = sportlerRepository
@@ -183,6 +210,17 @@ public class TrainingsplanController {
                 }
                 return ResponseEntity.ok(PaginatedResponseDTO.fromPage(
                         trainingsplanRepository.findBySportlerIdIn(ids, pageable)));
+            }
+
+            if (hasDauer && hasStatus) {
+                return ResponseEntity.ok(PaginatedResponseDTO.fromPage(
+                        trainingsplanRepository.findByDauerGreaterThanAndStatus(
+                                minDauer, TrainingsplanStatus.valueOf(status), pageable)));
+            }
+
+            if (hasDauer) {
+                return ResponseEntity.ok(PaginatedResponseDTO.fromPage(
+                        trainingsplanRepository.findByDauerGreaterThan(minDauer, pageable)));
             }
 
             if (hasStatus) {
