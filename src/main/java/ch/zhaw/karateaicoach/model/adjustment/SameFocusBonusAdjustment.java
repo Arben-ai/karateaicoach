@@ -1,6 +1,7 @@
 package ch.zhaw.karateaicoach.model.adjustment;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import ch.zhaw.karateaicoach.model.Trainingsplan;
@@ -17,7 +18,7 @@ public class SameFocusBonusAdjustment implements TrainingsplanAdjustment {
     public double calculateAdjustment(List<Trainingsplan> trainingsplaene) {
 
         List<Trainingsplan> filtered = trainingsplaene.stream()
-                .filter(tp -> fokus.equals(tp.getFokus()))
+                .filter(tp -> Objects.equals(fokus, tp.getFokus()))
                 .collect(Collectors.toList());
 
         int count = filtered.size();
