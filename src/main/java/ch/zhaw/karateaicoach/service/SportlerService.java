@@ -19,6 +19,10 @@ public class SportlerService {
         return sportlerRepository.existsById(sportlerId);
     }
 
+    public Optional<Sportler> getSportlerById(String sportlerId) {
+        return sportlerRepository.findById(sportlerId);
+    }
+
     public List<Sportler> getAllSportler() {
         return sportlerRepository.findAll();
     }
