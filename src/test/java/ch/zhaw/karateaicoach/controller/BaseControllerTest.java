@@ -17,6 +17,8 @@ import org.springframework.web.context.WebApplicationContext;
 import ch.zhaw.karateaicoach.repository.SportlerRepository;
 import ch.zhaw.karateaicoach.repository.TrainingsfokusRepository;
 import ch.zhaw.karateaicoach.repository.TrainingsplanRepository;
+import ch.zhaw.karateaicoach.service.MailService;
+import ch.zhaw.karateaicoach.service.MailValidatorService;
 import ch.zhaw.karateaicoach.service.SportlerService;
 import ch.zhaw.karateaicoach.service.TrainingsplanService;
 
@@ -60,6 +62,12 @@ abstract class BaseControllerTest {
 
     @MockitoBean
     protected ChatClient chatClient;
+
+    @MockitoBean
+    protected MailService mailService;
+
+    @MockitoBean
+    protected MailValidatorService mailValidatorService;
 
     @BeforeEach
     void setUpMockMvc() {
