@@ -52,7 +52,7 @@
 </script>
 
 <!-- ── SEKTION 1: Titel + Formular ── -->
-<section class="sp-form-section">
+<section class="sp-form-section" style="animation: ka-slide-in-left 0.4s ease both;">
   <div class="page-content">
     <div class="d-flex justify-content-between align-items-center mb-1">
       <h1 class="page-title"><i class="bi bi-people-fill me-2"></i>Sportler</h1>
@@ -262,9 +262,9 @@
 
     {#if sportler && sportler.length > 0}
       <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3">
-        {#each sportler as s}
+        {#each sportler as s, i}
           {@const belt = beltColor(s.guertelgrad)}
-          <div class="col">
+          <div class="col" style="animation: ka-fly-up 0.45s ease both; animation-delay: {i * 0.06}s;">
             <div class="sportler-card">
               {#if s.guertelgrad}
                 <div class="sportler-card-accent" style="background:{belt.bg};"></div>

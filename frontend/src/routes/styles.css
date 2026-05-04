@@ -402,6 +402,32 @@ body {
   font-weight: 500;
 }
 
+/* ── Entrance animation keyframes ── */
+@keyframes ka-slide-down {
+  from { opacity: 0; transform: translateY(-28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes ka-slide-up {
+  from { opacity: 0; transform: translateY(36px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes ka-fly-up {
+  from { opacity: 0; transform: translateY(56px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+@keyframes ka-slide-in-right {
+  from { opacity: 0; transform: translateX(-36px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes ka-slide-in-left {
+  from { opacity: 0; transform: translateX(36px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes ka-scale-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
 /* Chat markdown rendering */
 .chat-ai-message p { margin-bottom: 0.4rem; }
 .chat-ai-message p:last-child { margin-bottom: 0; }

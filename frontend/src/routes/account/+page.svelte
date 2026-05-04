@@ -15,7 +15,7 @@
   );
 </script>
 
-<div class="page-content">
+<div class="page-content" style="animation: ka-slide-in-right 0.4s ease both;">
 <div class="d-flex justify-content-between align-items-center mb-1">
   <h1 class="page-title"><i class="bi bi-person-circle me-2"></i>Account</h1>
 </div>
@@ -69,7 +69,7 @@
 {#if isAuthenticated}
   <div class="row justify-content-center">
     <div class="col-md-6">
-      <div class="profile-card">
+      <div class="profile-card" style="animation: ka-scale-in 0.45s ease both; animation-delay: 0.15s;">
         <div class="profile-header">
           {#if user.picture}
             <img src={user.picture} alt="Profilbild" class="profile-avatar" />

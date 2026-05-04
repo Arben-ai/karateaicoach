@@ -76,7 +76,7 @@
   </div>
   <p class="page-subtitle">Frage den Assistenten nach Sportlern und Trainingsplänen oder lass ihn neue erstellen.</p>
 
-  <div class="chat-wrapper d-flex flex-column card">
+  <div class="chat-wrapper d-flex flex-column card" style="animation: ka-scale-in 0.4s ease both; animation-delay: 0.1s;">
     <div class="chat-messages flex-grow-1 overflow-auto p-3 d-flex flex-column">
       {#each messages as msg}
         {#if msg.type === "loading"}

@@ -4,7 +4,7 @@
 
 <div class="container mt-5">
   <div class="row justify-content-center">
-    <div class="col-md-5">
+    <div class="col-md-5" style="animation: ka-scale-in 0.4s ease both;">
       <div class="text-center mb-4">
         <i class="bi bi-shield-fill" style="font-size: 2.5rem; color: var(--accent);"></i>
         <h1 class="h4 mt-2 fw-700">KarateAI Coach</h1>

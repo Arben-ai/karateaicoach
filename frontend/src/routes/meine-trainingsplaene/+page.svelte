@@ -125,7 +125,7 @@
 </script>
 
 <div class="page-content">
-<div class="d-flex justify-content-between align-items-center mb-1">
+<div class="d-flex justify-content-between align-items-center mb-1" style="animation: ka-slide-in-right 0.4s ease both;">
   <h1 class="page-title"><i class="bi bi-journal-text me-2"></i>Meine Trainingspläne</h1>
   {#if pagination}
     <span class="pagination-info">{pagination.totalElements} Plan{pagination.totalElements !== 1 ? 'e' : ''} total</span>
@@ -135,11 +135,11 @@
 
 {#if trainingsplaene && trainingsplaene.length > 0}
   <div class="plan-list">
-    {#each trainingsplaene as plan (plan.id)}
+    {#each trainingsplaene as plan, i (plan.id)}
       {@const cfg = statusConfig(plan.status)}
       {@const expanded = expandedId === plan.id}
 
-      <div id="plan-{plan.id}" class="plan-card {expanded ? 'plan-card--expanded' : ''} {flashingId === plan.id ? 'plan-card--flash' : ''}">
+      <div id="plan-{plan.id}" class="plan-card {expanded ? 'plan-card--expanded' : ''} {flashingId === plan.id ? 'plan-card--flash' : ''}" style="animation: ka-slide-up 0.45s ease both; animation-delay: {i * 0.07}s;">
         <!-- Header: always visible, click to expand -->
         <!-- svelte-ignore a11y_no_static_element_interactions -->
         <!-- svelte-ignore a11y_click_events_have_key_events -->

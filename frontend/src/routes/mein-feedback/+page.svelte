@@ -52,7 +52,7 @@
 </script>
 
 <div class="page-content">
-<div class="d-flex justify-content-between align-items-center mb-1">
+<div class="d-flex justify-content-between align-items-center mb-1" style="animation: ka-slide-down 0.4s ease both;">
   <h1 class="page-title"><i class="bi bi-envelope-fill me-2"></i>Mein Feedback</h1>
   {#if unreadCount > 0}
     <span class="unread-counter">{unreadCount} ungelesen</span>
@@ -62,7 +62,7 @@
 
 {#if trainingsfokusse && trainingsfokusse.length > 0}
   <div class="inbox">
-    {#each trainingsfokusse as fokus (fokus.id)}
+    {#each trainingsfokusse as fokus, i (fokus.id)}
       {@const read = isRead(fokus)}
       {@const expanded = expandedId === fokus.id}
       {@const katColor = kategorieColor(fokus.kategorie)}
@@ -72,6 +72,7 @@
       <!-- svelte-ignore a11y_click_events_have_key_events -->
       <div
         class="inbox-row {read ? 'inbox-row--read' : 'inbox-row--unread'} {expanded ? 'inbox-row--expanded' : ''}"
+        style="animation: ka-slide-in-right 0.42s ease both; animation-delay: {i * 0.07}s;"
         onclick={() => toggle(fokus)}
       >
         <!-- Header row -->

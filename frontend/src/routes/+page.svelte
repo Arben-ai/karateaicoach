@@ -10,7 +10,7 @@
 </script>
 
 {#if isAuthenticated}
-  <div class="hero-section">
+  <div class="hero-section" style="animation: ka-slide-down 0.5s ease both;">
     <div class="hero-icon">
       <i class="bi bi-shield-fill"></i>
     </div>
@@ -24,7 +24,7 @@
     <div class="page-content">
       <div class="row g-3 mb-4">
         {#if user.user_roles && user.user_roles.includes("admin")}
-          <div class="col-md-4">
+          <div class="col-md-4" style="animation: ka-fly-up 0.5s ease both; animation-delay: 0.1s;">
             <div class="stat-card">
               <div class="stat-card-icon"><i class="bi bi-people-fill"></i></div>
               <div class="stat-card-title">Sportler</div>
@@ -34,7 +34,7 @@
               </a>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-4" style="animation: ka-fly-up 0.5s ease both; animation-delay: 0.22s;">
             <div class="stat-card">
               <div class="stat-card-icon"><i class="bi bi-bullseye"></i></div>
               <div class="stat-card-title">Trainingsfokus</div>
@@ -44,7 +44,7 @@
               </a>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-4" style="animation: ka-fly-up 0.5s ease both; animation-delay: 0.34s;">
             <div class="stat-card">
               <div class="stat-card-icon"><i class="bi bi-journal-text"></i></div>
               <div class="stat-card-title">Trainingspläne</div>
@@ -55,7 +55,7 @@
             </div>
           </div>
         {:else}
-          <div class="col-md-4">
+          <div class="col-md-4" style="animation: ka-fly-up 0.5s ease both; animation-delay: 0.1s;">
             <div class="stat-card">
               <div class="stat-card-icon"><i class="bi bi-bullseye"></i></div>
               <div class="stat-card-title">Mein Feedback</div>
@@ -65,7 +65,7 @@
               </a>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-4" style="animation: ka-fly-up 0.5s ease both; animation-delay: 0.22s;">
             <div class="stat-card">
               <div class="stat-card-icon"><i class="bi bi-journal-text"></i></div>
               <div class="stat-card-title">Meine Trainingspläne</div>
@@ -75,7 +75,7 @@
               </a>
             </div>
           </div>
-          <div class="col-md-4">
+          <div class="col-md-4" style="animation: ka-fly-up 0.5s ease both; animation-delay: 0.34s;">
             <div class="stat-card">
               <div class="stat-card-icon"><i class="bi bi-chat-dots"></i></div>
               <div class="stat-card-title">KI-Assistent</div>
@@ -140,7 +140,7 @@
   {/if}
 
 {:else}
-  <div class="hero-section">
+  <div class="hero-section" style="animation: ka-slide-down 0.5s ease both;">
     <div class="hero-icon">
       <i class="bi bi-shield-fill"></i>
     </div>
@@ -159,21 +159,21 @@
   <section class="features-section">
     <div class="page-content">
       <div class="row g-3">
-        <div class="col-md-4 d-flex">
+        <div class="col-md-4 d-flex" style="animation: ka-fly-up 0.5s ease both; animation-delay: 0.1s;">
           <div class="stat-card w-100">
             <div class="stat-card-icon"><i class="bi bi-robot"></i></div>
             <div class="stat-card-title">KI-Trainingspläne</div>
             <div class="stat-card-text">Personalisierte Pläne basierend auf Gürtelgrad und Trainingszielen</div>
           </div>
         </div>
-        <div class="col-md-4 d-flex">
+        <div class="col-md-4 d-flex" style="animation: ka-fly-up 0.5s ease both; animation-delay: 0.22s;">
           <div class="stat-card w-100">
             <div class="stat-card-icon"><i class="bi bi-graph-up"></i></div>
             <div class="stat-card-title">Fortschritt verfolgen</div>
             <div class="stat-card-text">Dokumentiere Trainingseinheiten und überwache die Entwicklung</div>
           </div>
         </div>
-        <div class="col-md-4 d-flex">
+        <div class="col-md-4 d-flex" style="animation: ka-fly-up 0.5s ease both; animation-delay: 0.34s;">
           <div class="stat-card w-100">
             <div class="stat-card-icon"><i class="bi bi-people-fill"></i></div>
             <div class="stat-card-title">Sportlerverwaltung</div>

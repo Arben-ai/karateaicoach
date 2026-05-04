@@ -53,7 +53,7 @@
 </script>
 
 <!-- ── SEKTION 1: Titel + Formular ── -->
-<section class="tf-form-section">
+<section class="tf-form-section" style="animation: ka-slide-in-right 0.4s ease both;">
   <div class="page-content">
     <div class="d-flex justify-content-between align-items-center mb-1">
       <h1 class="page-title"><i class="bi bi-bullseye me-2"></i>Trainingsfokus</h1>
@@ -264,9 +264,9 @@
 
     {#if trainingsfokusse && trainingsfokusse.length > 0}
       <div class="fokus-list">
-        {#each trainingsfokusse as fokus}
+        {#each trainingsfokusse as fokus, i}
           {@const sportlerName = sportler.find(s => s.id === fokus.sportlerId)?.name ?? '—'}
-          <div class="fokus-card">
+          <div class="fokus-card" style="animation: ka-slide-in-left 0.42s ease both; animation-delay: {i * 0.06}s;">
             <div class="fokus-card-body">
               <div class="fokus-card-top">
                 <span class="fokus-sportler-name">{sportlerName}</span>

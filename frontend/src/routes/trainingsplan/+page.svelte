@@ -62,7 +62,7 @@
   };
 </script>
 
-<div class="page-content">
+<div class="page-content" style="animation: ka-slide-down 0.4s ease both;">
 <div class="d-flex justify-content-between align-items-center mb-1">
   <h1 class="page-title"><i class="bi bi-journal-text me-2"></i>Trainingspläne</h1>
 </div>
@@ -123,10 +123,10 @@
 
 {#if trainingsplaene && trainingsplaene.length > 0}
   <div class="plan-list">
-    {#each trainingsplaene as tp}
+    {#each trainingsplaene as tp, i}
       {@const sportlerName = sportler.find(s => s.id === tp.sportlerId)?.name ?? '—'}
       {@const accent = statusAccent(tp.status)}
-      <div class="plan-card" style="border-left-color: {accent};">
+      <div class="plan-card" style="border-left-color: {accent}; animation: ka-slide-up 0.42s ease both; animation-delay: {i * 0.06}s;">
         <div class="plan-card-body">
           <div class="plan-card-top">
             <span class="plan-sportler-name">{sportlerName}</span>
