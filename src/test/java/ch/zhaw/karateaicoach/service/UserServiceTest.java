@@ -128,4 +128,100 @@ class UserServiceTest {
 
         assertTrue(userService.userHasRole("ROLE_ADMIN"));
     }
+
+    // getCurrentUserEmail
+
+    @Test
+    void getCurrentUserEmail_returnsNull_whenNoAuthentication() {
+        assertNull(userService.getCurrentUserEmail());
+    }
+
+    @Test
+    void getCurrentUserEmail_returnsNull_whenAnonymous() {
+        AnonymousAuthenticationToken anon = new AnonymousAuthenticationToken(
+                "key", "anonymousUser", List.of(new SimpleGrantedAuthority("ROLE_ANONYMOUS")));
+        SecurityContextHolder.getContext().setAuthentication(anon);
+
+        assertNull(userService.getCurrentUserEmail());
+    }
+
+    @Test
+    void getCurrentUserEmail_returnsEmailClaim_whenJwtPrincipal() {
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getClaimAsString("email")).thenReturn("user@test.com");
+        Authentication auth = new UsernamePasswordAuthenticationToken(jwt, null, List.of());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        assertEquals("user@test.com", userService.getCurrentUserEmail());
+    }
+
+    @Test
+    void getCurrentUserEmail_returnsNull_whenNonJwtPrincipal() {
+        Authentication auth = new UsernamePasswordAuthenticationToken("testuser", null, List.of());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        assertNull(userService.getCurrentUserEmail());
+    }
+
+    // getCurrentUserName
+
+    @Test
+    void getCurrentUserName_returnsNull_whenNoAuthentication() {
+        assertNull(userService.getCurrentUserName());
+    }
+
+    @Test
+    void getCurrentUserName_returnsFullName_whenJwtHasBothNames() {
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getClaimAsString("given_name")).thenReturn("Max");
+        when(jwt.getClaimAsString("family_name")).thenReturn("Muster");
+        Authentication auth = new UsernamePasswordAuthenticationToken(jwt, null, List.of());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        assertEquals("Max Muster", userService.getCurrentUserName());
+    }
+
+    @Test
+    void getCurrentUserName_returnsGivenNameOnly_whenFamilyNameNull() {
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getClaimAsString("given_name")).thenReturn("Max");
+        when(jwt.getClaimAsString("family_name")).thenReturn(null);
+        Authentication auth = new UsernamePasswordAuthenticationToken(jwt, null, List.of());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        assertEquals("Max", userService.getCurrentUserName());
+    }
+
+    @Test
+    void getCurrentUserName_returnsName_whenGivenNameNullAndNameNotEmail() {
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getClaimAsString("given_name")).thenReturn(null);
+        when(jwt.getClaimAsString("family_name")).thenReturn(null);
+        when(jwt.getClaimAsString("name")).thenReturn("Max Muster");
+        Authentication auth = new UsernamePasswordAuthenticationToken(jwt, null, List.of());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        assertEquals("Max Muster", userService.getCurrentUserName());
+    }
+
+    @Test
+    void getCurrentUserName_returnsEmail_whenNameLooksLikeEmail() {
+        Jwt jwt = mock(Jwt.class);
+        when(jwt.getClaimAsString("given_name")).thenReturn(null);
+        when(jwt.getClaimAsString("family_name")).thenReturn(null);
+        when(jwt.getClaimAsString("name")).thenReturn("user@test.com");
+        when(jwt.getClaimAsString("email")).thenReturn("user@test.com");
+        Authentication auth = new UsernamePasswordAuthenticationToken(jwt, null, List.of());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        assertEquals("user@test.com", userService.getCurrentUserName());
+    }
+
+    @Test
+    void getCurrentUserName_returnsAuthName_whenNonJwtPrincipal() {
+        Authentication auth = new UsernamePasswordAuthenticationToken("testuser", null, List.of());
+        SecurityContextHolder.getContext().setAuthentication(auth);
+
+        assertEquals("testuser", userService.getCurrentUserName());
+    }
 }

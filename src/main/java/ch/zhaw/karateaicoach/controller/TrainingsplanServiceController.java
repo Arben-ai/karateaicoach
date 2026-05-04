@@ -16,6 +16,7 @@ import ch.zhaw.karateaicoach.repository.TrainingsplanRepository;
 import ch.zhaw.karateaicoach.service.MailService;
 import ch.zhaw.karateaicoach.service.SportlerService;
 import ch.zhaw.karateaicoach.service.TrainingsplanService;
+import ch.zhaw.karateaicoach.service.UserService;
 
 @RestController
 @RequestMapping("/api/service")
@@ -33,9 +34,16 @@ public class TrainingsplanServiceController {
     @Autowired
     private MailService mailService;
 
+    @Autowired
+    private UserService userService;
+
     @PutMapping("/activateTrainingsplan")
     public ResponseEntity<Trainingsplan> activateTrainingsplan(
             @RequestBody TrainingsplanStatusChangeDTO dto) {
+
+        if (!userService.userHasRole("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         Optional<Trainingsplan> plan =
                 trainingsplanService.activateTrainingsplan(dto.getTrainingsplanId());
@@ -62,6 +70,10 @@ public class TrainingsplanServiceController {
     @PutMapping("/completeTrainingsplan")
     public ResponseEntity<Trainingsplan> completeTrainingsplan(
             @RequestBody TrainingsplanStatusChangeDTO dto) {
+
+        if (!userService.userHasRole("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         Optional<Trainingsplan> plan =
                 trainingsplanService.completeTrainingsplan(dto.getTrainingsplanId());

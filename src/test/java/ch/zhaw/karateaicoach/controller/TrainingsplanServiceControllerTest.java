@@ -2,6 +2,7 @@ package ch.zhaw.karateaicoach.controller;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -90,5 +91,39 @@ class TrainingsplanServiceControllerTest extends BaseControllerTest {
         mockMvc.perform(get("/api/service/trainingsplanDashboard")
                         .param("sportlerId", "nonexistent"))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void activateTrainingsplan_requiresAuthentication() throws Exception {
+        mockMvc.perform(put("/api/service/activateTrainingsplan")
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content("{\"trainingsplanId\": \"tp-1\"}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void completeTrainingsplan_requiresAuthentication() throws Exception {
+        mockMvc.perform(put("/api/service/completeTrainingsplan")
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content("{\"trainingsplanId\": \"tp-1\"}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void activateTrainingsplan_asNonAdmin_returnsForbidden() throws Exception {
+        mockMvc.perform(put("/api/service/activateTrainingsplan")
+                        .with(user("athlete").roles("USER"))
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content("{\"trainingsplanId\": \"tp-1\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void completeTrainingsplan_asNonAdmin_returnsForbidden() throws Exception {
+        mockMvc.perform(put("/api/service/completeTrainingsplan")
+                        .with(user("athlete").roles("USER"))
+                        .contentType(org.springframework.http.MediaType.APPLICATION_JSON)
+                        .content("{\"trainingsplanId\": \"tp-1\"}"))
+                .andExpect(status().isForbidden());
     }
 }
