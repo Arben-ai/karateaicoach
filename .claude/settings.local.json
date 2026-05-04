@@ -15,7 +15,8 @@
       "Bash(git -C \"c:\\\\Users\\\\arben\\\\KarateAI Coach\\\\karateaicoach\" add src/test/java/ch/zhaw/karateaicoach/controller/SportlerControllerTest.java)",
       "Bash(gh issue *)",
       "Bash(./mvnw -B verify)",
-      "Bash(powershell -Command \"Get-Content 'target/site/jacoco/index.html' | Select-String -Pattern 'Total|ctr1|ctr2' | Select-Object -Last 10\")"
+      "Bash(powershell -Command \"Get-Content 'target/site/jacoco/index.html' | Select-String -Pattern 'Total|ctr1|ctr2' | Select-Object -Last 10\")",
+      "Bash(gh label *)"
     ]
   }
 }
