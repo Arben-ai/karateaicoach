@@ -33,6 +33,17 @@
     expandedSections = { ...expandedSections, [key]: !expandedSections[key] };
   }
 
+  function isCollapsibleSection(title) {
+    if (!title) return false;
+    return /^(woche|phase|block|einheit|tag|monat|zyklus)\s*\d+/i.test(title);
+  }
+
+  function isSectionExpanded(planId, sectionIdx, title) {
+    const key = `${planId}-${sectionIdx}`;
+    if (key in expandedSections) return expandedSections[key];
+    return false; // collapsible sections start closed
+  }
+
   const createPageLink = (page) => `/meine-trainingsplaene?page=${page}`;
 
   const statusConfig = (status) => ({
@@ -128,7 +139,7 @@
 <div class="d-flex justify-content-between align-items-center mb-1" style="animation: ka-slide-in-right 0.4s ease both;">
   <h1 class="page-title"><i class="bi bi-journal-text me-2"></i>Meine Trainingspläne</h1>
   {#if pagination}
-    <span class="pagination-info">{pagination.totalElements} Plan{pagination.totalElements !== 1 ? 'e' : ''} total</span>
+    <span class="pagination-info">{pagination.totalElements} {pagination.totalElements !== 1 ? 'Pläne' : 'Plan'} total</span>
   {/if}
 </div>
 <p class="page-subtitle">Von der KI generierte Pläne basierend auf deinem Coach-Feedback</p>
@@ -169,12 +180,24 @@
               {@const sections = parseSections(plan.inhalt)}
               <div class="plan-sections">
                 {#each sections as section, i}
+                  {@const collapsible = isCollapsibleSection(section.title)}
+                  {@const secExpanded = collapsible ? isSectionExpanded(plan.id, i, section.title) : true}
                   {#if section.title}
                     <div class="plan-section">
-                      <div class="plan-section-header">
-                        <i class="bi bi-calendar-week me-2"></i>{section.title}
+                      <!-- svelte-ignore a11y_no_static_element_interactions -->
+                      <!-- svelte-ignore a11y_click_events_have_key_events -->
+                      <div
+                        class="plan-section-header {collapsible ? 'plan-section-header--collapsible' : ''}"
+                        onclick={() => collapsible && toggleSection(plan.id, i)}
+                      >
+                        <span>
+                          <i class="bi bi-calendar-week me-2"></i>{section.title}
+                        </span>
+                        {#if collapsible}
+                          <i class="bi bi-chevron-{secExpanded ? 'up' : 'down'} section-chevron"></i>
+                        {/if}
                       </div>
-                      {#if section.content}
+                      {#if secExpanded && section.content}
                         <div class="plan-section-body">
                           {@html marked(section.content)}
                         </div>
@@ -183,7 +206,7 @@
                   {:else if section.content}
                     <div class="plan-section">
                       <div class="plan-section-header plan-section-header--intro">
-                        <i class="bi bi-info-circle me-2"></i>Übersicht
+                        <span><i class="bi bi-info-circle me-2"></i>Übersicht</span>
                       </div>
                       <div class="plan-section-body">
                         {@html marked(section.content)}
@@ -335,6 +358,25 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .plan-section-header--collapsible {
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+
+  .plan-section-header--collapsible:hover {
+    background: color-mix(in srgb, var(--accent) 8%, var(--bg-secondary));
+  }
+
+  .section-chevron {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
   }
 
   .plan-section-header--intro {

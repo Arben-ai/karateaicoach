@@ -104,7 +104,7 @@ public class TrainingsfokusController {
         }
 
         try {
-            Pageable pageable = PageRequest.of(page, size, Sort.by("schwerpunkt").ascending());
+            Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
 
             boolean hasName = !sportlerName.isBlank();
             boolean hasKategorie = !kategorie.isBlank();

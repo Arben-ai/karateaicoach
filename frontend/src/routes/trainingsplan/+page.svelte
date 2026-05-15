@@ -89,7 +89,7 @@
         placeholder="Sportler suchen..."
         bind:value={searchInput}
         onkeydown={(e) => e.key === "Enter" && applyFilter()}
-        style="background:var(--card-bg); border-color:var(--border-color); color:var(--text-primary);"
+        style="background-color:var(--card-bg); border-color:var(--border-color); color:var(--text-primary);"
       />
     </div>
   </div>
@@ -98,7 +98,7 @@
       class="form-select"
       bind:value={statusFilter}
       onchange={applyFilter}
-      style="background:var(--card-bg); border-color:var(--border-color); color:var(--text-primary);"
+      style="background-color:var(--card-bg); border-color:var(--border-color); color:var(--text-primary);"
     >
       <option value="">Alle Status</option>
       <option value="ACTIVE">Aktiv</option>

@@ -241,7 +241,7 @@
           class="form-select"
           bind:value={kategorieFilter}
           onchange={applyFilter}
-          style="background: var(--card-bg); border-color: var(--border-color); color: var(--text-primary);"
+          style="background-color: var(--card-bg); border-color: var(--border-color); color: var(--text-primary);"
         >
           <option value="">Alle Kategorien</option>
           <option value="Kata">Kata</option>

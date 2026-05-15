@@ -117,7 +117,7 @@ export const actions = {
       return {
         success: false,
         error: err.response?.status === 403
-          ? "Nur Admins duerfen Trainingsplaene erstellen."
+          ? "Nur Admins dürfen Trainingspläne erstellen."
           : "Trainingsplan konnte nicht erstellt werden."
       };
     }

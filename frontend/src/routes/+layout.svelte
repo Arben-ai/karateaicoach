@@ -121,9 +121,21 @@
         <h4 class="footer-heading">Navigation</h4>
         <ul class="footer-links">
           <li><a href="/">Startseite</a></li>
-          <li><a href="/login">Anmelden</a></li>
-          <li><a href="/signup">Registrieren</a></li>
-          <li><a href="/chat">KI-Assistent</a></li>
+          {#if isAuthenticated}
+            {#if user.user_roles && user.user_roles.includes("admin")}
+              <li><a href="/sportler">Sportler</a></li>
+              <li><a href="/trainingsfokus">Trainingsfokus</a></li>
+              <li><a href="/trainingsplan">Trainingspläne</a></li>
+            {:else}
+              <li><a href="/mein-feedback">Mein Feedback</a></li>
+              <li><a href="/meine-trainingsplaene">Meine Trainingspläne</a></li>
+              <li><a href="/chat">KI-Assistent</a></li>
+            {/if}
+            <li><a href="/account">Account</a></li>
+          {:else}
+            <li><a href="/login">Anmelden</a></li>
+            <li><a href="/signup">Registrieren</a></li>
+          {/if}
         </ul>
       </div>
 

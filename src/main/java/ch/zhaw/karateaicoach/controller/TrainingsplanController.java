@@ -130,7 +130,7 @@ public class TrainingsplanController {
                                         .getResult().getOutput().getText();
 
                                 Trainingsplan plan = new Trainingsplan(
-                                        "KI-Plan: " + fokus.getSchwerpunkt(),
+                                        fokus.getSchwerpunkt(),
                                         60,
                                         TrainingsplanStatus.ACTIVE,
                                         sportler.getId());
@@ -161,7 +161,7 @@ public class TrainingsplanController {
         return sportlerService.resolveCurrentSportler(userId, email, name)
                 .map(sportler -> {
                     Pageable pageable = PageRequest.of(
-                            page, size, Sort.by("erstelldatum").descending().and(Sort.by("id").ascending()));
+                            page, size, Sort.by("id").descending());
                     return ResponseEntity.<Object>ok(
                             PaginatedResponseDTO.fromPage(
                                     trainingsplanRepository.findBySportlerId(sportler.getId(), pageable)));
@@ -188,7 +188,7 @@ public class TrainingsplanController {
 
             Pageable pageable = PageRequest.of(
                     page, size,
-                    Sort.by("erstelldatum").descending().and(Sort.by("id").ascending()));
+                    Sort.by("id").descending());
 
             boolean hasName = !sportlerName.isBlank();
             boolean hasStatus = status != null && !status.isBlank();

@@ -89,9 +89,6 @@
               </span>
             {/if}
             <span class="inbox-subject {read ? '' : 'fw-bold'}">{fokus.schwerpunkt}</span>
-            {#if !expanded}
-              <span class="inbox-preview d-none d-md-inline">— {fokus.beschreibung}</span>
-            {/if}
           </div>
 
           <div class="d-flex align-items-center gap-2 flex-shrink-0">

@@ -43,7 +43,7 @@ public class ChatController {
                 sportlerService.resolveCurrentSportler(userId, email, null).ifPresent(sportler -> {
                     String schwerpunkt = extractSchwerpunkt(message);
                     Trainingsplan plan = new Trainingsplan(
-                            "KI-Plan: " + schwerpunkt,
+                            schwerpunkt,
                             60,
                             TrainingsplanStatus.ACTIVE,
                             sportler.getId());

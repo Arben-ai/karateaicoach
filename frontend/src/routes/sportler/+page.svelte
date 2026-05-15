@@ -234,7 +234,7 @@
           class="form-select"
           bind:value={guertelgradFilter}
           onchange={applyFilter}
-          style="background: var(--card-bg); border-color: var(--border-color); color: var(--text-primary);"
+          style="background-color: var(--card-bg); border-color: var(--border-color); color: var(--text-primary);"
         >
           <option value="">Alle Gürtelgrade</option>
           <option value="Weiss">Weiss</option>
