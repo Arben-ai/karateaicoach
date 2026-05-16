@@ -59,6 +59,12 @@ class TrainingsfokusFilterControllerTest extends BaseControllerTest {
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
     void getAllTrainingsfokusWithSportlerNameFilter() throws Exception {
+        ch.zhaw.karateaicoach.model.Sportler sportler = new ch.zhaw.karateaicoach.model.Sportler(
+                "Anna", "anna@example.com", "Braun", 56.0);
+        org.springframework.test.util.ReflectionTestUtils.setField(sportler, "id", "sp-1");
+
+        when(sportlerRepository.findByNameContainingIgnoreCase(anyString(), any()))
+                .thenReturn(new PageImpl<>(List.of(sportler), PageRequest.of(0, 5), 1));
         when(trainingsfokusRepository.findBySportlerIdIn(any(), any()))
                 .thenReturn(new PageImpl<>(List.of(fokus), PageRequest.of(0, 5), 1));
 
