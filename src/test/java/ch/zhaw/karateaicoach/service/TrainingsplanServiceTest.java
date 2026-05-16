@@ -101,6 +101,42 @@ class TrainingsplanServiceTest {
         verify(trainingsplanRepository, never()).save(any());
     }
 
+    @Test
+    void archiveTrainingsplan_success() {
+        Trainingsplan plan = new Trainingsplan("Kata", 60, TrainingsplanStatus.COMPLETED, "sportler-1");
+        ReflectionTestUtils.setField(plan, "id", "tp-5");
+        when(trainingsplanRepository.findById("tp-5")).thenReturn(Optional.of(plan));
+        when(trainingsplanRepository.save(plan)).thenReturn(plan);
+
+        Optional<Trainingsplan> result = trainingsplanService.archiveTrainingsplan("tp-5");
+
+        assertTrue(result.isPresent());
+        assertEquals(TrainingsplanStatus.ARCHIVED, result.get().getStatus());
+        verify(trainingsplanRepository).save(plan);
+    }
+
+    @Test
+    void archiveTrainingsplan_notFound_returnsEmpty() {
+        when(trainingsplanRepository.findById("nonexistent")).thenReturn(Optional.empty());
+
+        Optional<Trainingsplan> result = trainingsplanService.archiveTrainingsplan("nonexistent");
+
+        assertTrue(result.isEmpty());
+        verify(trainingsplanRepository, never()).save(any());
+    }
+
+    @Test
+    void archiveTrainingsplan_wrongStatus_returnsEmpty() {
+        Trainingsplan plan = new Trainingsplan("Kata", 60, TrainingsplanStatus.ACTIVE, "sportler-1");
+        ReflectionTestUtils.setField(plan, "id", "tp-6");
+        when(trainingsplanRepository.findById("tp-6")).thenReturn(Optional.of(plan));
+
+        Optional<Trainingsplan> result = trainingsplanService.archiveTrainingsplan("tp-6");
+
+        assertTrue(result.isEmpty());
+        verify(trainingsplanRepository, never()).save(any());
+    }
+
     private static <T> T any() {
         return org.mockito.ArgumentMatchers.any();
     }
