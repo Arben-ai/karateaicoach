@@ -1,8 +1,8 @@
 # KarateAI Coach
 
 ![CI](https://github.com/Arben-ai/karateaicoach/actions/workflows/ci.yml/badge.svg)
-![Coverage](https://raw.githubusercontent.com/Arben-ai/karateaicoach/main/.github/badges/jacoco.svg)
-![Branches](https://raw.githubusercontent.com/Arben-ai/karateaicoach/main/.github/badges/branches.svg)
+![Coverage](https://github.com/Arben-ai/karateaicoach/blob/main/.github/badges/jacoco.svg)
+![Branches](https://github.com/Arben-ai/karateaicoach/blob/main/.github/badges/branches.svg)
 
 KarateAI Coach ist eine webbasierte Anwendung zur KI-gestützten Erstellung und Verwaltung individueller Trainingspläne für Karateka.  
 
