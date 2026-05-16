@@ -177,6 +177,12 @@
           bind:value={message}
           required
           rows="1"
+          onkeydown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              if (message.trim()) formRef.requestSubmit();
+            }
+          }}
         ></textarea>
         <button type="submit" class="btn btn-primary align-self-end">
           <i class="bi bi-send me-1"></i>Senden

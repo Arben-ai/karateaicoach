@@ -159,7 +159,7 @@
             <i class="bi bi-robot plan-icon"></i>
             <div class="min-w-0">
               <div class="plan-titel {expanded ? 'fw-bold' : ''}">{plan.titel}</div>
-              {#if plan.fokus}
+              {#if plan.fokus && plan.fokus !== plan.titel}
                 <div class="plan-fokus"><i class="bi bi-bullseye me-1"></i>{plan.fokus}</div>
               {/if}
             </div>

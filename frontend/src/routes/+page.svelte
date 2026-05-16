@@ -5,6 +5,8 @@
   let isAuthenticated = $derived(data.isAuthenticated);
   let user = $derived(data.user);
   let profileIncomplete = $derived(data.profileIncomplete);
+  let unreadCount = $derived(data.unreadCount ?? 0);
+  let notificationDismissed = $state(false);
 
   const guertelgrade = ['Weiss', 'Gelb', 'Orange', 'Grün', 'Blau', 'Braun', 'Schwarz'];
 </script>
@@ -19,6 +21,35 @@
       Verwalte deine Trainingspläne und verfolge deinen Fortschritt mit KarateAI Coach.
     </p>
   </div>
+
+  {#if unreadCount > 0 && !notificationDismissed}
+    <div class="feedback-notification" style="animation: ka-fly-up 0.4s ease both; animation-delay: 0.05s;">
+      <div class="feedback-notification-inner">
+        <div class="feedback-notification-icon">
+          <i class="bi bi-bell-fill"></i>
+          <span class="feedback-notification-badge">{unreadCount}</span>
+        </div>
+        <div class="feedback-notification-body">
+          <strong>Neues Feedback vom Coach!</strong>
+          <span>
+            Du hast {unreadCount === 1 ? 'eine ungelesene Nachricht' : `${unreadCount} ungelesene Nachrichten`} in deinem Feedback.
+          </span>
+        </div>
+        <div class="feedback-notification-actions">
+          <a href="/mein-feedback" class="btn btn-primary btn-sm">
+            <i class="bi bi-arrow-right me-1"></i>Jetzt ansehen
+          </a>
+          <button
+            class="btn btn-ghost btn-sm"
+            onclick={() => (notificationDismissed = true)}
+            aria-label="Schliessen"
+          >
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  {/if}
 
   <section class="features-section">
     <div class="page-content">
@@ -250,5 +281,90 @@
   @keyframes slideUp {
     from { opacity: 0; transform: translateY(16px); }
     to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .feedback-notification {
+    max-width: 860px;
+    margin: 0 auto 1.5rem;
+    padding: 0 1rem;
+  }
+
+  .feedback-notification-inner {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: color-mix(in srgb, var(--accent) 12%, var(--card-bg));
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 4px 20px color-mix(in srgb, var(--accent) 15%, transparent);
+  }
+
+  .feedback-notification-icon {
+    position: relative;
+    flex-shrink: 0;
+    font-size: 1.5rem;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .feedback-notification-badge {
+    position: absolute;
+    top: -6px;
+    right: -8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 1px 5px;
+    line-height: 1.4;
+  }
+
+  .feedback-notification-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+  }
+
+  .feedback-notification-body span {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  .feedback-notification-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: color 0.15s, background 0.15s;
+  }
+
+  .btn-ghost:hover {
+    color: var(--text-primary);
+    background: color-mix(in srgb, var(--text-muted) 15%, transparent);
+  }
+
+  @media (max-width: 576px) {
+    .feedback-notification-inner {
+      flex-wrap: wrap;
+    }
+
+    .feedback-notification-actions {
+      width: 100%;
+      justify-content: flex-end;
+    }
   }
 </style>

@@ -13,17 +13,26 @@ export async function load({ locals }) {
   let sportler = null;
   let profileIncomplete = false;
 
+  let unreadCount = 0;
+
   if (isAuthenticated && !userIsAdmin(user) && jwt_token) {
     try {
-      const res = await axios.get(`${API_BASE_URL}/api/sportler/me`, {
-        headers: { Authorization: 'Bearer ' + jwt_token }
-      });
-      sportler = res.data;
+      const [sportlerRes, feedbackRes] = await Promise.all([
+        axios.get(`${API_BASE_URL}/api/sportler/me`, {
+          headers: { Authorization: 'Bearer ' + jwt_token }
+        }),
+        axios.get(`${API_BASE_URL}/api/trainingsfokus/me?size=50`, {
+          headers: { Authorization: 'Bearer ' + jwt_token }
+        })
+      ]);
+      sportler = sportlerRes.data;
       profileIncomplete = !sportler.guertelgrad || !sportler.gewicht;
+      const feedbacks = feedbackRes.data?.content ?? feedbackRes.data ?? [];
+      unreadCount = feedbacks.filter((f) => !f.gelesen).length;
     } catch {}
   }
 
-  return { profileIncomplete, sportler };
+  return { profileIncomplete, sportler, unreadCount };
 }
 
 export const actions = {
