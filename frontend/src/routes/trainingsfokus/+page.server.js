@@ -116,6 +116,27 @@ export const actions = {
     }
   },
 
+  updateStatus: async ({ request, locals }) => {
+    const jwt_token = locals.jwt_token;
+    if (!jwt_token) throw error(401, "Authentication required");
+    if (!userIsAdmin(locals.user)) throw redirect(303, "/");
+
+    const data = await request.formData();
+    const id = data.get("id");
+    const status = data.get("status");
+
+    try {
+      await axios({
+        method: "put",
+        url: `${API_BASE_URL}/api/trainingsfokus/${id}/status?status=${status}`,
+        headers: { Authorization: "Bearer " + jwt_token }
+      });
+      return { success: true };
+    } catch {
+      return { success: false, error: "Status konnte nicht geändert werden." };
+    }
+  },
+
   deleteTrainingsfokus: async ({ request, locals }) => {
     const jwt_token = locals.jwt_token;
     if (!jwt_token) throw error(401, "Authentication required");

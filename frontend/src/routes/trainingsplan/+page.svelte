@@ -1,5 +1,6 @@
 <script>
-  import { goto } from "$app/navigation";
+  import { goto, invalidateAll } from "$app/navigation";
+  import { enhance } from "$app/forms";
 
   let { data } = $props();
   let sportler = $derived(data.sportler);
@@ -29,17 +30,15 @@
 
   const statusClass = (status) => {
     switch (status) {
-      case "DRAFT":     return "badge-status-draft";
       case "ACTIVE":    return "badge-status-active";
       case "COMPLETED": return "badge-status-completed";
       case "ARCHIVED":  return "badge-status-archived";
-      default:          return "badge-status-draft";
+      default:          return "badge-status-archived";
     }
   };
 
   const statusLabel = (status) => {
     switch (status) {
-      case "DRAFT":     return "Entwurf";
       case "ACTIVE":    return "Aktiv";
       case "COMPLETED": return "Abgeschlossen";
       case "ARCHIVED":  return "Archiviert";
@@ -103,7 +102,6 @@
       <option value="">Alle Status</option>
       <option value="ACTIVE">Aktiv</option>
       <option value="COMPLETED">Abgeschlossen</option>
-      <option value="DRAFT">Entwurf</option>
       <option value="ARCHIVED">Archiviert</option>
     </select>
   </div>
@@ -155,6 +153,25 @@
               {tp.inhalt.length > 150 ? tp.inhalt.slice(0, 150) + '…' : tp.inhalt}
             </p>
           {/if}
+          <div class="plan-actions">
+            {#if tp.status === 'ACTIVE'}
+              <form method="POST" action="?/completeTrainingsplan"
+                use:enhance={() => async ({ update }) => { await update(); await invalidateAll(); }}>
+                <input type="hidden" name="id" value={tp.id} />
+                <button type="submit" class="btn btn-outline-primary btn-sm">
+                  <i class="bi bi-check-circle me-1"></i>Abschliessen
+                </button>
+              </form>
+            {:else if tp.status === 'COMPLETED'}
+              <form method="POST" action="?/archiveTrainingsplan"
+                use:enhance={() => async ({ update }) => { await update(); await invalidateAll(); }}>
+                <input type="hidden" name="id" value={tp.id} />
+                <button type="submit" class="btn btn-outline-secondary btn-sm">
+                  <i class="bi bi-archive me-1"></i>Archivieren
+                </button>
+              </form>
+            {/if}
+          </div>
         </div>
       </div>
     {/each}
@@ -268,5 +285,11 @@
     line-height: 1.55;
     border-left: 2px solid var(--border-color);
     padding-left: 0.75rem;
+  }
+
+  .plan-actions {
+    margin-top: 0.75rem;
+    display: flex;
+    gap: 0.5rem;
   }
 </style>

@@ -81,6 +81,69 @@ export async function load({ locals, url }) {
 }
 
 export const actions = {
+  activateTrainingsplan: async ({ request, locals }) => {
+    const jwt_token = locals.jwt_token;
+    if (!jwt_token) throw error(401, "Authentication required");
+    if (!userIsAdmin(locals.user)) throw redirect(303, "/");
+
+    const data = await request.formData();
+    const trainingsplanId = data.get("id");
+
+    try {
+      await axios({
+        method: "put",
+        url: `${API_BASE_URL}/api/service/activateTrainingsplan`,
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + jwt_token },
+        data: { trainingsplanId }
+      });
+      return { success: true };
+    } catch {
+      return { success: false, error: "Plan konnte nicht aktiviert werden." };
+    }
+  },
+
+  completeTrainingsplan: async ({ request, locals }) => {
+    const jwt_token = locals.jwt_token;
+    if (!jwt_token) throw error(401, "Authentication required");
+    if (!userIsAdmin(locals.user)) throw redirect(303, "/");
+
+    const data = await request.formData();
+    const trainingsplanId = data.get("id");
+
+    try {
+      await axios({
+        method: "put",
+        url: `${API_BASE_URL}/api/service/completeTrainingsplan`,
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + jwt_token },
+        data: { trainingsplanId }
+      });
+      return { success: true };
+    } catch {
+      return { success: false, error: "Plan konnte nicht abgeschlossen werden." };
+    }
+  },
+
+  archiveTrainingsplan: async ({ request, locals }) => {
+    const jwt_token = locals.jwt_token;
+    if (!jwt_token) throw error(401, "Authentication required");
+    if (!userIsAdmin(locals.user)) throw redirect(303, "/");
+
+    const data = await request.formData();
+    const trainingsplanId = data.get("id");
+
+    try {
+      await axios({
+        method: "put",
+        url: `${API_BASE_URL}/api/service/archiveTrainingsplan`,
+        headers: { "Content-Type": "application/json", Authorization: "Bearer " + jwt_token },
+        data: { trainingsplanId }
+      });
+      return { success: true };
+    } catch {
+      return { success: false, error: "Plan konnte nicht archiviert werden." };
+    }
+  },
+
   createTrainingsplan: async ({ request, locals }) => {
     const jwt_token = locals.jwt_token;
 

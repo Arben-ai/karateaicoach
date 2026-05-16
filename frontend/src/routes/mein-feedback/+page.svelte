@@ -123,10 +123,7 @@
                 <span class="detail-value">{fokus.kategorie}</span>
               </div>
             {/if}
-            <div class="detail-section">
-              <span class="detail-label"><i class="bi bi-info-circle me-1"></i>Beschreibung</span>
-              <span class="detail-value">{fokus.beschreibung}</span>
-            </div>
+
             {#if fokus.notiz}
               <div class="coach-notiz">
                 <div class="coach-notiz-label">

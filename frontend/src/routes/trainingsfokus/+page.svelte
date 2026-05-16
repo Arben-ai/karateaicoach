@@ -1,5 +1,6 @@
 <script>
   import { enhance } from "$app/forms";
+  import { invalidateAll } from "$app/navigation";
   import { goto } from "$app/navigation";
 
   let { data, form } = $props();
@@ -33,6 +34,16 @@
 
   const statusLabel = (status) =>
     status === "AKTIV" ? "Aktiv" : "Inaktiv";
+
+  let deleteTarget = $state(null);
+
+  function openDeleteModal(id, name) {
+    deleteTarget = { id, name };
+  }
+
+  function closeDeleteModal() {
+    deleteTarget = null;
+  }
 
   let schwerpunktSelected = $state("");
   let turnierdatum = $state("");
@@ -285,14 +296,29 @@
               {/if}
             </div>
             <div class="fokus-card-actions">
-              <form method="POST" action="?/deleteTrainingsfokus" use:enhance>
+              <form
+                method="POST"
+                action="?/updateStatus"
+                use:enhance={() => async ({ update }) => { await update(); await invalidateAll(); }}
+              >
                 <input type="hidden" name="id" value={fokus.id} />
-                <button type="submit" class="btn btn-outline-secondary btn-sm"
-                  aria-label="Löschen"
-                  onclick={(e) => { if (!confirm('Trainingsfokus wirklich löschen?')) e.preventDefault(); }}>
-                  <i class="bi bi-trash"></i>
+                <input type="hidden" name="status" value={fokus.status === 'AKTIV' ? 'INAKTIV' : 'AKTIV'} />
+                <button
+                  type="submit"
+                  class="btn btn-sm {fokus.status === 'AKTIV' ? 'btn-outline-warning' : 'btn-outline-success'}"
+                  title={fokus.status === 'AKTIV' ? 'Deaktivieren' : 'Aktivieren'}
+                >
+                  <i class="bi {fokus.status === 'AKTIV' ? 'bi-pause-fill' : 'bi-play-fill'}"></i>
+                  {fokus.status === 'AKTIV' ? 'Deaktivieren' : 'Aktivieren'}
                 </button>
               </form>
+              <button
+                class="btn btn-outline-secondary btn-sm"
+                aria-label="Löschen"
+                onclick={() => openDeleteModal(fokus.id, fokus.schwerpunkt)}
+              >
+                <i class="bi bi-trash"></i>
+              </button>
             </div>
           </div>
         {/each}
@@ -329,6 +355,43 @@
     {/if}
   </div>
 </section>
+
+{#if deleteTarget}
+  <div
+    class="modal-overlay"
+    role="presentation"
+    onclick={closeDeleteModal}
+    onkeydown={(e) => e.key === 'Escape' && closeDeleteModal()}
+  >
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div class="modal-card" onclick={(e) => e.stopPropagation()}>
+      <div class="modal-icon-wrap">
+        <i class="bi bi-trash3-fill modal-icon"></i>
+      </div>
+      <h2 class="modal-title">Trainingsfokus löschen?</h2>
+      <p class="modal-text">
+        <strong>{deleteTarget.name}</strong> wird dauerhaft entfernt.<br />
+        Diese Aktion kann nicht rückgängig gemacht werden.
+      </p>
+      <div class="modal-actions">
+        <button class="btn btn-outline-secondary" onclick={closeDeleteModal}>
+          Abbrechen
+        </button>
+        <form
+          method="POST"
+          action="?/deleteTrainingsfokus"
+          use:enhance={() => async ({ update }) => { closeDeleteModal(); await update(); }}
+        >
+          <input type="hidden" name="id" value={deleteTarget.id} />
+          <button type="submit" class="btn btn-danger">
+            <i class="bi bi-trash me-1"></i>Löschen
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+{/if}
 
 <style>
   /* ── Sektionen ── */
@@ -436,6 +499,80 @@
   .fokus-card-actions {
     display: flex;
     align-items: center;
+    gap: 0.4rem;
+    flex-shrink: 0;
+  }
+
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.15s ease;
+  }
+
+  .modal-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 2rem 1.75rem;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.2s ease;
+  }
+
+  .modal-icon-wrap {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(220, 53, 69, 0.12);
+    border: 2px solid rgba(220, 53, 69, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.25rem;
+  }
+
+  .modal-icon {
+    font-size: 1.5rem;
+    color: #dc3545;
+  }
+
+  .modal-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .modal-text {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
   .turnier-info {

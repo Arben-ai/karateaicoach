@@ -97,6 +97,20 @@ public class TrainingsplanServiceController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
+    @PutMapping("/archiveTrainingsplan")
+    public ResponseEntity<Trainingsplan> archiveTrainingsplan(
+            @RequestBody TrainingsplanStatusChangeDTO dto) {
+
+        if (!userService.userHasRole("admin")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        Optional<Trainingsplan> plan = trainingsplanService.archiveTrainingsplan(dto.getTrainingsplanId());
+
+        return plan.map(t -> new ResponseEntity<>(t, HttpStatus.OK))
+                   .orElse(new ResponseEntity<>(HttpStatus.BAD_REQUEST));
+    }
+
     @GetMapping("/trainingsplanDashboard")
     public ResponseEntity<List<TrainingsplanStatusAggregationDTO>> getTrainingsplanDashboard(
             @RequestParam String sportlerId) {

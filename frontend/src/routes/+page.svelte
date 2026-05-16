@@ -23,28 +23,25 @@
   </div>
 
   {#if unreadCount > 0 && !notificationDismissed}
-    <div class="feedback-notification" style="animation: ka-fly-up 0.4s ease both; animation-delay: 0.05s;">
-      <div class="feedback-notification-inner">
-        <div class="feedback-notification-icon">
-          <i class="bi bi-bell-fill"></i>
-          <span class="feedback-notification-badge">{unreadCount}</span>
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <div class="notif-overlay" onclick={() => (notificationDismissed = true)}>
+      <div class="notif-popup" onclick={(e) => e.stopPropagation()}>
+        <div class="notif-popup-icon-wrap">
+          <i class="bi bi-bell-fill notif-popup-icon"></i>
         </div>
-        <div class="feedback-notification-body">
-          <strong>Neues Feedback vom Coach!</strong>
-          <span>
-            Du hast {unreadCount === 1 ? 'eine ungelesene Nachricht' : `${unreadCount} ungelesene Nachrichten`} in deinem Feedback.
-          </span>
-        </div>
-        <div class="feedback-notification-actions">
-          <a href="/mein-feedback" class="btn btn-primary btn-sm">
-            <i class="bi bi-arrow-right me-1"></i>Jetzt ansehen
+        <h2 class="notif-popup-title">Neues Feedback vom Coach</h2>
+        <p class="notif-popup-text">
+          Dein Coach hat
+          {unreadCount === 1 ? 'einen neuen Trainingsfokus' : `${unreadCount} neue Trainingsfokusse`}
+          für dich hinterlegt.
+        </p>
+        <div class="notif-popup-actions">
+          <a href="/mein-feedback" class="btn btn-primary">
+            <i class="bi bi-arrow-right me-2"></i>Jetzt ansehen
           </a>
-          <button
-            class="btn btn-ghost btn-sm"
-            onclick={() => (notificationDismissed = true)}
-            aria-label="Schliessen"
-          >
-            <i class="bi bi-x-lg"></i>
+          <button class="btn btn-outline-secondary" onclick={() => (notificationDismissed = true)}>
+            Später
           </button>
         </div>
       </div>
@@ -283,88 +280,65 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  .feedback-notification {
-    max-width: 860px;
-    margin: 0 auto 1.5rem;
-    padding: 0 1rem;
-  }
-
-  .feedback-notification-inner {
+  .notif-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1500;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(5px);
     display: flex;
     align-items: center;
-    gap: 1rem;
-    background: color-mix(in srgb, var(--accent) 12%, var(--card-bg));
-    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
-    border-radius: 14px;
-    padding: 1rem 1.25rem;
-    box-shadow: 0 4px 20px color-mix(in srgb, var(--accent) 15%, transparent);
+    justify-content: center;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease both;
   }
 
-  .feedback-notification-icon {
-    position: relative;
-    flex-shrink: 0;
-    font-size: 1.5rem;
+  .notif-popup {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 22px;
+    padding: 2.5rem 2rem 2rem;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.45);
+    animation: slideUp 0.25s ease both;
+  }
+
+  .notif-popup-icon-wrap {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    border: 2px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+  }
+
+  .notif-popup-icon {
+    font-size: 1.6rem;
     color: var(--accent);
-    line-height: 1;
   }
 
-  .feedback-notification-badge {
-    position: absolute;
-    top: -6px;
-    right: -8px;
-    background: var(--accent);
-    color: #fff;
-    font-size: 0.65rem;
+  .notif-popup-title {
+    font-size: 1.2rem;
     font-weight: 700;
-    border-radius: 999px;
-    padding: 1px 5px;
-    line-height: 1.4;
+    color: var(--text-primary);
+    margin-bottom: 0.6rem;
   }
 
-  .feedback-notification-body {
-    flex: 1;
+  .notif-popup-text {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 1.75rem;
+  }
+
+  .notif-popup-actions {
     display: flex;
     flex-direction: column;
-    gap: 0.15rem;
-    font-size: 0.9rem;
-    color: var(--text-primary);
-  }
-
-  .feedback-notification-body span {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-  }
-
-  .feedback-notification-actions {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    flex-shrink: 0;
-  }
-
-  .btn-ghost {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    padding: 0.25rem 0.5rem;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: color 0.15s, background 0.15s;
-  }
-
-  .btn-ghost:hover {
-    color: var(--text-primary);
-    background: color-mix(in srgb, var(--text-muted) 15%, transparent);
-  }
-
-  @media (max-width: 576px) {
-    .feedback-notification-inner {
-      flex-wrap: wrap;
-    }
-
-    .feedback-notification-actions {
-      width: 100%;
-      justify-content: flex-end;
-    }
+    gap: 0.6rem;
   }
 </style>

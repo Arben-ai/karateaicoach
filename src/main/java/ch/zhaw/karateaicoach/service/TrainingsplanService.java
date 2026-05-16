@@ -35,7 +35,6 @@ public class TrainingsplanService {
         return Optional.of(plan);
     }
 
-    // 🔥 NEU
     public Optional<Trainingsplan> completeTrainingsplan(String trainingsplanId) {
 
         Optional<Trainingsplan> optionalPlan = trainingsplanRepository.findById(trainingsplanId);
@@ -52,6 +51,21 @@ public class TrainingsplanService {
         }
 
         plan.setStatus(TrainingsplanStatus.COMPLETED);
+        trainingsplanRepository.save(plan);
+
+        return Optional.of(plan);
+    }
+
+    public Optional<Trainingsplan> archiveTrainingsplan(String trainingsplanId) {
+        Optional<Trainingsplan> optionalPlan = trainingsplanRepository.findById(trainingsplanId);
+
+        if (optionalPlan.isEmpty()) return Optional.empty();
+
+        Trainingsplan plan = optionalPlan.get();
+
+        if (plan.getStatus() != TrainingsplanStatus.COMPLETED) return Optional.empty();
+
+        plan.setStatus(TrainingsplanStatus.ARCHIVED);
         trainingsplanRepository.save(plan);
 
         return Optional.of(plan);
