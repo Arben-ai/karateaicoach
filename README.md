@@ -250,61 +250,290 @@ KarateAI Coach ermöglicht leistungsorientierten Karateka und ihren Trainern ein
 ![Use-Case Diagramm](doc/uc-diagram.drawio.svg)
 
 ## Use-Case Beschreibung
+
 ### Use Case Description
 
 **ID:** 1  
-**Title:** Trainingsplan generieren  
+**Title:** Registrieren  
 
 **Pre-Conditions:**  
-- Der Sportler ist erfolgreich eingeloggt (UC Login).  
-- Es existiert ein aktiver Trainingsfokus für den Sportler.  
+- Keine.  
 
 **Actors:**  
 Sportler  
 
 **Sequence:**  
-1. Sportler wählt „Trainingsplan generieren“.  
-2. System prüft, ob ein aktiver Trainingsfokus existiert.  
-3. System lädt Trainingsfokus und verfügbare Übungen.  
-4. KI generiert einen Trainingsplan basierend auf den Daten.  
-5. Trainingsplan wird gespeichert und angezeigt.  
+1. Sportler ruft die Registrierungsseite auf.  
+2. Sportler gibt Name, E-Mail und Passwort ein.  
+3. System erstellt ein Konto via Auth0.  
+4. Sportler wird zur Startseite weitergeleitet.  
 
 **Data Definitions:**  
-Trainingsfokus: Typ Text  
-Übung: Typ Text  
-Titel: Typ Text  
-Erstelldatum: Typ Zeit  
-Dauer: Typ Zahl  
-Status: Typ Text  
+Name: Typ Text  
+E-Mail: Typ Text  
+Passwort: Typ Passwort  
 
 **Exception:**  
-- Kein aktiver Trainingsfokus vorhanden → Trainingsplan kann nicht generiert werden.  
-- Fehler bei KI-Generierung → Fehlermeldung wird angezeigt.  
+- E-Mail bereits vorhanden → Fehlermeldung wird angezeigt.  
+- Ungültige E-Mail-Adresse → Registrierung nicht möglich.  
 
 ---
 
 ### Use Case Description
 
 **ID:** 2  
+**Title:** Login  
+
+**Pre-Conditions:**  
+- Sportler oder Coach besitzt ein registriertes Konto.  
+
+**Actors:**  
+Sportler, Coach  
+
+**Sequence:**  
+1. Benutzer ruft die Login-Seite auf.  
+2. Benutzer gibt E-Mail und Passwort ein.  
+3. System prüft die Zugangsdaten via Auth0.  
+4. Benutzer wird zur Startseite weitergeleitet.  
+
+**Data Definitions:**  
+E-Mail: Typ Text  
+Passwort: Typ Passwort  
+
+**Exception:**  
+- Falsche E-Mail oder Passwort → Fehlermeldung wird angezeigt, Login-Seite wird erneut angezeigt.  
+- Kein Konto vorhanden → Anmeldung schlägt fehl.  
+
+---
+
+### Use Case Description
+
+**ID:** 3  
+**Title:** Profil verwalten  
+
+**Pre-Conditions:**  
+- Sportler ist erfolgreich eingeloggt (UC 2 Login).  
+
+**Actors:**  
+Sportler  
+
+**Sequence:**  
+1. Sportler navigiert zur Account-Seite.  
+2. Sportler aktualisiert Gürtelgrad und/oder Gewicht.  
+3. Sportler speichert die Änderungen.  
+4. System aktualisiert das Profil und zeigt eine Bestätigung an.  
+
+**Data Definitions:**  
+Gürtelgrad: Typ Text  
+Gewicht: Typ Zahl  
+
+**Exception:**  
+- Sportler-Profil nicht gefunden → Fehlermeldung wird angezeigt.  
+
+---
+
+### Use Case Description
+
+**ID:** 4  
+**Title:** Trainingsplan generieren  
+
+**Pre-Conditions:**  
+- Sportler ist erfolgreich eingeloggt (UC 2 Login).  
+- Es existiert ein aktiver Trainingsfokus für den Sportler.  
+
+**Actors:**  
+Sportler  
+
+**Sequence:**  
+1. Sportler navigiert zur Seite „Meine Trainingspläne”.  
+2. Sportler wählt einen aktiven Trainingsfokus aus.  
+3. Sportler klickt auf „Trainingsplan generieren”.  
+4. System übergibt den Trainingsfokus an die KI (UC 5).  
+5. Trainingsplan wird gespeichert und angezeigt.  
+
+**Data Definitions:**  
+Trainingsfokus: Typ Text  
+Titel: Typ Text  
+Dauer: Typ Zahl  
+Status: Typ Text  
+
+**Exception:**  
+- Kein aktiver Trainingsfokus vorhanden → Generierung nicht möglich.  
+- Fehler bei KI-Generierung → Fehlermeldung wird angezeigt.  
+
+---
+
+### Use Case Description
+
+**ID:** 5  
+**Title:** KI-Trainingsplan generieren lassen  
+
+**Pre-Conditions:**  
+- UC 4 Trainingsplan generieren wurde ausgelöst.  
+- Trainingsfokus ist vollständig befüllt.  
+
+**Actors:**  
+Sportler  
+
+**Sequence:**  
+1. System sendet Trainingsfokus, Gürtelgrad und Gewicht an das KI-Modell.  
+2. KI generiert einen detaillierten, strukturierten Trainingsplan.  
+3. System speichert den generierten Plan in der Datenbank.  
+4. Trainingsplan wird dem Sportler angezeigt.  
+
+**Data Definitions:**  
+Schwerpunkt: Typ Text  
+Kategorie: Typ Text  
+Dauer in Wochen: Typ Zahl  
+Einheiten pro Woche: Typ Zahl  
+Minuten pro Einheit: Typ Zahl  
+Inhalt (KI-generiert): Typ Text  
+
+**Exception:**  
+- KI-Modell nicht erreichbar → Fehlermeldung wird angezeigt.  
+- Bereits ein Plan für diesen Fokus vorhanden → Bestehender Plan wird zurückgegeben.  
+
+---
+
+### Use Case Description
+
+**ID:** 6  
+**Title:** Trainingsfokus einsehen  
+
+**Pre-Conditions:**  
+- Sportler ist erfolgreich eingeloggt (UC 2 Login).  
+
+**Actors:**  
+Sportler  
+
+**Sequence:**  
+1. Sportler navigiert zur Seite „Mein Feedback”.  
+2. System lädt alle Trainingsfokusse des Sportlers.  
+3. Sportler wählt einen Trainingsfokus aus und sieht die Details.  
+4. System markiert den Trainingsfokus als gelesen.  
+
+**Data Definitions:**  
+Schwerpunkt: Typ Text  
+Kategorie: Typ Text  
+Notiz: Typ Text  
+Status: Typ Text  
+Gelesen: Typ Boolean  
+
+**Exception:**  
+- Kein Trainingsfokus vorhanden → Hinweis wird angezeigt.  
+
+---
+
+### Use Case Description
+
+**ID:** 7  
+**Title:** Trainingsplan einsehen  
+
+**Pre-Conditions:**  
+- Sportler ist erfolgreich eingeloggt (UC 2 Login).  
+
+**Actors:**  
+Sportler  
+
+**Sequence:**  
+1. Sportler navigiert zur Seite „Meine Trainingspläne”.  
+2. System lädt alle Trainingspläne des Sportlers.  
+3. Sportler wählt einen Trainingsplan aus und sieht den Inhalt.  
+
+**Data Definitions:**  
+Titel: Typ Text  
+Inhalt: Typ Text  
+Status: Typ Text  
+Dauer: Typ Zahl  
+
+**Exception:**  
+- Kein Trainingsplan vorhanden → Hinweis wird angezeigt.  
+
+---
+
+### Use Case Description
+
+**ID:** 8  
+**Title:** Mit KI chatten  
+
+**Pre-Conditions:**  
+- Sportler ist erfolgreich eingeloggt (UC 2 Login).  
+
+**Actors:**  
+Sportler  
+
+**Sequence:**  
+1. Sportler navigiert zur Chat-Seite.  
+2. Sportler gibt eine Nachricht ein und sendet sie (Enter oder Button).  
+3. System sendet die Nachricht an das KI-Modell.  
+4. KI-Antwort wird angezeigt.  
+
+**Data Definitions:**  
+Nachricht: Typ Text  
+Antwort: Typ Text  
+
+**Exception:**  
+- KI-Modell nicht erreichbar → Fehlermeldung wird angezeigt.  
+
+---
+
+### Use Case Description
+
+**ID:** 9  
+**Title:** Sportler verwalten  
+
+**Pre-Conditions:**  
+- Coach ist erfolgreich eingeloggt (UC 2 Login).  
+
+**Actors:**  
+Coach  
+
+**Sequence:**  
+1. Coach navigiert zur Sportler-Verwaltungsseite.  
+2. Coach kann Sportler suchen, filtern, erstellen oder löschen.  
+3. System speichert die Änderungen und aktualisiert die Liste.  
+
+**Data Definitions:**  
+Name: Typ Text  
+E-Mail: Typ Text  
+Gürtelgrad: Typ Text  
+Gewicht: Typ Zahl  
+
+**Exception:**  
+- E-Mail bereits vorhanden → 409 Conflict, Fehlermeldung wird angezeigt.  
+- Ungültige E-Mail → 400 Bad Request, Fehlermeldung wird angezeigt.  
+- Sportler nicht gefunden → 404 Not Found.  
+
+---
+
+### Use Case Description
+
+**ID:** 10  
 **Title:** Trainingsfokus definieren  
 
 **Pre-Conditions:**  
-- Trainer ist erfolgreich eingeloggt (UC Login).  
+- Coach ist erfolgreich eingeloggt (UC 2 Login).  
 - Sportler existiert im System.  
 
 **Actors:**  
-Trainer  
+Coach  
 
 **Sequence:**  
-1. Trainer wählt einen Sportler aus.  
-2. Trainer erfasst Beschreibung und Schwerpunkt.  
-3. Trainer setzt Status auf „Aktiv“.  
+1. Coach navigiert zur Trainingsfokus-Seite.  
+2. Coach wählt einen Sportler aus und erfasst Schwerpunkt, Kategorie und Notiz.  
+3. Coach setzt optional Turniername, Turnierdatum, Dauer und Einheiten.  
 4. Trainingsfokus wird gespeichert.  
 
 **Data Definitions:**  
-Beschreibung: Typ Text  
 Schwerpunkt: Typ Text  
+Kategorie: Typ Text  
+Notiz: Typ Text  
 Status: Typ Text  
+Dauer in Wochen: Typ Zahl  
+Einheiten pro Woche: Typ Zahl  
+Minuten pro Einheit: Typ Zahl  
+Turniername: Typ Text  
+Turnierdatum: Typ Zeit  
 
 **Exception:**  
 - Sportler existiert nicht → Trainingsfokus kann nicht erstellt werden.  
@@ -313,28 +542,84 @@ Status: Typ Text
 
 ### Use Case Description
 
-**ID:** 3  
-**Title:** Trainingsfortschritt erfassen  
+**ID:** 11  
+**Title:** Trainingsfokus verwalten  
 
 **Pre-Conditions:**  
-- Sportler ist erfolgreich eingeloggt (UC Login).  
-- Ein Trainingsplan existiert.  
+- Coach ist erfolgreich eingeloggt (UC 2 Login).  
+- Trainingsfokus existiert im System.  
 
 **Actors:**  
-Sportler  
+Coach  
 
 **Sequence:**  
-1. Sportler öffnet eine Trainingseinheit.  
-2. Sportler trägt Intensität und Status ein.  
-3. Änderungen werden gespeichert.  
+1. Coach navigiert zur Trainingsfokus-Seite.  
+2. Coach kann den Status eines Trainingsfokus auf AKTIV oder INAKTIV setzen.  
+3. Coach kann einen Trainingsfokus löschen.  
+4. System speichert die Änderungen.  
 
 **Data Definitions:**  
-Datum: Typ Zeit  
-Intensität: Typ Zahl  
-Trainingsstatus: Typ Text  
+Status: Typ Text (AKTIV, INAKTIV)  
 
 **Exception:**  
-- Trainingseinheit nicht vorhanden → Eingabe nicht möglich.   
+- Trainingsfokus nicht gefunden → 404 Not Found.  
+- Ungültiger Status → 400 Bad Request.  
+
+---
+
+### Use Case Description
+
+**ID:** 12  
+**Title:** Trainingspläne verwalten  
+
+**Pre-Conditions:**  
+- Coach ist erfolgreich eingeloggt (UC 2 Login).  
+- Trainingsplan existiert im System.  
+
+**Actors:**  
+Coach  
+
+**Sequence:**  
+1. Coach navigiert zur Trainingsplan-Verwaltungsseite.  
+2. Coach kann Trainingspläne filtern und einsehen.  
+3. Coach kann den Status eines Trainingsplans ändern (Aktiv → Abgeschlossen).  
+4. System speichert die Änderungen und sendet eine E-Mail an den Sportler.  
+
+**Data Definitions:**  
+Titel: Typ Text  
+Status: Typ Text (ACTIVE, COMPLETED)  
+Dauer: Typ Zahl  
+
+**Exception:**  
+- Trainingsplan nicht gefunden → 400 Bad Request.  
+- Falscher Status für Übergang → Statusänderung nicht möglich.  
+
+---
+
+### Use Case Description
+
+**ID:** 13  
+**Title:** Trainingsplan archivieren  
+
+**Pre-Conditions:**  
+- Coach ist erfolgreich eingeloggt (UC 2 Login).  
+- Trainingsplan hat den Status COMPLETED.  
+
+**Actors:**  
+Coach  
+
+**Sequence:**  
+1. Coach navigiert zur Trainingsplan-Verwaltungsseite.  
+2. Coach wählt einen abgeschlossenen Trainingsplan aus.  
+3. Coach klickt auf „Archivieren”.  
+4. System setzt den Status auf ARCHIVED.  
+
+**Data Definitions:**  
+Status: Typ Text (COMPLETED → ARCHIVED)  
+
+**Exception:**  
+- Trainingsplan hat nicht den Status COMPLETED → Archivierung nicht möglich.  
+- Trainingsplan nicht gefunden → 400 Bad Request.  
 
 ## Fachliches Datenmodell 
 ### ER-Diagramm
