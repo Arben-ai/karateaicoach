@@ -21,7 +21,8 @@
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
       "Bash(curl -s \"https://documenter.gw.postman.com/api/collections/52470822/2sBXirjoXu?segregateAuth=true&versionTag=latest\")",
-      "Bash(xargs grep -l \"McpServer\\\\|@McpTool\\\\|ModelContextProtocol\")"
+      "Bash(xargs grep -l \"McpServer\\\\|@McpTool\\\\|ModelContextProtocol\")",
+      "Bash(npm init *)"
     ]
   }
 }
