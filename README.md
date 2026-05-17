@@ -828,6 +828,21 @@ Alle Issues sind mit Beschreibung, Labels und Akzeptanzkriterien dokumentiert. E
 ### Mehrere Branches
 Feature-Branches werden pro Issue erstellt und nach Abschluss in `main` gemergt. Die Branch-Namen referenzieren direkt die Issue-Nummer (z.B. `9-api-endpoint-get-all-trainingsplan`).
 
+---
+
+### End-to-End Tests
+Die Anwendung wird mit **Playwright** End-to-End getestet. Die Tests laufen automatisch in der CI-Pipeline (GitHub Actions) gegen einen gebauten Frontend-Build.
+
+Folgende Szenarien werden getestet:
+- Startseite lädt korrekt mit Titel und Navigation
+- Login- und Registrierungsseite sind erreichbar
+- Navigation zwischen Seiten funktioniert
+- Geschützte Seiten leiten zur Login-Seite um
+- Footer ist sichtbar
+
+**Relevante Code-Stelle:** [tests/e2e.test.ts](frontend/tests/e2e.test.ts)  
+**CI-Workflow:** [ci.yml](.github/workflows/ci.yml)
+
 # Fazit
 
 ## Stand der Implementation
