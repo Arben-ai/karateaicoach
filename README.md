@@ -631,7 +631,7 @@ Status: Typ Text (COMPLETED → ARCHIVED)
 ### Beschreibung des fachlichen Modells
 
 Das fachliche Datenmodell bildet die zentrale Domänenlogik von **KarateAI Coach** ab.  
-Es beschreibt ausschließlich fachliche Konzepte ohne technische IDs oder Implementierungsdetails.
+Es beschreibt ausschließlich fachliche Konzepte ohne technische Implementierungsdetails.
 
 #### Zentrale Entitäten
 
@@ -641,26 +641,26 @@ Es beschreibt ausschließlich fachliche Konzepte ohne technische IDs oder Implem
 - Gürtelgrad
 - Gewicht
 
-Ein Sportler wird von genau einem Trainer betreut und kann mehrere Trainingspläne, Trainingsfokusse sowie Wettkämpfe besitzen.
+Ein Sportler wird von genau einem Coach betreut und kann mehrere Trainingsfokusse sowie mehrere Trainingspläne besitzen.
 
 ---
 
-**Trainer**
+**Coach**
 - Name
 - E-Mail
-- Lizenzstufe
 
-Ein Trainer betreut mehrere Sportler, definiert Trainingsfokusse und erstellt Übungen.
+Ein Coach betreut mehrere Sportler und definiert deren Trainingsfokusse.
 
 ---
 
 **Trainingsfokus**
-- Beschreibung
 - Schwerpunkt
+- Kategorie
 - Status
 
-Ein Trainingsfokus wird von einem Trainer definiert und gehört genau einem Sportler.  
-Er dient als fachliche Grundlage für die Generierung von Trainingsplänen.
+Ein Trainingsfokus wird von einem Coach definiert und gehört genau einem Sportler.  
+Er dient als fachliche Grundlage für die KI-gestützte Generierung von Trainingsplänen.  
+Ein Sportler kann mehrere Trainingsfokusse besitzen (N:1 zu Sportler, N:1 zu Coach).
 
 ---
 
@@ -670,38 +670,16 @@ Er dient als fachliche Grundlage für die Generierung von Trainingsplänen.
 - Dauer
 - Status
 
-Ein Trainingsplan gehört genau einem Sportler und basiert auf genau einem Trainingsfokus.  
-Ein Trainingsplan besteht aus mehreren Trainingseinheiten.
+Ein Trainingsplan gehört genau einem Sportler und basiert auf einem Trainingsfokus.  
+Er wird durch die Künstliche Intelligenz erstellt.
 
 ---
 
-**Trainingseinheit**
-- Datum
-- Intensität
-- Trainingsstatus
+**Künstliche Intelligenz**
+- Model
+- API Key
 
-Eine Trainingseinheit gehört genau einem Trainingsplan und enthält mehrere Übungen.  
-Zwischen Trainingseinheit und Übung besteht eine M:N-Beziehung.
-
----
-
-**Übung**
-- Name
-- Beschreibung
-
-Eine Übung wird von einem Trainer erstellt und kann in mehreren Trainingseinheiten verwendet werden.
-
----
-
-**Wettkampf**
-- Name
-- Datum
-- Kategorie
-- Gewichtsklasse
-- Ort
-- Status
-
-Ein Wettkampf gehört genau einem Sportler.
+Die Künstliche Intelligenz erstellt auf Basis eines Trainingsfokus automatisch einen strukturierten Trainingsplan. Sie wird vom System aufgerufen und kann mehrere Trainingspläne generieren (1:N zu Trainingsplan).
 
 ---
 
@@ -710,25 +688,15 @@ Ein Wettkampf gehört genau einem Sportler.
 Folgende Entitäten besitzen fachliche Zustände:
 
 **Trainingsplan**
-- DRAFT
-- ACTIVE
-- COMPLETED
-- ARCHIVED
+- ACTIVE — Plan ist aktiv und wird verwendet
+- COMPLETED — Plan wurde abgeschlossen
+- ARCHIVED — Plan ist archiviert
 
 **Trainingsfokus**
-- AKTIV
-- INAKTIV
+- AKTIV — Fokus ist aktiv und für den Sportler sichtbar
+- INAKTIV — Fokus ist deaktiviert
 
-**Trainingseinheit**
-- GEPLANT
-- DURCHGEFÜHRT
-- ABGESAGT
-
-**Wettkampf**
-- GEPLANT
-- DONE
-
-Diese Zustände steuern die fachliche Logik des Systems (z.B. darf ein Trainingsplan nur generiert werden, wenn ein aktiver Trainingsfokus existiert).
+Diese Zustände steuern die fachliche Logik des Systems. Ein Trainingsplan kann nur aus einem aktiven Trainingsfokus generiert werden. Der Trainingsplan durchläuft die Zustände ACTIVE → COMPLETED → ARCHIVED.
 
 ## UI-Mockup
 
@@ -756,10 +724,109 @@ Diese Zustände steuern die fachliche Logik des Systems (z.B. darf ein Trainings
 > Beschreibung des Frontends mit Screenshots der fertigen Applikation. Alle Teile des GUIs, die bewertet werden sollen, müssen abgebildet sein.
 
 ## KI-Funktionen
-> Aufgaben und Funktionen des eingebundenen KI-Modells.
+
+Die Anwendung verwendet **Spring AI** mit dem **OpenAI GPT-Modell** (Claude-kompatibel) für drei unterschiedliche KI-Funktionen.
+
+---
+
+### 1. KI-Chat-Assistent
+
+Der Sportler kann über die Chat-Seite direkt mit dem KI-Karate-Coach kommunizieren. Die Nachricht wird an das KI-Modell gesendet und die Antwort wird in Echtzeit angezeigt. Falls die Nachricht einen Trainingsplan-Befehl enthält (Stichwort „Trainingsplan" und „Schwerpunkt:"), wird der generierte Plan automatisch in der Datenbank gespeichert.
+
+**Relevante Code-Stelle:** [ChatController.java:34](src/main/java/ch/zhaw/karateaicoach/controller/ChatController.java#L34)
+
+---
+
+### 2. KI-Generierung eines Trainingsplans aus Trainingsfokus
+
+Wenn ein Sportler auf „Trainingsplan generieren" klickt, wird ein detaillierter, wettkampforientierter Trainingsplan durch die KI erstellt. Der Prompt enthält Informationen aus dem Trainingsfokus (Schwerpunkt, Kategorie, Dauer, Einheiten, Turnierdaten) sowie die Sportler-Daten (Gürtelgrad, Gewicht, Name). Die KI gibt einen strukturierten Plan mit Wochen, Aufwärmen, Hauptteil und Cooldown zurück.
+
+**Relevante Code-Stelle:** [TrainingsplanController.java:109-129](src/main/java/ch/zhaw/karateaicoach/controller/TrainingsplanController.java#L109)
+
+---
+
+### 3. KI-gestützte Titelverbesserung
+
+Beim manuellen Erstellen eines Trainingsplans durch den Coach wird der eingegebene Titel automatisch durch die KI optimiert. Das Modell berücksichtigt den Trainingsfokus und die Dauer und gibt einen verbesserten Titel zurück.
+
+**Relevante Code-Stelle:** [TrainingsplanController.java:58-61](src/main/java/ch/zhaw/karateaicoach/controller/TrainingsplanController.java#L58)
+
+---
+
+### 4. KI-Tools (Function Calling)
+
+Über Spring AI `@Tool`-Annotationen stellt das Backend der KI Datenbankzugriffe als aufrufbare Funktionen bereit. Die KI kann damit selbstständig Sportler und Trainingspläne abfragen oder erstellen.
+
+| Tool | Beschreibung |
+|---|---|
+| `getAllSportler()` | Gibt alle Sportler aus der Datenbank zurück |
+| `getAllTrainingsplaene()` | Gibt alle Trainingspläne zurück |
+| `createSportler()` | Erstellt einen neuen Sportler |
+| `createTrainingsplan()` | Erstellt einen neuen Trainingsplan |
+
+**Relevante Code-Stelle:** [KarateTools.java](src/main/java/ch/zhaw/karateaicoach/tools/KarateTools.java)
 
 ## Optionale Anforderungen
-> Liste der umgesetzten optionalen Anforderungen mit Beschreibung.
+
+### Codeanalyse mit SonarQube
+Die Codequalität wird automatisch bei jedem Push mit SonarQube analysiert. Der Workflow ist als GitHub Action definiert.
+
+**Relevante Code-Stelle:** [sonar.yml](.github/workflows/sonar.yml)
+
+---
+
+### Komplexes Datenmodell
+Das Datenmodell umfasst 5 Entitäten (Sportler, Coach, Trainingsfokus, Trainingsplan, Künstliche Intelligenz) mit definierten Beziehungen und Zuständen. Trainingsfokus und Trainingsplan durchlaufen jeweils mehrere Zustände.
+
+---
+
+### Komplexes Frontend
+Das Frontend ist mit SvelteKit umgesetzt und beinhaltet rollenbasierte Navigation, Paginierung, Filterung, animierte Seitenübergänge, modale Dialoge, Echtzeit-Chat und eine Login-Benachrichtigung bei ungelesen Feedback.
+
+---
+
+### Zugriff auf Drittsysteme
+Die Anwendung integriert drei externe Systeme:
+- **Auth0** — Authentifizierung und Rollenverwaltung
+- **OpenAI / Spring AI** — KI-Generierung von Trainingsplänen
+- **Mailservice** — automatischer E-Mail-Versand bei Statusänderungen
+
+---
+
+### Backend mit MCP-Server (AI Tools)
+Das Backend stellt der KI über Spring AI `@Tool`-Annotationen Datenbankfunktionen als aufrufbare Tools bereit (Function Calling).
+
+**Relevante Code-Stelle:** [KarateTools.java](src/main/java/ch/zhaw/karateaicoach/tools/KarateTools.java)
+
+---
+
+### Komplexe Benutzerverwaltung
+Die Benutzerverwaltung basiert auf Auth0 mit zwei Rollen (Admin/Coach und Sportler). Alle API-Endpoints sind rollenbasiert geschützt. Die Rolle wird aus dem JWT-Token ausgelesen.
+
+**Relevante Code-Stelle:** [UserService.java](src/main/java/ch/zhaw/karateaicoach/service/UserService.java)
+
+---
+
+### Komplexe Abfragen auf der Datenbank
+Die Repositories beinhalten mehrere komplexe MongoDB-Abfragen mit Filterung, Paginierung und einer Aggregation für das Dashboard.
+
+| Abfrage | Beschreibung |
+|---|---|
+| `findByDauerGreaterThanAndStatus` | Kombinierter Filter nach Dauer und Status |
+| `findByStatusAndSportlerIdIn` | Filter nach Status und mehreren Sportler-IDs |
+| `getTrainingsplanStatusAggregation` | MongoDB Aggregation: gruppiert Pläne nach Status |
+
+**Relevante Code-Stelle:** [TrainingsplanRepository.java:30-34](src/main/java/ch/zhaw/karateaicoach/repository/TrainingsplanRepository.java#L30)
+
+---
+
+### Detaillierte Dokumentation auf GitHub
+Alle Issues sind mit Beschreibung, Labels und Akzeptanzkriterien dokumentiert. Es werden über 20 verschiedene Labels verwendet. Issues sind Sprints (Iterations) zugeordnet und durchlaufen die SCRUM-Board-Spalten Ready → In Progress → Done.
+
+---
+
+### Mehrere Branches
+Feature-Branches werden pro Issue erstellt und nach Abschluss in `main` gemergt. Die Branch-Namen referenzieren direkt die Issue-Nummer (z.B. `9-api-endpoint-get-all-trainingsplan`).
 
 # Fazit
 
