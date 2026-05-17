@@ -9,8 +9,8 @@ test.describe('Öffentliche Seiten', () => {
 
   test('Startseite zeigt Login- und Registrieren-Button', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('a.btn[href="/login"]')).toBeVisible();
-    await expect(page.locator('a.btn[href="/signup"]')).toBeVisible();
+    await expect(page.getByRole('link', { name: /Login|Anmelden/ }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: /Registrieren/ }).first()).toBeVisible();
   });
 
   test('Login-Seite ist erreichbar', async ({ page }) => {
@@ -25,13 +25,13 @@ test.describe('Öffentliche Seiten', () => {
 
   test('Navigation von Startseite zur Login-Seite', async ({ page }) => {
     await page.goto('/');
-    await page.locator('a.btn[href="/login"]').click();
+    await page.getByRole('link', { name: /Login|Anmelden/ }).first().click();
     await expect(page).toHaveURL(/.*login/);
   });
 
   test('Navigation von Startseite zur Registrierungsseite', async ({ page }) => {
     await page.goto('/');
-    await page.locator('a.btn[href="/signup"]').click();
+    await page.getByRole('link', { name: /Registrieren/ }).first().click();
     await expect(page).toHaveURL(/.*signup/);
   });
 
