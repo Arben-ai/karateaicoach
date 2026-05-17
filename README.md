@@ -4,21 +4,22 @@
 ![Coverage](https://github.com/Arben-ai/karateaicoach/blob/main/.github/badges/jacoco.svg)
 ![Branches](https://github.com/Arben-ai/karateaicoach/blob/main/.github/badges/branches.svg)
 
-KarateAI Coach ist eine webbasierte Anwendung zur KI-gestützten Erstellung und Verwaltung individueller Trainingspläne für Karateka.  
+KarateAI Coach ist eine webbasierte Anwendung zur KI-gestützten Erstellung und Verwaltung individueller Trainingspläne für Karateka.
 
-Die Applikation generiert auf Basis von Gürtelgrad, Trainingszielen und Trainingshäufigkeit personalisierte Trainingspläne und ermöglicht die strukturierte Nachverfolgung des Trainingsfortschritts.
+Die Applikation generiert auf Basis eines vom Coach definierten Trainingsfokus personalisierte Trainingspläne mittels KI und ermöglicht die strukturierte Verwaltung des Trainingsfortschritts.
 
 ## Rollen
 
 - **Sportler**
-  - Kann Trainingspläne generieren lassen
-  - Kann Trainingspläne einsehen und verwalten
-  - Kann Trainingsfortschritte dokumentieren
+  - Kann eigenen Trainingsfokus (Feedback vom Coach) einsehen
+  - Kann Trainingsplan aus Trainingsfokus generieren lassen
+  - Kann eigene Trainingspläne einsehen
+  - Kann mit dem KI-Assistenten chatten
 
-- **Trainer**  
-  - Kann Sportler betreuen
-  - Kann Trainingspläne einsehen und anpassen
-  - Kann Fortschritte analysieren
+- **Coach (Admin)**
+  - Kann Sportler verwalten (erstellen, bearbeiten, löschen)
+  - Kann Trainingsfokusse für Sportler erstellen und verwalten
+  - Kann Trainingspläne verwalten und Status ändern (Aktiv → Abgeschlossen → Archiviert)
 
 # Inhaltsverzeichnis
 - [Einleitung](#einleitung)
@@ -194,7 +195,7 @@ Die Plattform verbindet Trainerexpertise mit datenbasierter Trainingsplanung und
 Automatische Generierung eines strukturierten, wettkampforientierten Trainingsplans auf Basis eines klar definierten Trainingsfokus – inklusive Fortschrittsverfolgung und Statusverwaltung.
 
 ### HIGH-LEVEL-KONZEPT
-„Notion für Karate-Trainer – kombiniert mit KI-gestützter Trainingsplanung."
+„Notion für Karate-Coaches – kombiniert mit KI-gestützter Trainingsplanung."
 
 ### WERTVERSPRECHEN
 KarateAI Coach ermöglicht leistungsorientierten Karateka und ihren Trainern eine strukturierte, datenbasierte und individuell zugeschnittene Trainingsplanung, um Wettkampfleistungen gezielt und messbar zu verbessern.
