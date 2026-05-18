@@ -721,7 +721,106 @@ Diese Zustände steuern die fachliche Logik des Systems. Ein Trainingsplan kann 
 # Implementation
 
 ## Frontend
-> Beschreibung des Frontends mit Screenshots der fertigen Applikation. Alle Teile des GUIs, die bewertet werden sollen, müssen abgebildet sein.
+
+Das Frontend ist mit **SvelteKit** umgesetzt und bietet eine rollenbasierte Benutzeroberfläche für Sportler und Coaches. Die Anwendung ist responsiv, enthält Animationen beim Seitenwechsel und ist auf Deutsch gehalten.
+
+---
+
+### Startseite (nicht eingeloggt)
+Die öffentliche Startseite zeigt eine Übersicht der Funktionen der Anwendung sowie Buttons zum Login und zur Registrierung.
+
+![Startseite](doc/Screenshots/startseite.png)
+
+---
+
+### Login
+Der Benutzer meldet sich mit E-Mail und Passwort an. Die Authentifizierung erfolgt über Auth0.
+
+![Login](doc/Screenshots/login-seite.png)
+
+---
+
+### Registrierung
+Neue Benutzer können sich mit Vorname, Nachname, E-Mail und Passwort registrieren.
+
+![Registrierung](doc/Screenshots/registrierungsseite.png)
+
+---
+
+### Dashboard (Sportler)
+Nach dem Login sieht der Sportler sein persönliches Dashboard mit Schnellzugriff auf Mein Feedback, Meine Trainingspläne und den KI-Assistenten.
+
+![Dashboard Sportler](doc/Screenshots/dashboard-sportler.png)
+
+---
+
+### Mein Feedback (Sportler)
+Der Sportler sieht die vom Coach definierten Trainingsfokusse mit Schwerpunkt, Kategorie und Notiz. Über den Button „Zum Trainingsplan" kann direkt ein KI-generierter Plan abgerufen werden.
+
+![Mein Feedback](doc/Screenshots/mein-feedback.png)
+
+---
+
+### Meine Trainingspläne (Sportler)
+Der Sportler sieht alle seine KI-generierten Trainingspläne mit Inhalt, Wochenstruktur und Status.
+
+![Meine Trainingspläne](doc/Screenshots/meine-trainingspläne.png)
+
+---
+
+### KI-Assistent (Chat)
+Der Sportler kann direkt mit dem KI-Karate-Coach chatten. Nachrichten können per Button oder Enter-Taste gesendet werden.
+
+![Chat](doc/Screenshots/chat.png)
+
+---
+
+### Account (Sportler)
+Der Sportler sieht seine Profilinformationen wie Name, E-Mail, Benutzername, Gürtelgrad und Gewicht.
+
+![Account Sportler](doc/Screenshots/account-sportler.png)
+
+---
+
+### Dashboard (Coach)
+Der Coach sieht sein Dashboard mit Schnellzugriff auf Sportler-, Trainingsfokus- und Trainingsplanverwaltung.
+
+![Dashboard Coach](doc/Screenshots/dashboard-coach.png)
+
+---
+
+### Sportlerverwaltung (Coach)
+Der Coach kann neue Sportler erfassen und bestehende Sportler nach Name und Gürtelgrad suchen und filtern.
+
+![Sportlerverwaltung](doc/Screenshots/sportler-verwaltung.png)
+
+---
+
+### Trainingsfokus erfassen (Coach)
+Der Coach definiert einen neuen Trainingsfokus mit Sportler, Kategorie, Schwerpunkt, Turnierdaten, Einheiten und einer persönlichen Notiz.
+
+![Trainingsfokus erfassen](doc/Screenshots/trainingsfokus-erfassen.png)
+
+---
+
+### Trainingsfokus Übersicht (Coach)
+Der Coach sieht alle Trainingsfokusse mit Status (Aktiv/Inaktiv) und kann diese aktivieren, deaktivieren oder löschen.
+
+![Trainingsfokus Übersicht](doc/Screenshots/trainingsfokus-übersicht.png)
+
+---
+
+### Trainingspläne (Coach)
+Der Coach sieht alle generierten Trainingspläne aller Sportler und kann deren Status verwalten (Aktiv → Abgeschlossen → Archiviert).
+
+![Trainingspläne](doc/Screenshots/trainingspläne.png)
+
+---
+
+### Account (Coach)
+Der Coach sieht seine Profilinformationen inklusive der Admin-Rolle.
+
+![Account Coach](doc/Screenshots/account-coach.png)
 
 ## KI-Funktionen
 
