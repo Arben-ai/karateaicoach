@@ -1,7 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const baseURL = process.env.CI ? 'http://localhost:4173' : 'http://localhost:5173';
-
 export default defineConfig({
   testDir: './tests',
   fullyParallel: true,
@@ -10,7 +8,7 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   use: {
-    baseURL,
+    baseURL: 'http://localhost:4173',
     trace: 'on-first-retry',
   },
   projects: [
@@ -20,7 +18,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run preview',
+    command: process.env.CI ? 'npm run preview' : 'npm run build && npm run preview',
     url: 'http://localhost:4173',
     reuseExistingServer: !process.env.CI,
     timeout: 120000,
