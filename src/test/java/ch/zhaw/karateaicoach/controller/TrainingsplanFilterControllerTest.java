@@ -109,6 +109,44 @@ class TrainingsplanFilterControllerTest extends BaseControllerTest {
 
     @Test
     @WithMockUser(username = "admin", roles = "ADMIN")
+    void getAllTrainingsplanWithSportlerNameAndStatusFilter() throws Exception {
+        when(sportlerRepository.findByNameContainingIgnoreCase(anyString(), any()))
+                .thenReturn(new PageImpl<>(List.of(sportlerAnna), PageRequest.of(0, 200), 1));
+        when(trainingsplanRepository.findByStatusAndSportlerIdIn(any(), any(), any()))
+                .thenReturn(new PageImpl<>(List.of(plan), PageRequest.of(0, 10), 1));
+
+        mockMvc.perform(get("/api/trainingsplan?sportlerName=Anna&status=ACTIVE"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void getAllTrainingsplanWithInvalidStatusReturnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/trainingsplan?status=UNGUELTIG"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void getAllTrainingsplanWithInvalidPaginationReturnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/trainingsplan?page=-1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void getAllTrainingsplanNoFiltersReturnsAll() throws Exception {
+        when(trainingsplanRepository.findAll(any(org.springframework.data.domain.Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(plan), PageRequest.of(0, 10), 1));
+
+        mockMvc.perform(get("/api/trainingsplan"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
     void createTrainingsplanSportlerNotExistsReturnsBadRequest() throws Exception {
         when(sportlerService.sportlerExists(anyString())).thenReturn(false);
 

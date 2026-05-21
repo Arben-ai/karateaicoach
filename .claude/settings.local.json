@@ -22,7 +22,12 @@
       "Bash(git push *)",
       "Bash(curl -s \"https://documenter.gw.postman.com/api/collections/52470822/2sBXirjoXu?segregateAuth=true&versionTag=latest\")",
       "Bash(xargs grep -l \"McpServer\\\\|@McpTool\\\\|ModelContextProtocol\")",
-      "Bash(npm init *)"
+      "Bash(npm init *)",
+      "Bash(Get-ChildItem -Recurse -Include \"*.svelte\", \"*.css\" -Path \"src\")",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)",
+      "Bash(sort -t',' -k4 -rn)",
+      "Bash(./mvnw -B verify -q)"
     ]
   }
 }

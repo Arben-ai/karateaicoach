@@ -129,4 +129,61 @@ class TrainingsfokusFilterControllerTest extends BaseControllerTest {
                         .delete("/api/trainingsfokus/{id}", "nonexistent"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void getAllTrainingsfokusWithSportlerNameAndKategorieFilter() throws Exception {
+        ch.zhaw.karateaicoach.model.Sportler sportler = new ch.zhaw.karateaicoach.model.Sportler(
+                "Anna", "anna@example.com", "Braun", 56.0);
+        org.springframework.test.util.ReflectionTestUtils.setField(sportler, "id", "sp-1");
+
+        when(sportlerRepository.findByNameContainingIgnoreCase(anyString(), any()))
+                .thenReturn(new org.springframework.data.domain.PageImpl<>(
+                        List.of(sportler), org.springframework.data.domain.PageRequest.of(0, 200), 1));
+        when(trainingsfokusRepository.findByKategorieAndSportlerIdIn(anyString(), any(), any()))
+                .thenReturn(new org.springframework.data.domain.PageImpl<>(
+                        List.of(fokus), org.springframework.data.domain.PageRequest.of(0, 5), 1));
+
+        mockMvc.perform(get("/api/trainingsfokus?sportlerName=Anna&kategorie=Kumite"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void getAllTrainingsfokusWithSportlerNameNoMatchReturnsEmpty() throws Exception {
+        when(sportlerRepository.findByNameContainingIgnoreCase(anyString(), any()))
+                .thenReturn(new org.springframework.data.domain.PageImpl<>(
+                        List.of(), org.springframework.data.domain.PageRequest.of(0, 200), 0));
+
+        mockMvc.perform(get("/api/trainingsfokus?sportlerName=Unbekannt"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void getAllTrainingsfokusWithInvalidStatusReturnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/trainingsfokus?status=UNGUELTIG"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void getAllTrainingsfokusWithInvalidPaginationReturnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/trainingsfokus?page=-1"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = "ADMIN")
+    void getAllTrainingsfokusNoFiltersReturnsAll() throws Exception {
+        when(trainingsfokusRepository.findAll(any(org.springframework.data.domain.Pageable.class)))
+                .thenReturn(new org.springframework.data.domain.PageImpl<>(
+                        List.of(fokus), org.springframework.data.domain.PageRequest.of(0, 10), 1));
+
+        mockMvc.perform(get("/api/trainingsfokus"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray());
+    }
 }

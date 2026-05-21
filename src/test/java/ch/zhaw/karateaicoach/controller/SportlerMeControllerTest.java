@@ -101,4 +101,51 @@ class SportlerMeControllerTest extends BaseControllerTest {
                         .content("{\"guertelgrad\":\"Schwarz\"}"))
                 .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    @WithMockUser(username = "link-user")
+    void createMySportler_existingByEmail_linksUser() throws Exception {
+        Sportler byEmail = new Sportler("Arben", "arben@test.com", "Schwarz", 75.0);
+        ReflectionTestUtils.setField(byEmail, "id", "sp-email");
+
+        when(mailValidatorService.isValid(any())).thenReturn(true);
+        when(sportlerRepository.findByUserId(anyString())).thenReturn(Optional.empty());
+        when(sportlerRepository.findByEmailAndUserIdIsNull(anyString())).thenReturn(Optional.of(byEmail));
+        when(sportlerRepository.save(any(Sportler.class))).thenReturn(byEmail);
+
+        mockMvc.perform(post("/api/sportler/me")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"arben@test.com\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("sp-email"));
+    }
+
+    @Test
+    @WithMockUser(username = "gewicht-user")
+    void createMySportler_withInvalidGewicht_stillCreates() throws Exception {
+        when(mailValidatorService.isValid(any())).thenReturn(true);
+        when(sportlerRepository.findByUserId(anyString())).thenReturn(Optional.empty());
+        when(sportlerRepository.findByEmailAndUserIdIsNull(anyString())).thenReturn(Optional.empty());
+
+        Sportler saved = new Sportler("Max", "max@test.com", "", 0.0);
+        ReflectionTestUtils.setField(saved, "id", "sp-max");
+        saved.setUserId("gewicht-user");
+        when(sportlerRepository.save(any(Sportler.class))).thenReturn(saved);
+
+        mockMvc.perform(post("/api/sportler/me")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"max@test.com\",\"name\":\"Max\",\"gewicht\":\"keinezahl\"}"))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    @WithMockUser(username = "invalid-mail-user")
+    void createMySportler_invalidEmail_returnsBadRequest() throws Exception {
+        when(mailValidatorService.isValid(any())).thenReturn(false);
+
+        mockMvc.perform(post("/api/sportler/me")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"notvalid@test.com\"}"))
+                .andExpect(status().isBadRequest());
+    }
 }
