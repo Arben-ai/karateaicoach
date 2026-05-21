@@ -28,7 +28,9 @@
       "Bash(Sort-Object)",
       "Bash(sort -t',' -k4 -rn)",
       "Bash(./mvnw -B verify -q)",
-      "Bash(powershell -Command \"Compress-Archive -Path 'target\\\\site\\\\jacoco' -DestinationPath 'jacoco.zip' -Force; Write-Host 'Done'\")"
+      "Bash(powershell -Command \"Compress-Archive -Path 'target\\\\site\\\\jacoco' -DestinationPath 'jacoco.zip' -Force; Write-Host 'Done'\")",
+      "Bash(powershell -Command \"Compress-Archive -Path 'target\\\\surefire-reports' -DestinationPath 'surefire-reports.zip' -Force; Write-Host 'Done'\")",
+      "Bash(powershell -Command \"Get-ChildItem 'target\\\\surefire-reports\\\\*.txt' | Measure-Object | Select-Object -ExpandProperty Count\")"
     ]
   }
 }
